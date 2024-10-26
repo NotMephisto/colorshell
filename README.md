@@ -2,17 +2,20 @@
 My customized Hyprland configuration that I use everyday!
 
 <div align="center">
-<div class="screenshot-container">
- <img width=48% src="repo/screenshot_lockscreen.png">
- <img width=48% src="repo/screenshot_desktop.png">
- <img width=48% src="repo/screenshot_tools.png">
- <img width=48% src="repo/screenshot_usage.png">
-</div>
+    <div class="screenshot-container">
+       <img width=48% src="repo/shots/lockscreen.png">
+       <img width=48% src="repo/shots/showoff.png">
+       <img width=48% src="repo/shots/tools.png">
+       <img width=48% src="repo/shots/gh_profile.png">
+    </div>
+ 
+ more screenshots in [`repo/shots`](https://github.com/retrozinndev/Hyprland-Dots/tree/ryo/repo/shots)
+ <br>
  <br>
 
  https://github.com/user-attachments/assets/6da4ee8f-56d0-4b2e-9ce7-5d721ad9c943
 
- <p>(for some reason I was nervous when recording this lol)</p>
+<p>(for some reason I was nervous when recording this lol)</p>
 </div>
 <br>
 
@@ -22,6 +25,10 @@ All the colors are dynamically based on the current wallpaper! This is possible 
 
 ## 🖼️ Wallpapers
 When you're at the [Installation](#Installation) process, you can choose to copy my dotfiles' wallpapers folder. If you chose to copy, you can change the current wallpaper by pressing <kbd>SUPER</kbd> + <kbd>W</kbd>, or clicking to change wallpaper in the Control Center.
+
+### Source
+All wallpapers inside this repo are not made by me! You can find all sources inside [`WALLPAPERS.md`](https://github.com/retrozinndev/Hyprland-Dots/blob/ryo/WALLPAPERS.md) file.
+
 
 ## Installation
 You'll need to have installed all needed packages before installing my dotfiles! Use your package manager to do so. See needed packages on [`Wiki/Dependencies`].
@@ -42,6 +49,8 @@ See usage and other relevant info on the [Wiki].
 ### 🎉 Apps
 - Browser: [Zen Browser]
 - Text Editor: [Neovim], my config is [here](https://github.com/retrozinndev/nvim-conf.lua)
+- Terminal Emulator: [Kitty]
+- Shell: [Nushell]
 - See more on the [wiki]!
 
 ## ❗ Issues
@@ -51,11 +60,15 @@ Got any issue? Please create a [new Issue], I'll be happy for helping you out!
 This repo is licensed under the [MIT License].
 
 
-<!-- References(Other repos / websites) -->
+<!-- References of other projects -->
 [pywal]: https://github.com/dylanaraps/pywal
-[mit license]: https://en.wikipedia.org/wiki/MIT_License
 [zen browser]: https://zen-browser.app
 [neovim]: https://neovim.io
+[nushell]: https://nushell.sh
+[kitty]: https://sw.kovidgoyal.net/kitty/
+
+<!--  Web refs -->
+[mit license]: https://en.wikipedia.org/wiki/MIT_License
 
 <!-- Tabs -->
 [wiki]: https://github.com/retrozinndev/Hyprland-Dots/wiki
