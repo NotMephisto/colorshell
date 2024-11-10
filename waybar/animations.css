@@ -1,24 +1,15 @@
-@keyframes blink {
-    0% {
-        background: @color3;
-    }
-
-    100% {
-        background: @color2;
-    }
-}
-
-@keyframes pick-attention { 
-    25% {
-        background: @color6;
-    }
-
+@keyframes workspace-pick-attention { 
     50% {
+        background: @color4;
+        padding: 0 18px;
+    }
+
+    60% {
         background: @color1;
     }
 
-    75% {
-        background: @color6;
+    80% {
+        background: @color4;
     }
 
     100% {

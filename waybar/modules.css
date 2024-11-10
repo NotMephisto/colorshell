@@ -13,45 +13,47 @@
 
 /* Workspace Indicator */
 #workspaces {
-    padding: 4px;
+    padding: 5px 0;
+    margin: 0 4px;
 }
 
-#workspaces button {
+#workspaces > button {
+    border: none;
+    box-shadow: none;
     background: @color1;
     border-radius: 14px;
     padding: 0 4px;
     margin: 0 2px;
 }
 
-#workspaces button.active {
+#workspaces > button.active {
     background: @foreground;
     padding-left: 14px;
     padding-right: 14px;
 }
 
-#workspaces button.urgent {
-    animation: pick-attention;
+#workspaces > button.urgent {
+    animation: workspace-pick-attention;
     animation-duration: 2s;
 }
 
-#workspace button.special {
+#workspace > button.special {
     background: @color3;
 }
 
-#workspaces button:first-child {
+#workspaces > button:first-child {
     margin-left: 0px;
 }
 
-#workspaces button:last-child {
+#workspaces > button:last-child {
     margin-right: 0px;
 }
-
 
 /* Notifications */
 widget #custom-notifications {
     font-size: 16px;
-    padding-left: 10px;
-    padding-right: 12px;
+    padding-left: 12px;
+    padding-right: 14px;
 }
 
 widget #custom-notifications.cc-open {
@@ -108,8 +110,13 @@ window.empty #window {
 /* Pulse Audio */
 #pulseaudio {
     padding-left: 8px;
-    padding-right: 8px;
+    padding-right: 16px;
 }
+
+#pulseaudio.bluetooth {
+    padding: 0 8px;
+}
+
 
 /* Media Player Info */
 #custom-media {

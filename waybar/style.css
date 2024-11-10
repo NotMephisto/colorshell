@@ -15,19 +15,18 @@ window#waybar {
     background: transparent;
 }
 
-window#waybar.hidden {
-    opacity: 0;
-}
-
 window > * > * {
     padding: 4px;
+    margin-bottom: 8px;
 }
 
 .modules-left, 
 .modules-center, 
 .modules-right {
-    background: alpha(@background, .80);
-    border-radius: 14px;
+    background: alpha(@background, .74);
+    border-radius: 16px;
+    margin: 6px;
+    box-shadow: 0 0 2px 0 black;
 }
 
 .module {
@@ -57,10 +56,12 @@ menu {
 
 menu > separator {
     padding: 0px;
+    margin: 2px 0;
 }
 
 menu > * {
     border-radius: 2px;
+    margin: 0;
 }
 
 menu > *:first-child {

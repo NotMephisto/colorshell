@@ -2,7 +2,7 @@
     "position": "top",
     "layer": "top",
     "spacing": 0, 
-    "margin": 5,
+    "margin": 0,
     "reload_style_on_change": true,
     "modules-left": [
         "custom/logo",
@@ -132,17 +132,14 @@
     },
 
     "cpu": {
-        "format": " {usage}%",
+        "format": "  {usage}%",
         "tooltip": true,
         "escape": true
     },
     "memory": {
-        "format": " {}%"
+        "format": "  {}%"
     },
     "temperature": {
-        // "thermal-zone": 2,
-        // "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
-        // "format-critical": "{temperatureC}°C {icon}",
         "critical-threshold": 80,
         "format": "{icon} {temperatureC}°C",
         "format-icons": ["", "", ""]
@@ -190,8 +187,8 @@
         "format-icons": [ "󰤯", "󰤟", "󰤢", "󰤥", "󰤨" ]
     },
     "pulseaudio": { 
-        "format": "{volume}% {icon}",
-        "format-bluetooth": "{volume}% {icon}󰂯",
+        "format": "{icon}   {volume}%",
+        "format-bluetooth": "{icon}󰂯 {volume}%",
         "format-muted": "",
         "format-icons": {
             "headphone": "",
