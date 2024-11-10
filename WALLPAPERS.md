@@ -21,3 +21,7 @@ the links down below.
 ## Linux Girl Wallpaper
 
 - [WallHere](https://wallhere.com/en/wallpaper/2284648)
+
+## Genshin Impact Wallpaper(s)
+
+Those can be get on web events from Genshin Impact, the game, and also on [HoYoLAB](https://hoyolab.com)
