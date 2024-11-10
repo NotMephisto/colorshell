@@ -3,50 +3,60 @@
 
 
 * {
+    all: unset;
 	background-image: none;
-	box-shadow: none;
-    outline: none;
     background-repeat: no-repeat;
+    transition: 100ms ease-in-out;
 }
 
 window {
-	background-color: alpha(shade(@background, .6), .6);
-}
-
-window > * > * {
-    border: 2px solid @color2;
-    border-radius: 18.8px;
-}
-
-button:first-child {
-    border-radius: 16px 0 0 16px;
+    background: transparent;
 }
 
 button {
-    border-radius: 0;
-    color: @foreground;
-	background-color: @background;
-    background-position: center;
-	background-size: 40%;
-    transition: 150ms linear;
+    border-radius: 16px;
+    background-position: center 40%;
+	background-size: 35%;
+    margin: 0 6px;
     font-size: 1.25em;
     font-weight: 700;
 }
 
-button:last-child {
-    border-radius: 0 16px 16px 0;
+window > * > * {
+    padding: 140px 60px;
 }
 
-button:focus, button:hover {
+button:first-child {
+    margin-right: 6px;
+}
+
+button:last-child {
+    margin-left: 6px;
+}
+
+button:focus,
+button:hover {
 	background-color: shade(@color1, .75);
+    background-size: 40%;
+    background-position: center;
 }
 
 button:focus:hover {
-    background-color: @color3;
+    background-color: @color2;
 }
 
 button:active {
     background-color: @color1;
+}
+
+button > label {
+    font-size: 1.8em;
+    color: transparent;
+}
+
+button:hover > label,
+button:focus > label {
+    color: @foreground;
 }
 
 #lock {

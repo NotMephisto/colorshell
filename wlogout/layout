@@ -24,7 +24,7 @@
 }
 {
     "label" : "logout",
-    "action" : "loginctl terminate-user $USER && killall sddm",
+    "action" : "loginctl kill-user $(whoami)",
     "text" : "Logout",
     "keybind" : "e"
 }
