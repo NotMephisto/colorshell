@@ -11,22 +11,14 @@ window#waybar {
     font-family: "Noto Sans", "Font Awesome", sans-serif;
     font-size: 12px;
     color: @foreground;
-    border-radius: 16px;
     background: transparent;
 }
 
-window > * > * {
+window#waybar > * {
     padding: 4px;
-    margin-bottom: 8px;
-}
-
-.modules-left, 
-.modules-center, 
-.modules-right {
-    background: alpha(@background, .74);
-    border-radius: 16px;
-    margin: 6px;
-    box-shadow: 0 0 2px 0 black;
+    background: alpha(@background, .85);
+    margin-bottom: 4px;
+    border-radius: 14px;
 }
 
 .module {

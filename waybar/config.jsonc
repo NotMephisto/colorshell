@@ -2,7 +2,7 @@
     "position": "top",
     "layer": "top",
     "spacing": 0, 
-    "margin": 0,
+    "margin": 6,
     "reload_style_on_change": true,
     "modules-left": [
         "custom/logo",
@@ -85,7 +85,7 @@
     },
 
     "custom/logo": {
-        "format": "", // Change to desired logo
+        "format": "", // Change to desired logo
         "tooltip": false,
         "escape": true,
         "on-click": "anyrun" // Change to desired action
@@ -177,7 +177,7 @@
     "network": {
         // "interface": "wlp2*", // (Optional) To force the use of this interface
         "format-wifi": "{icon}",
-        "format-ethernet": "",
+        "format-ethernet": "",
         "tooltip-format": "<tt>{ifname}\t{ipaddr}\n {bandwidthUpBits}\n {bandwidthDownBits}</tt>",
         "tooltip-format-disconnected": "<tt>Disconnected</tt>",
         "tooltip-format-wifi": "<tt>󰤨 {essid}\n {bandwidthUpBits}\n {bandwidthDownBits}</tt>",
@@ -192,8 +192,8 @@
         "format-muted": "",
         "format-icons": {
             "headphone": "",
-            "hands-free": "",
-            "headset": "",
+            "hands-free": "󰥰",
+            "headset": "󰋎",
             "phone": "",
             "phone-muted": "",
             "portable": "",
