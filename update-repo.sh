@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-HYPRLAND_DOTS_DIRS=("hypr" "swaync" "waybar" "anyrun" "wlogout" "wal")
+HYPRLAND_DOTS_DIRS=("hypr" "swaync" "waybar" "anyrun" "wlogout" "wal" "fastfetch")
 WALLPAPERS_DIR="$HOME/wallpapers"
 
 printf "\n"
@@ -69,6 +69,7 @@ Check_existance() {
 Update_local() {
     for dotsDir in ${HYPRLAND_DOTS_DIRS[@]}; do
         if [[ -d "$HOME/.config/$dotsDir" ]]; then 
+            echo "-> Trying to copy ${dotsDir^}..."
             cp -r $HOME/.config/$dotsDir ./$dotsDir
         else
             Send_log "warn" "Looks like the ~/.config/$dotsDir dir is in fault! Skipping it..."
@@ -84,6 +85,8 @@ Update_local() {
 }
 
 Update_remote() {
+    echo "Git status:"
+    /usr/bin/env git status
     echo "Please type one of the dotfiles you want to push now(only one dir):"
     ls --color=auto -d -- */
     printf "Directory: "
