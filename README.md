@@ -54,7 +54,7 @@ See usage and other relevant info on the [Wiki].
 - See more on the [wiki]!
 
 ## ❗ Issues
-Got any issue? Please create a [new Issue], I'll be happy for helping you out!
+Having issues? Please create a [new Issue] here, I'll be happy to help you out!
 
 ## 📜 License
 This repo is licensed under the [MIT License].
