@@ -79,9 +79,12 @@ Update_local() {
         fi
     done
 
-    if [[ -d "$WALLPAPERS_DIR" ]]; then
+    if [[ -d $WALLPAPERS_DIR ]]; then
         Send_log "info" "Copying wallpapers"
+        mkdir -p ./wallpapers
         cp -rf $WALLPAPERS_DIR/* ./wallpapers
+    else
+        Send_log "warn" "Wallpapers dir could not be found in $HOME, skipping..."
     fi
 
     printf "\nDone updating local repo!\n"
