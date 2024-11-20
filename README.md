@@ -1,24 +1,8 @@
 # Retrozinn's Hyprland Dots
-My customized Hyprland configuration that I use everyday!
+My customized Hyprland dotfiles that I keep changing time to time!
 
-<div align="center">
-    <div class="screenshot-container">
-       <img width=48% src="repo/shots/lockscreen.png">
-       <img width=48% src="repo/shots/showoff.png">
-       <img width=48% src="repo/shots/tools.png">
-       <img width=48% src="repo/shots/gh_profile.png">
-    </div>
- 
- more screenshots in [`repo/shots`](https://github.com/retrozinndev/Hyprland-Dots/tree/ryo/repo/shots)
- <br>
- <br>
-
- https://github.com/user-attachments/assets/6da4ee8f-56d0-4b2e-9ce7-5d721ad9c943
-
-<p>(for some reason I was nervous when recording this lol)</p>
-</div>
-<br>
-
+> [!warning]
+> This is a work in progress, it's still not ready to use.
 
 ## 🎨 Colors
 All the colors are dynamically based on the current wallpaper! This is possible by using [pywal], a cli tool to generate colorschemes by using an image as a base.
@@ -42,9 +26,6 @@ In order to install this style right away, just run this installation script:
 ```nushell
  $ git clone "https://github.com/retrozinndev/Hyprland-Dots.git"; cd Hyprland-Dots; bash apply.sh
 ```
-
-### ❔ How to Use
-See usage and other relevant info on the [Wiki].
 
 ### 🎉 Apps
 - Browser: [Zen Browser]
