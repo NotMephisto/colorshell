@@ -19,6 +19,9 @@ My customized Hyprland configuration that I use everyday!
 </div>
 <br>
 
+> [!note]
+> I am currently working with eww, you can see how my work is going on branch `eww-edition`.
+> Thus I may be a little bit be inactive in the main branch (`ryo`).
 
 ## 🎨 Colors
 All the colors are dynamically based on the current wallpaper! This is possible by using [pywal], a cli tool to generate colorschemes by using an image as a base.
