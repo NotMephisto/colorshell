@@ -8,10 +8,11 @@
 (defwidget workspaces [] 
     (eventbox :onscroll "[[ {} == up ]] && hyprctl dispatch workspace e+1 || hyprctl dispatch workspace e-1"
       (box :class "workspaces"
+           :space-evenly false
         (for workspace in json_workspaces
             (button :onclick "hyprctl dispatch workspace ${workspace.id}" 
                     :class "${ json_active_workspace.id == workspace.id ? "active" : "default" }"
-            "${workspace.id}")
+            "")
         )
       )
     )

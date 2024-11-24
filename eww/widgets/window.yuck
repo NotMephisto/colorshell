@@ -1,6 +1,6 @@
 
 (deflisten active_window :initial ""
-`sh ./scripts/window.sh`)
+`sh ./scripts/active-window.sh`)
 
 (defwidget window []
     (button :visible { active_window.class == "null" ? false : true }

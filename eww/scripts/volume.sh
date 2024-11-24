@@ -1,28 +1,39 @@
 #!/usr/bin/env bash
 
-# Note: $SCROLL is defined by eww
+default_value="5"
+audio_sink="@DEFAULT_AUDIO_SINK@"
+current_volume=$(wpctl get-volume $audio_sink)
 
-DEFAULT_INCREASE='5'
 
-Guess_increase_decrease() {
-    CURRENT_VOL=$(Translate_volume_to_int)
+get_volume() {
+    echo $(wpctl get-volume $audio_sink)
+}
 
-    if [[ $SCROLL == "up" ]]; then
-        if [[ $(awk "BEGIN { ($CURRENT_VOL+$DEFAULT_INCREASE) }") > 100 ]]; then
-            echo "1.00"
-        else
-            echo "$DEFAULT_INCREASE%+"
+get_json_loop() {
+    while true; do
+        if ! [[ $current_volume == get_volume ]]; then
+            echo "{ \"volume\": $(translate_volume $current_volume) }"
+            current_volume=$(get_volume)
         fi
+    done
+}
+
+set_volume() {
+    wpctl set-volume $audio_sink $1
+}
+
+translate_volume() {
+    echo "$($1 | sed -e 's/Volume: //' -e 's/^1\./1/' -e 's/^0.//' -e 's/^00/0/')"
+}
+
+increase_vol() {
+    if (($(translate_volume $current_volume)+$default_value >= 100)); then
+        set_volume "1.00"
     else
-        echo "$DEFAULT_INCREASE%-"
+        set_volume "$default_value%+"
     fi
 }
 
-Update_volume() {
-    UPDATED_VOL=$(Guess_increase_decrease)
-    wpctl set-volume "@DEFAULT_AUDIO_SINK@" "$UPDATED_VOL"
-}
-
-Translate_volume_to_int() {
-    echo $(wpctl get-volume @DEFAULT_AUDIO_SINK@ | sed -e 's/Volume: //' -e 's/^1\./1/' -e 's/^0.//' -e 's/^00/0/')
+decrease_vol() {
+    set_volume "$default_value%-"
 }
