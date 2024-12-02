@@ -1,5 +1,9 @@
 
-.control-center {
-    background: green;
+// window.control-center {}
+
+box.cc {
+    margin: 16px;
+    background: rgba($background, .85);
     border-radius: 16px;
+    border: 2px solid darken($color: $color3, $amount: 20);
 }

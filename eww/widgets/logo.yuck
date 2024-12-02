@@ -1,4 +1,0 @@
-(defwidget logo []
-    (button :class "distro-logo"
-    "")
-)

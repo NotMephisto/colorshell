@@ -3,13 +3,14 @@
 (include "./windows/control-center.yuck")
 
 ; Widgets
-(include "./widgets/workspaces.yuck")
-(include "./widgets/clock.yuck")
-(include "./widgets/notifications.yuck")
-(include "./widgets/audio.yuck")
-(include "./widgets/media.yuck")
-(include "./widgets/logo.yuck")
-(include "./widgets/window.yuck")
+(include "./widgets/bar/workspaces.yuck")
+(include "./widgets/bar/clock.yuck")
+(include "./widgets/bar/notifications.yuck")
+(include "./widgets/bar/audio.yuck")
+(include "./widgets/bar/media.yuck")
+(include "./widgets/bar/logo.yuck")
+(include "./widgets/bar/window.yuck")
+(include "./widgets/bar/network.yuck")
 
 (defwindow bar 
     :monitor 0
@@ -43,7 +44,8 @@
                  :prepend-new true
                  :class "systray"
         )
-        (audio)
+;        (audio)
+        (network)
         (notifications)
       )
     )

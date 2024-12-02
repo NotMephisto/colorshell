@@ -1,7 +1,13 @@
 
+$foreground: lighten($color: $foreground, $amount: 10);
+
 .bar {
     background: transparent;
     padding: 4px;
+
+    & label {
+        font-weight: 500;
+    }
 }
 
 /* Styles .widgets-[left/center/right] */
@@ -28,14 +34,15 @@
 button {
     padding: 6px 10px;
     border-radius: 12px;
+    background: none;
 }
 
 button:hover {
-    background: darken($color: $color1, $amount: 5);
+    background: $color3;
 }
 
 button:active {
-    background: darken($color: $color1, $amount: 20)
+    background: darken($color: $color3, $amount: 10);
 }
 
 button label {
@@ -103,12 +110,9 @@ menu {
 }
 
 .distro-logo {
-    padding: 0 14px;
-
-    & > button {
-        padding: 0;
-        margin: 0;
-    }
+    padding: 0;
+    padding-left: 12px;
+    padding-right: 6px;
 
     & > label {
         font-size: 15px;
@@ -124,25 +128,72 @@ menu {
     }
 }
 
+
 .mediaplayer {
     border-radius: 12px;
     box-shadow: inset 0 0 0px 2px $color3;
     padding: 0 4px;
+    padding-right: 0px;
 
-    & > label {
+    & label.media-title,
+    & label.media-artist {
         margin: 0 4px;
         padding-right: 5px;
+        color: $foreground;
+        font-size: inherit;
+
+        &.media-title {
+            margin-top: 6px;
+            margin-bottom: 6px;
+            border-right: .5px solid darken($color: $foreground, $amount: 20);
+        }
+    }
+
+    &.revealed label.media-artist {
         border-right: 2px solid $color3;
     }
 
-    & > button {
+    & button {
         padding: 0 7px;
-        border-radius: 4px;
-        margin: 2px 2px;
+        border-radius: 0px;
     }
 }
 
+.window {
+    padding: 0 4px;
+    padding-right: 6px;
+
+    & > .window-icon {
+        padding-right: 24px;
+        margin-right: 4px;
+        background-position: center;
+        background-size: 24px;
+        background-repeat: no-repeat;
+    }
+
+    & > label.window-class {
+        font-size: 10px;
+        font-family: monospace;
+        color: darken($color: $foreground, $amount: 20);
+    }
+
+    & > label.window-title {
+        margin-top: -2px;
+        font-size: inherit;
+        color: $foreground;
+    }
+}
+
+.network {
+    padding-left: 10px;
+    padding-right: 7px;
+}
+
 .notifications button {
-    padding-left: 11px;
-    padding-right: 11px;
+    padding-left: 12px;
+    padding-right: 10px;
+
+    &.open, &:hover {
+        background: $color3;
+    }
 }

@@ -1,0 +1,10 @@
+(defpoll uptime_info :interval "25s"
+`echo "$(cat /etc/hostname), Uptime: $( uptime -p | sed -e 's/^up //')"`)
+
+
+(defwidget quickactions []
+    (box :orientation "horizontal"
+        (label :xalign 0
+               :text "${uptime_info}")
+    )
+)

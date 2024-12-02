@@ -1,0 +1,9 @@
+(defpoll connection_status :interval "2s"
+`nmcli n c`)
+
+(defwidget network []
+    (box
+        (button :class "network"
+        { connection_status == "full" || connection_status == "partial" ? " " : "󰤭 " })
+    )
+)

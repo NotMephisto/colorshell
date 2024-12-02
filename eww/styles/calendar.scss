@@ -1,9 +1,30 @@
-.widget-calendar {
-    padding: 24px;
+
+.calendar-box {
+    padding: 12px;
     background: rgba($background, 0.6);
     border-radius: 16px;
 
-    & > .title {
-        background: $color1;
+    & > label.calendar-header {
+        font-size: 15px;
+        font-weight: 700;
+    }
+
+    .month-calendar {
+        transition: all 120ms linear;
+        border-radius: 8px;
+        padding: 6px;
+        font-weight: 600;
+
+        & > .header {
+            border-radius: 6px;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            border-bottom: solid .5px gray;
+        }
+
+        // Selected day / Current day
+        &:selected {
+            background: darken($color: $color3, $amount: 20);
+        }
     }
 }

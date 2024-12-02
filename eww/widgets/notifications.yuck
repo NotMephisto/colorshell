@@ -1,5 +1,0 @@
-(defwidget notifications []
-    (box :class "notifications"
-      (button :onclick "swaync-client -t" "")
-    )
-)

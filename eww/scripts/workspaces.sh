@@ -5,7 +5,7 @@ hyprctl -j workspaces | jq -c
 
 handle() {
   case $1 in
-    workspace*) hyprctl -j workspaces | jq -c ;;
+    workspace* | destroyworkspace*) hyprctl -j workspaces | jq -c ;;
   esac
 }
 
