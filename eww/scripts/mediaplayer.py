@@ -133,7 +133,8 @@ class PlayerManager:
             "status": player.props.status.lower(),
             "title": player.get_title(),
             "artist": player.get_artist(),
-            "player": player.props.player_name.lower()
+            "player": player.props.player_name.lower(),
+            "artUrl": player.print_metadata_prop("mpris:artUrl")
         }
 
         sys.stdout.write(json.dumps(output) + "\n")
