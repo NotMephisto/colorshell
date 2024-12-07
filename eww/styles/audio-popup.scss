@@ -7,20 +7,20 @@ box.audio-popup {
     border: .5px solid rgba($foreground, .3);
 }
 
-.separator {
+.audio-popup .separator {
     box-shadow: 0 0 0 1px darken($color: $foreground, $amount: 25);
     margin: 4px 0;
     border-radius: 1px;
 }
 
-.output-slider {
+.audio-popup .output-slider {
     label {
         margin-left: 18px;
         color: $background;
     }
 }
 
-.source-slider {
+.audio-popup .source-slider {
     label {
         margin-left: 18px;
         color: $background;
