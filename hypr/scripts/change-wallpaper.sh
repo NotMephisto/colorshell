@@ -44,12 +44,7 @@ Hot_reload_wallpaper() {
 
 Reload_pywal() {
     echo "Reloading pywal colorscheme"
-    wal -q -s -t -i "$SET_WALLPAPER_FULL"
-}
-
-Reload_swaync() {
-    echo "Reloading stylesheet for SwayNC"
-    swaync-client -rs
+    wal -q -t --cols16 darken -i "$SET_WALLPAPER_FULL"
 }
 
 Reload_eww() {
@@ -83,6 +78,5 @@ Hot_reload_wallpaper
 Reload_pywal
 Reload_eww
 Update_wallpaper_settings
-Reload_swaync
 
 exit 0
