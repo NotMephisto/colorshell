@@ -10,11 +10,11 @@ Every widget on any of these screenshots are totally functional! Except the noti
 
 <div align="center"
 
-[!image](repo/eww_shots/desktop.png)
-[!image](repo/eww_shots/control_center.png)
-[!image](repo/eww_shots/audio_thing.png)
-[!image](repo/eww_shots/calendar.png)
-[!image](repo/eww_shots/logout_menu.png)
+![image](repo/eww_shots/desktop.png)
+![image](repo/eww_shots/control_center.png)
+![image](repo/eww_shots/audio_thing.png)
+![image](repo/eww_shots/calendar.png)
+![image](repo/eww_shots/logout_menu.png)
 
 </div>
 
