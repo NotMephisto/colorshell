@@ -33,25 +33,20 @@
     }
 }
 
-.workspaces {
+// Styles the literal script for workspace indicators
+ .workspaces {
     padding: 2px 0px;
     border-radius: 10px;
 
     & > button {
-        padding: 0 0;
         border-radius: 16px;
         margin: 0 2px;
+        padding: 5px 12px;
         background: $color1;
-        transition: ease-in 80ms;
-        transition-property: all;
 
         &.active {
-            padding: 0 22px;
+            padding: 5px 22px;
             background: $foreground;
-        }
-
-        &.default {
-            padding: 0 12px;
         }
     }
 }
@@ -180,11 +175,11 @@
     }
 }
 
-.notifications button {
+.control-center-toggle button {
     padding-left: 12px;
     padding-right: 10px;
 
-    &.open, &:hover {
-        background: $color3;
+    &.open {
+        background: darken($color: $color3, $amount: 15);
     }
 }

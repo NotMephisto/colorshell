@@ -27,6 +27,14 @@ box.cc {
     .button-row {
         margin: 7px 0;
     }
+
+    .color-picker {
+        padding-right: 11px;
+    }
+
+    .powermenu {
+        padding-right: 11px;
+    }
 }
 
 .control-center .mediaplayer {
@@ -148,6 +156,50 @@ box.cc {
             & button.do-not-disturb {
                 padding-right: 12px;
             }
+        }
+    }
+}
+
+.toggle-grid {
+    .grid-toggle .toggle {
+        margin: 0 6px;
+
+        &:first-child {
+            margin-left: 0;
+        }
+
+        &:last-child {
+            margin-right: 0;
+        }
+    }
+}
+
+.grid-toggle {
+    
+    &.active {
+        background: darken($color: $color1, $amount: 2);
+    }
+
+    & > .toggle {
+        padding: 8px;
+        border-radius: 18px;
+
+        label {
+            font-family: "Cantarell", "0xProto Nerd Font";
+        }
+
+        .icon {
+            margin-right: 6px;
+            font-size: 16px;
+        }
+
+        label.header {
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        label.body {
+            font-size: 11px;
         }
     }
 }

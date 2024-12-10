@@ -18,6 +18,6 @@
         (quickactions)
         (toggle-grid)
         (mediaplayer :album_background true)
-        (notifications)
+        (notifications :notification-history json_notification_history)
     )
 )

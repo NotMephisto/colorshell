@@ -8,8 +8,10 @@ box.audio-popup {
 }
 
 .audio-popup .separator {
-    box-shadow: 0 0 0 1px darken($color: $foreground, $amount: 25);
-    margin: 4px 0;
+    border-top: .5px solid rgba(darken($color: $foreground, $amount: 25), .7);
+    margin-bottom: 8px;
+    margin-left: 6px;
+    margin-right: 6px;
     border-radius: 1px;
 }
 
@@ -24,5 +26,29 @@ box.audio-popup {
     label {
         margin-left: 18px;
         color: $background;
+    }
+}
+
+
+.audio-popup {
+
+    trough {
+        background: darken($color: $foreground, $amount: 25);
+        border-radius: 6px;
+    }
+
+    trough highlight {
+        background: $foreground;
+        padding: 10px;
+        border-radius: inherit;
+    }
+
+    slider:active highlight {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+
+    scale {
+        padding: 10px;
     }
 }

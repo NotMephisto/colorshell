@@ -1,5 +1,5 @@
 
-(defwidget control-center-toggle []
+(defwidget cc-toggle []
     (box :class "control-center-toggle"
       (button :onclick "eww open --toggle control-center" 
       " ")

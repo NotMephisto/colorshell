@@ -10,7 +10,7 @@
          :orientation "vertical"
 
         (label :class "calendar-header"
-               :text "Calendar")
+               :text "${month-name}")
         (calendar :class "month-calendar"
                   :show-details true
                   :show-heading true

@@ -1,10 +1,6 @@
-
-(defpoll datetime :interval "10s"
-`date +"%A %d, %H:%M"`)
-
 (defwidget clock []
     (box :class "clock"
       (button :onclick "eww open calendar-window --toggle"
-      "${datetime}")
+      "${day-name} ${day}, ${time}")
     )
 )

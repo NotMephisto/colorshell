@@ -1,0 +1,31 @@
+; All globally used variables are stored here
+
+
+; Listeners
+(deflisten json_notification_history :initial `[]`
+`python scripts/notification-daemon.py`)
+
+(deflisten json_volume :initial `{ "output": 60, "source": 80 }`
+`sh scripts/get-volume-watch.sh`)
+
+(deflisten literal_workspaces :initial ""
+`sh scripts/workspaces.sh`)
+
+; Date and time
+(defpoll day-name :interval "5s"
+`date +"%A"`)
+
+(defpoll day :interval "5s"
+`date +"%d"`)
+
+(defpoll month :interval "5s"
+`date +"%m"`)
+
+(defpoll month-name :interval "5s"
+`date +"%B"`)
+
+(defpoll year :interval "5s"
+`date +"%Y"`)
+
+(defpoll time :interval "5s"
+`date +"%H:%M"`)

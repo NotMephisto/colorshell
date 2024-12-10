@@ -1,8 +1,5 @@
 (include "widgets/control-center/notification.yuck")
 
-(deflisten json_notification_history :initial "{[]}"
-`python ./scripts/notification-watcher.py`)
-
 (defwidget notifications []
     (box :class "cc-notifications"
          :space-evenly false
@@ -11,7 +8,7 @@
         (scroll :class "vertical-scroll"
                 :hscroll false
                 :vscroll true
-                :height 400 ; Adjust according to your screen size
+                :height 400 ; Adjust according to control center size
                 :vexpand true
 
             (box :class "notifications"
@@ -49,7 +46,7 @@
             "󰒲")
             (button :class "clear-all"
                     :onclick "dunstctl history-clear"
-            "Clear all ")
+            "Clear all")
         )
     )
 )

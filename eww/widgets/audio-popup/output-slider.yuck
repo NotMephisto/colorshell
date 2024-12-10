@@ -5,7 +5,7 @@
         (overlay
             (scale :min 0
                    :max 100
-                   :value "${volume_json.output}"
+                   :value "${json_volume.output}"
                    :orientation "horizontal"
                    :draw-value false
                    :flipped false

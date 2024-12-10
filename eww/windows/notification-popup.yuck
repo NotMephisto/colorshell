@@ -1,0 +1,47 @@
+(defwindow floating-notification []
+    :monitor 0
+    :exclusive false
+    :focusable false
+    :namespace "eww-notification-popup"
+    :geometry (geometry :anchor "top right"
+                        :width "128px"
+                        :height "64px")
+    :stacking "overlay"
+
+    (box :class "floating-notifications"
+        (for item in json_notification_history
+            (floating-notification :summary "${item.summary}"
+                                   :body "${item.body}"
+                                   :image "${item.image}"
+                                   :app-name "${item.applicationName}")
+        )
+    )
+)
+
+(defwidget floating-notification [ summary body image app-name ]
+    (box :class "popup-notification"
+         :space-evenly false
+         :orientation "vertical"
+
+        (box :orientation "horizontal"
+             :class "top"
+
+            (label :text "${app-name}")
+        )
+
+        (box :orientation "horizontal"
+            (box :class "image"
+                 :style "background-image: ${image};")
+
+            (box :class "content"
+                 :orientation "vertical"
+
+                (label :class "summary"
+                       :text "${summary}")
+
+                (label :class "body"
+                       :text "${body}")
+            )
+        )
+    )
+)
