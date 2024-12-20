@@ -1,52 +1,55 @@
-(include "widgets/control-center/notification.yuck")
-
 (defwidget notifications []
-    (box :class "cc-notifications"
-         :space-evenly false
-         :orientation "vertical"
-        
-        (scroll :class "vertical-scroll"
-                :hscroll false
-                :vscroll true
-                :height 400 ; Adjust according to control center size
-                :vexpand true
+  (box :class "cc-notifications"
+       :orientation "vertical"
+       :space-evenly false
+      
+    (scroll :class "vertical-scroll"
+            :hscroll false
+            :vscroll true
+            :hexpand true
+            :vexpand true
+            :height 500
+            :style "border-radius: 16px;"
 
-            (box :class "notifications"
-                 :orientation "vertical"
-                 :space-evenly false
+      (box :class "notifications"
+           :orientation "vertical"
+           :space-evenly false
+           
 
-                (for notification in json_notification_history
-                    (notification :application_name "${notification.applicationName}"
-                                  :image "${notification.image}"
-                                  :summary "${notification.summary}"
-                                  :body "${notification.body}")
-                )
-
-                (box :class "empty-notifications"
-                     :visible { json_notification_history[0] == "null" ? true : false }
-                     :style "margin-top: 150px;"
-                     :space-evenly false
-                     :orientation "vertical"
-                     :halign "center"
-                    
-                    (label :class "bell-icon"
-                           :text "󱇦"
-                           :style "font-size: 96px")
-
-                    (label :text "You're done!"
-                           :style "margin-left: 12px;")
-                )
-            )
+        (for notification in json_notifications
+          (notification :application_name "${notification.app-name.data}"
+                        :image "${notification.app-icon.data}"
+                        :summary "${notification.summary.data}"
+                        :body "${notification.body.data}"
+                        ;:onclickclose "dunstctl history-rm ${notification.id.data}" ; needs fix
+                        :onclick "makoctl invoke -n ${notification.id.data}"
+                        :icon "${notification.app-name.data}"
+          )
         )
 
-        (box :class "bottom button-row"
-             :halign "end"
+        (box :class "empty-notifications"
+             :visible { arraylength(json_notifications) == 0 ? true : false }
+             :style "margin-top: 50px;"
              :space-evenly false
-            (button :class "do-not-disturb"
-            "󰒲")
-            (button :class "clear-all"
-                    :onclick "dunstctl history-clear"
-            "Clear all")
+             :orientation "vertical"
+             :halign "center"
+            
+            (label :class "bell-icon"
+                   :text "󱇦"
+                   :style "font-size: 96px")
+
+            (label :text "You're done!"
+                   :style "margin-left: 12px;")
         )
+      )
     )
+
+    (box :class "bottom button-row"
+         :halign "end"
+         :space-evenly false
+      (button :class "clear-all"
+              :onclick { arraylength(json_notifications) > 0 ? "pkill mako; hyprctl dispatch exec mako" : "" }
+      "󰎟  Clear")
+    )
+  )
 )

@@ -1,4 +1,4 @@
-(defwidget notification [ ?application_name ?icon_path summary body ?image ?onclick ]
+(defwidget notification [ ?application_name ?icon summary body ?image ?onclickclose ?onclick ]
     (eventbox :onclick "${onclick}"
         (box :class "notification"
              :orientation "vertical"
@@ -14,20 +14,19 @@
                      :halign "start"
                      :hexpand true
                      :vexpand false
-
+                    
                     (image :class "app-icon"
-                           :path "${icon_path}"
-                           :visible { icon_path != "" ? true : false }
-                           :image-width 32
-                           :image-height 32)
+                           :visible { icon != "" ? true : false }
+                           :icon "${icon}"
+                           :icon-size "menu")
                     (label :class "app-name"
                            :text "${application_name}")
                 )
-                (box :space-evenly false
-                    (button :class "close"
-                            :onclick "${onclick}"
-                    "󰅖")
-                )
+                (button :class "close"
+                        :style "border-radius: 10px; padding: 6px; padding-left: 10px; padding-right: 10px;"
+                        :onclick "${onclickclose}"
+                        :visible false ; Temporary, will try doing something to remove history items
+                "󰅖")
             )
 
             (box :class "content"
@@ -35,7 +34,7 @@
                 (box :class "image"
                      :width 96
                      :height 96
-                     :visible { image != "" ? true : false }
+                     :visible { image != "" && image != "\{\}" ? true : false }
                      :style { image != "" ? "background-image: image(url('${image}'));" : "" }
                 ) 
 

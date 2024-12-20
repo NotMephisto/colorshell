@@ -2,9 +2,10 @@
 (include "variables.yuck")
 
 ; Windows
-(include "windows/calendar.yuck")
+(include "windows/calendar-window.yuck")
 (include "windows/control-center.yuck")
 (include "windows/bar.yuck")
 (include "windows/powermenu.yuck")
-(include "windows/audio-popup.yuck")
-(include "windows/notification-popup.yuck")
+(include "windows/volume-control.yuck")
+(include "windows/volume-popup.yuck")
+(include "windows/floating-media.yuck")

@@ -134,7 +134,8 @@ class PlayerManager:
             "title": player.get_title(),
             "artist": player.get_artist(),
             "player": player.props.player_name.lower(),
-            "artUrl": player.print_metadata_prop("mpris:artUrl")
+            "artUrl": player.print_metadata_prop("mpris:artUrl"),
+            "length": player.print_metadata_prop("mpris:length")
         }
 
         sys.stdout.write(json.dumps(output) + "\n")

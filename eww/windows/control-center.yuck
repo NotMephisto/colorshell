@@ -1,13 +1,13 @@
-(include "./widgets/control-center/quickactions.yuck")
-(include "./widgets/control-center/notifications.yuck")
-(include "./widgets/control-center/toggle-grid.yuck")
-(include "./widgets/control-center/mediaplayer.yuck")
+(include "widgets/control-center/top-bar.yuck")
+(include "widgets/control-center/notifications.yuck")
+(include "widgets/control-center/big-media.yuck")
+(include "widgets/control-center/notification.yuck")
+(include "widgets/control-center/toggles.yuck")
 
 (defwindow control-center []
     :monitor 0
     :geometry (geometry :width "500px"
-                        :height "95%"
-                        :anchor "center right")
+                        :anchor "top right")
     :stacking "overlay"
     :exclusive false
     :namespace "eww-cc"
@@ -15,9 +15,9 @@
     (box :class "cc"
          :orientation "vertical"
          :space-evenly false
-        (quickactions)
-        (toggle-grid)
-        (mediaplayer :album_background true)
-        (notifications :notification-history json_notification_history)
+        (top-bar)
+        (toggles)
+        (big-media :album_background true)
+        (notifications)
     )
 )

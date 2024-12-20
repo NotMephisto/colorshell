@@ -1,12 +1,12 @@
-(include "./widgets/bar/workspaces.yuck")
-(include "./widgets/bar/clock.yuck")
-(include "./widgets/bar/cc-toggle.yuck")
-(include "./widgets/bar/audio.yuck")
-(include "./widgets/bar/media.yuck")
-(include "./widgets/bar/logo.yuck")
-(include "./widgets/bar/window.yuck")
-(include "./widgets/bar/network.yuck")
-(include "./widgets/bar/battery.yuck")
+(include "widgets/bar/workspaces.yuck")
+(include "widgets/bar/clock.yuck")
+(include "widgets/bar/cc-toggle.yuck")
+(include "widgets/bar/audio.yuck")
+(include "widgets/bar/media.yuck")
+(include "widgets/bar/logo.yuck")
+(include "widgets/bar/window.yuck")
+(include "widgets/bar/network.yuck")
+(include "widgets/bar/battery.yuck")
 
 (defwindow bar 
     :monitor 0
@@ -22,22 +22,22 @@
            :space-evenly false
         (logo)
         (workspaces)
+        (window)
       )
       (box :class "widgets-center"
            :halign "center"
            :space-evenly false
         (clock)
-        (window)
         (media)
       )
       (box :class "widgets-right"
            :halign "end"
            :space-evenly false
-        (systray :spacing 5
+        (systray :spacing 0
                  :orientation "horizontal"
                  :space-evenly false
                  :icon-size 14
-                 :prepend-new true
+                 :prepend-new false
                  :class "systray"
         )
         (audio)

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 # output current window before event trigger to prevent issues
-hyprctl -j activewindow | jq -c
+hyprctl -j activewindow | jq -c | sed 's/\\[n]//g'
 
 handle() {
   case $1 in
-    activewindow*) hyprctl -j activewindow | jq -c ;;
+      activewindow*) hyprctl -j activewindow | jq -c | sed 's/\\[n]//g' ;;
   esac
 }
 

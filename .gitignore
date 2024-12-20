@@ -2,3 +2,5 @@
 # Ignore personal configurations (e.g.: hyprpaper.conf, input.conf)
 hypr/hyprpaper.conf
 hypr/input.conf
+
+*.log

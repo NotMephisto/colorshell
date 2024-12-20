@@ -7,13 +7,26 @@
     }
     & > button {
         padding: 96px;
+        margin: 0 6px;
+        border-radius: 6px;
+        background: darken($color: $foreground, $amount: 35);
+
+        &:first-child {
+            border-top-left-radius: 24px;
+            border-bottom-left-radius: 24px;
+        }
+
+        &:last-child {
+            border-top-right-radius: 24px;
+            border-bottom-right-radius: 24px;
+        }
+
         & label {
             font-size: 98px;
         }
     }
 
-    & button:hover,
-    & button:focus {
-        background: darken($color: $color2, $amount: 20);
+    & button:hover {
+        background: $color1;
     }
 }

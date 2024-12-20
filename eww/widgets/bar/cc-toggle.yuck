@@ -1,7 +1,6 @@
 
 (defwidget cc-toggle []
-    (box :class "control-center-toggle"
-      (button :onclick "eww open --toggle control-center" 
-      " ")
-    )
+  (button :onclick "sh scripts/eww-window.sh toggle control-center" 
+          :class "control-center-toggle ${ window_state_control-center == "open" ? "open" : "closed" }"
+  { notification_modes =~ "dnd" ? "󰂠" : "󰂚"})
 )

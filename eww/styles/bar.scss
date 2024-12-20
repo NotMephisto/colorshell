@@ -34,18 +34,20 @@
 }
 
 // Styles the literal script for workspace indicators
- .workspaces {
+.workspaces {
     padding: 2px 0px;
-    border-radius: 10px;
+    border-radius: 50%;
 
     & > button {
+        $padding-block: 5px;
+
         border-radius: 16px;
         margin: 0 2px;
-        padding: 5px 12px;
-        background: $color1;
+        padding: $padding-block 12px;
+        background: lighten($color: $color1, $amount: 10);
 
         &.active {
-            padding: 5px 22px;
+            padding: $padding-block 22px;
             background: $foreground;
         }
     }
@@ -66,7 +68,7 @@
     margin: 0 6px;
     
     & > * > * {
-        margin: 0 4px
+        margin: 0 6px;
     }
 }
 
@@ -76,7 +78,7 @@
 
     & > .media {
         border-radius: inherit;
-        background: darken($color: $color3, $amount: 15);
+        background: darken($color: $color3, $amount: 5);
         
         & > label {
             color: $foreground;
@@ -129,7 +131,7 @@
     padding: 0 4px;
 
     & > .icon {
-        margin: 0 4px;
+        margin-right: 6px;
     }
 
     & > box.info {
@@ -147,7 +149,12 @@
     }
 }
 
-.network {
+.network button {
+    padding-left: 10px;
+    padding-right: 7px;
+}
+
+.bluetooth button {
     padding-left: 10px;
     padding-right: 7px;
 }
@@ -157,9 +164,13 @@
         background: darken($color: $color2, $amount: 5);
     }
 
-    & > box.audio {
+    & > .audio {
         padding: 0 8px;
         border-radius: 12px;
+
+        &.open {
+            background: darken($color: $color3, $amount: 10);
+        }
 
         label {
             font-weight: 600;
@@ -175,11 +186,19 @@
     }
 }
 
-.control-center-toggle button {
+.clock button.cal-open {
+    background: darken($color: $color3, $amount: 10);
+}
+
+.control-center-toggle {
     padding-left: 12px;
-    padding-right: 10px;
+    padding-right: 14px;
+
+    label {
+        font-size: 12px;
+    }
 
     &.open {
-        background: darken($color: $color3, $amount: 15);
+        background: darken($color: $color3, $amount: 10);
     }
 }

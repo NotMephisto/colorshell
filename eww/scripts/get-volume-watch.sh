@@ -16,6 +16,7 @@ source_vol=$(get_vol $source_)
 
 print_json
 
+# Loop
 pactl subscribe | grep --line-buffered -e "on sink" -e "on source" | while read -r; do
 
     output_vol=$(get_vol $sink_)

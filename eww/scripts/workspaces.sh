@@ -1,22 +1,21 @@
 #!/usr/bin/env bash
 
-#!/usr/bin/env bash
-
 print_workspaces_literal() {
     active_workspace_id=$(hyprctl -j activeworkspace | jq .id | xargs)
     existing_workspaces=$(hyprctl -j workspaces | jq .[].id | xargs)
 
     output="
-(box :class \"workspaces\"
-     :space-evenly false
-     :orientation \"horizontal\""
+        (box :class \"workspaces\"
+             :space-evenly false
+             :orientation \"horizontal\""
 
     for i in {1..10}; do
         output=$output"
-    (button :onclick \"hyprctl dispatch workspace $i\" 
-            :class { $active_workspace_id == $i ? \"active\" : \"\" } 
-            :visible { \"$existing_workspaces\" =~ $i ? true : false }
-    \"\")"
+            (button :onclick \"hyprctl dispatch workspace $i >> /dev/null \" 
+                    :class { $active_workspace_id == $i ? \"active\" : \"\" } 
+                    :visible { \"$existing_workspaces\" =~ $i ? true : false }
+                    :tooltip \"Workspace ${i}\"
+            \"\")"
 
         if [ $i == 10 ]; then
             output=$output")" # closes box if last

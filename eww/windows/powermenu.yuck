@@ -9,7 +9,7 @@
       :exclusive true
 
     (eventbox :class "outside"
-              :onclick "eww open bar; eww close powermenu"
+              :onclick "sh scripts/eww-window.sh close powermenu; sh scripts/eww-window.sh open bar"
         (box :space-evenly true
              :halign "center"
              :class "powermenu-container"
@@ -23,7 +23,7 @@
                     :onclick "loginctl kill-user $(sh -c 'echo $USER')"
             "󰗽")
             (button :class "close"
-                    :onclick "eww open bar; eww close powermenu"
+                    :onclick "sh scripts/eww-window.sh close powermenu; sh scripts/eww-window.sh open bar"
             "󰅖")
         )
     )

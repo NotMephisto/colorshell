@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-HYPRLAND_DOTS_DIRS=("hypr" "eww" "anyrun" "kitty" "wal" "fastfetch")
+HYPRLAND_DOTS_DIRS=("hypr" "eww" "anyrun" "kitty" "wal" "fastfetch" "mako")
 WALLPAPERS_DIR="$HOME/wallpapers"
 
 printf "\n"
