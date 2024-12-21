@@ -1,35 +1,41 @@
 # Retrozinn's Hyprland Dots
-My customized Hyprland dotfiles that I keep changing time to time!
+My customized Hyprland dotfiles that I keep improving almost everyday 🤩 !
 
-> [!warning]
-> This is a work in progress, it's still not ready to use.
-> Currently, I'm making the Eww configuration myself.
+> [!note]
+> Finally, the Eww edition is ready! You can now use it if you want to! :heart: <br>
+> If you're searching for the previous dotfiles with Waybar and Swaync, go
+> to the [`waybar-edition`](https://github.com/retrozinndev/Hyprland-Dots/tree/waybar-edition) branch!
 
-## Recent progress screenshots
-Every widget on any of these screenshots are totally functional! Except the notification center.
-
+## 🌄 Screenshots
 <div align="center"
+ 
+  <img src="repo/shots/desktop.png" width="45%">
+  <img src="repo/shots/control_center.png" width="45%">
+  <img src="repo/shots/showing_off_rice.png" width="45%">
+  <img src="repo/shots/runner.png" width="45%">
+  <img src="repo/shots/floating_github.png" width="45%">
+  <img src="repo/shots/calendar.png" width="45%">
+  <img src="repo/shots/floating_media.png" width="45%">
+  <img src="repo/shots/power_menu.png" width="45%">
 
-![image](repo/eww_shots/desktop.png)
-![image](repo/eww_shots/control_center.png)
-![image](repo/eww_shots/audio_thing.png)
-![image](repo/eww_shots/calendar.png)
-![image](repo/eww_shots/logout_menu.png)
-
+  more shots in [`repo/shots`](https://github.com/retrozinndev/Hyprland-Dots/tree/ryo/repo/shots)
+  
 </div>
 
 ## 🎨 Colors
-All the colors are dynamically based on the current wallpaper! This is possible by using [pywal], a cli tool to generate colorschemes by using an image as a base.
+All the colors of the interface are dynamically generated from your wallpaper! This is possible by using [pywal16] (fork of pywal), a cli tool to generate color schemes on the fly.
 
 ## 🖼️ Wallpapers
-When you're at the [Installation](#Installation) process, you can choose to copy my dotfiles' wallpapers folder. If you chose to copy, you can change the current wallpaper by pressing <kbd>SUPER</kbd> + <kbd>W</kbd>, or clicking to change wallpaper in the Control Center.
+When you're at the [Installation](#Installation) process, you can choose whether to install my wallpapers. If you chose to install, you can select any of them by clicking to change wallpaper in the Control Center. Or if you haven't chose to install, you can create the directory `~/wallpapers` in your home directory `~` and put an image you want to use as wallpaper and choose it using the menu inside control center and also by pressing <kbd>SUPER</kbd> + <kbd>W</kbd>!
 
-### Source
+See more bindings inside the `~/.config/hypr/bindings.conf` file or check the [Wiki/Usage] page!
+
+### ℹ️ Source
 All wallpapers inside this repo are not made by me! You can find all sources inside the [`WALLPAPERS.md`](https://github.com/retrozinndev/Hyprland-Dots/blob/ryo/WALLPAPERS.md) file.
 
 
 ## Installation
-You'll need to have installed all needed packages before installing my dotfiles! Use your package manager to do so. See needed packages on [`Wiki/Dependencies`].
+You'll need to have installed all needed packages before installing my dotfiles! Use your package manager to do so. See needed packages in [Wiki/Dependencies].
 
 In order to install this style right away, just run this installation script:
 
@@ -38,10 +44,10 @@ In order to install this style right away, just run this installation script:
 > 💡 Tip: Note the `$` character means that it's recommended to run this command without root privileges.
 
 ```nushell
- $ git clone "https://github.com/retrozinndev/Hyprland-Dots.git"; cd Hyprland-Dots; bash apply.sh
+ $ git clone https://github.com/retrozinndev/Hyprland-Dots; cd Hyprland-Dots; sh apply.sh
 ```
 
-### 🎉 Apps
+### 🎉 Tools
 - Browser: [Zen Browser]
 - Text Editor: [Neovim], my config is [here](https://github.com/retrozinndev/nvim-conf.lua)
 - Terminal Emulator: [Kitty]
@@ -59,7 +65,7 @@ Thanks to everyone who starred my dotfiles! 💖
 [![Stargazers over time](https://starchart.cc/retrozinndev/Hyprland-Dots.svg?background=%2324292e&axis=%23fafbfc&line=%232dba4e)](https://starchart.cc/retrozinndev/Hyprland-Dots)
 
 <!-- References of other projects -->
-[pywal]: https://github.com/dylanaraps/pywal
+[pywal16]: https://github.com/eylles/pywal16
 [zen browser]: https://zen-browser.app
 [neovim]: https://neovim.io
 [nushell]: https://nushell.sh
@@ -73,7 +79,8 @@ Thanks to everyone who starred my dotfiles! 💖
 [issues]: https://github.com/retrozinndev/Hyprland-Dots/issues
 
 <!-- Wiki Pages -->
-[`wiki/dependencies`]: https://github.com/retrozinndev/Hyprland-Dots/wiki/Dependencies
+[wiki/dependencies]: https://github.com/retrozinndev/Hyprland-Dots/wiki/Dependencies
+[wiki/usage]: https://github.com/retrozinndev/Hyprland-Dots/wiki/Usage
 
 <!-- Action Links -->
 [new issue]: https://github.com/retrozinndev/Hyprland-Dots/issues/new
