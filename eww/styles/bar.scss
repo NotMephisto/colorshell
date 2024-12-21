@@ -143,15 +143,15 @@
 
     & > box.info {
         & > label.window-class {
-            font-size: 10px;
+            font-size: 9.8px;
             font-family: monospace;
             color: darken($color: $foreground, $amount: 20);
         }
 
         & > label.window-title {
-            margin-top: -2px;
-            font-size: inherit;
+            font-size: 12px;
             color: $foreground;
+            margin-top: -3px;
         }
     }
 }
