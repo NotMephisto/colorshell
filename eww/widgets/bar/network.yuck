@@ -1,0 +1,5 @@
+(defwidget network []
+    (box :class "network"
+        (button "${ network_status == 'full' ? ' ' : '󰤭 ' }")
+    )
+)

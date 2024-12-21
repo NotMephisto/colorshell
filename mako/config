@@ -1,0 +1,44 @@
+# Lightweight Wayland Notification Daemon (mako) Configuration File
+# the man page of mako config file is a mess :skull:
+
+# general
+max-history=14
+sort=-time
+actions=1
+history=1
+icons=1
+
+# display
+layer=overlay
+anchor=top-right
+
+# binding
+on-touch=invoke-default-action
+
+# style
+font=Cantarell 12
+background-color=#1b2024
+padding=12
+width=420
+border-size=1
+border-color=#7e7e7ef0
+border-radius=14
+text-alignment=left
+margin=16
+max-icon-size=72
+
+[urgency="low"]
+default-timeout=4000
+
+[urgency="normal"]
+default-timeout=8000
+
+[urgency="critical"]
+default-timeout=0
+
+# modes
+[mode="dnd"]
+invisible=1
+
+# vim: ft=cfg
+# nvim: ft=cfg

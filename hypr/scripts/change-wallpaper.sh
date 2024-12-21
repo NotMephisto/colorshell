@@ -1,25 +1,33 @@
 #!/usr/bin/env bash
 
-# This script is made by retrozinndev (João Dias), This script 
-# is licensed under the MIT License as in retrozinndev/Hyprland-Dots repository.
+# This script is made by retrozinndev (João Dias), It is licensed under
+# the MIT License as in retrozinndev/Hyprland-Dots repository.
 # GitHub: https://github.com/retrozinndev 
 # Dotfiles: https://github.com/retrozinndev/Hyprland-Dots
 
-# The script prompts the user with anyrun to choose an image file inside the defined
-# $WALLPAPER_DIR, after user selected a file, it automatically writes it to the 
-# hyprpaper.conf file and hot reloads if hyprpaper is running.
+# The script prompts the user with anyrun or wofi to choose an image file inside
+# the defined $WALLPAPERS_DIR. If the user selects an entry, it automatically 
+# writes changes to the hyprpaper.conf file and hot-reloads wallpaper if hyprpaper 
+# is running.
 
-
-if [[ $WALLPAPER_DIR == "" ]]; then
-    WALLPAPER_DIR="$HOME/wallpapers"
+if [[ $WALLPAPERS_DIR == "" ]]; then
+    WALLPAPERS_DIR="$HOME/wallpapers"
 fi
 
 HYPRPAPER_FILE="$HOME/.config/hypr/hyprpaper.conf"
 
-WALLPAPER_SELECT_CMD="anyrun --plugins libstdin.so"
+if [[ -f /bin/anyrun ]]; then
+    WALLPAPER_SELECT_CMD="anyrun --plugins libstdin.so"
+elif [[ -f /bin/wofi ]]; then
+    WALLPAPER_SELECT_CMD="wofi --dmenu"
+else 
+    notify-send -u normal "Hyprpaper script" "Couldn't find anyrun or wofi for dmenu! Try installing one of these two before selecting wallpaper!"
+    exit 1
+fi
 
-if [[ -z $(ls -A $WALLPAPER_DIR) ]]
+if [[ -z $(ls -A $WALLPAPERS_DIR) ]]
 then
+    notify-send -u normal "Hyprpaper script" "Couldn't find any wallpaper inside \`~/wallpapers\`, try putting an image you like in there to choose it!"
     exit 1
 fi
 
@@ -44,17 +52,17 @@ Hot_reload_wallpaper() {
 
 Reload_pywal() {
     echo "Reloading pywal colorscheme"
-    wal -q -s -t -i "$SET_WALLPAPER_FULL"
+    wal -q -t --cols16 darken -i "$SET_WALLPAPER_FULL"
 }
 
-Reload_swaync() {
-    echo "Reloading stylesheet for SwayNC"
-    swaync-client -rs
+Reload_eww() {
+    echo "Reloading Eww..."
+    eww reload
 }
 
 # Prompt wallpapers via dmenu
-SET_WALLPAPER_NAME="$(ls $WALLPAPER_DIR | $WALLPAPER_SELECT_CMD)"
-SET_WALLPAPER_FULL="$WALLPAPER_DIR/$SET_WALLPAPER_NAME"
+SET_WALLPAPER_NAME="$(ls $WALLPAPERS_DIR | $WALLPAPER_SELECT_CMD)"
+SET_WALLPAPER_FULL="$WALLPAPERS_DIR/$SET_WALLPAPER_NAME"
 
 echo "Wallpaper: $SET_WALLPAPER_NAME"
 
@@ -62,11 +70,11 @@ echo "Wallpaper: $SET_WALLPAPER_NAME"
 if [[ $SET_WALLPAPER_NAME == "" ]] || [[ $SET_WALLPAPER_NAME == " " ]]
 then
     echo "No wallpaper has been selected by user!"
-    if [ $RANDOM_WALLPAPER_WHEN_EMPTY = true ]
+    if [[ $RANDOM_WALLPAPER_WHEN_EMPTY == true ]]
     then
-        SET_WALLPAPER_NAME=$(ls $WALLPAPER_DIR | shuf -n 1)
+        SET_WALLPAPER_NAME=$(ls $WALLPAPERS_DIR | shuf -n 1)
         echo "Selected random wallpaper from $HOME/wallpapers: $SET_WALLPAPER_NAME"
-        SET_WALLPAPER_FULL="$WALLPAPER_DIR/$SET_WALLPAPER_NAME"
+        SET_WALLPAPER_FULL="$WALLPAPERS_DIR/$SET_WALLPAPER_NAME"
 
     else
         echo "Skipping hyprpaper changes and exiting."
@@ -76,7 +84,7 @@ fi
 
 Hot_reload_wallpaper
 Reload_pywal
+Reload_eww
 Update_wallpaper_settings
-Reload_swaync
 
 exit 0

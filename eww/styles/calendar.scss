@@ -1,0 +1,34 @@
+
+.calendar-box {
+    padding: 10px;
+    background: rgba($background, 0.6);
+    border-radius: 16px;
+
+    & > label.calendar-header {
+        font-size: 15px;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .month-calendar {
+        & > * {
+            background: lighten($color: $background, $amount: 2);
+        }
+        border-radius: 12px;
+        padding: 0 5px;
+        padding-top: 10px;
+        font-weight: 500;
+
+        & > .header {
+            border-radius: 6px;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            border-bottom: solid .5px gray;
+        }
+
+        // Selected day / Current day
+        &:selected {
+            background: darken($color: $color1, $amount: 20);
+        }
+    }
+}

@@ -1,0 +1,8 @@
+(defwidget clock []
+    (box :class "clock"
+         :tooltip "${day-name}, ${month-name} ${day}"
+      (button :onclick "sh scripts/eww-window.sh toggle calendar-window"
+              :class "${window_state_calendar-window == 'open' ? 'cal-open' : ''}"
+      "${day-name} ${day}, ${time}")
+    )
+)

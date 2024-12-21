@@ -1,0 +1,60 @@
+(defwidget notification [ ?application_name ?icon summary body ?image ?onclickclose ?onclick ]
+    (eventbox :onclick "${onclick}"
+        (box :class "notification"
+             :orientation "vertical"
+             :height 96
+             :space-evenly false
+
+            (box :class "top"
+                 :orientation "horizontal"
+                 :space-evenly false
+
+                (box :class "app-info"
+                     :space-evenly false
+                     :halign "start"
+                     :hexpand true
+                     :vexpand false
+                    
+                    (image :class "app-icon"
+                           :visible { icon != "" ? true : false }
+                           :icon "${icon}"
+                           :icon-size "menu")
+                    (label :class "app-name"
+                           :text "${application_name}")
+                )
+                (button :class "close"
+                        :style "border-radius: 10px; padding: 6px; padding-left: 10px; padding-right: 10px;"
+                        :onclick "${onclickclose}"
+                        :visible false ; Temporary, will try doing something to remove history items
+                "󰅖")
+            )
+
+            (box :class "content"
+                 :space-evenly false
+                (box :class "image"
+                     :width 96
+                     :height 96
+                     :visible { image != "" && image != "\{\}" ? true : false }
+                     :style { image != "" ? "background-image: image(url('${image}'));" : "" }
+                ) 
+
+                (box :class "text"
+                     :orientation "vertical"
+                     :space-evenly false
+
+                    (label :class "summary"
+                           :text "${summary}"
+                           :xalign 0
+                           :halign "start"
+                           :show-truncated true)
+
+                    (label :class "body"
+                           :markup "${body}"
+                           :xalign 0
+                           :show-truncated false
+                           :wrap true)
+                )
+            )
+        )
+    )
+)
