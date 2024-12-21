@@ -22,6 +22,7 @@ My customized Hyprland dotfiles that I keep improving almost everyday 🤩 !
   
 </div>
 
+
 ## 🎨 Colors
 All the colors of the interface are dynamically generated from your wallpaper! This is possible by using [pywal16] (fork of pywal), a cli tool to generate color schemes on the fly.
 
