@@ -18,7 +18,7 @@
         (toggles)
         (big-media :show-album-bg true
                    :show-album-image true
-                   :visible { json_media != "" ? true : false })
+                   :visible { json_media == "" || (json_media.title == "null" && json_media.artist == "null") ? false : true })
         (notifications)
     )
 )

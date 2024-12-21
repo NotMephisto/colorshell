@@ -4,7 +4,8 @@
 (defwidget media [] 
   (eventbox :onhover "${EWW_CMD} update media_reveal_controls=true"
             :onhoverlost "${EWW_CMD} update media_reveal_controls=false"
-            :visible { json_media == "" ||
+            :visible { json_media == "" || (json_media.title == "null" &&
+                       json_media.artist == "null") ||
                        (active_window.class =~ json_media.player &&
                        active_window.title =~ json_media.title) ?
                            false : true
