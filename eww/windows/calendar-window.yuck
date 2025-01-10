@@ -1,6 +1,7 @@
 (defwindow calendar-window
     :monitor 0
-    :geometry (geometry :anchor "top center")
+    :geometry (geometry :anchor "top center"
+                        :y "5px")
     :stacking "fg"
     :exclusive false
     :namespace "eww-calendar"

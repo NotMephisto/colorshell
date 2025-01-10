@@ -6,7 +6,8 @@
     :geometry (geometry :anchor "top right"
                         :width "512px"
                         :height "1px"
-                        :x "5px")
+                        :x "5px"
+                        :y "6px")
     :stacking "overlay"
 
   (box :class "floating-notifications"

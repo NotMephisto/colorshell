@@ -1,7 +1,8 @@
 (defwindow hardware-monitor []
   :monitor 0
   :geometry (geometry :width "320"
-                      :anchor "top right")
+                      :anchor "top right"
+                      :y "5px")
 
   :exclusive 0
   :namespace "eww-hardware"

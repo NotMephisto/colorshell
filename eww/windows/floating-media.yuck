@@ -1,7 +1,8 @@
 (defwindow floating-media []
     :monitor 0
     :geometry (geometry :anchor "top center"
-                        :width "460px")
+                        :width "460px"
+                        :y "5px")
     :exclusive false
     :stacking "fg"
     :focusable false

@@ -6,7 +6,8 @@
     :namespace "eww-volume"
     :geometry (geometry :anchor "top right"
                         :width "280px"
-                        :x "6px")
+                        :x "6px"
+                        :y "5px")
     :exclusive false
     :stacking "overlay"
     :focusable false
