@@ -1,7 +1,7 @@
 (defwindow floating-media []
     :monitor 0
     :geometry (geometry :anchor "top center"
-                        :width "450px")
+                        :width "460px")
     :exclusive false
     :stacking "fg"
     :focusable false
@@ -13,7 +13,7 @@
                               && json_media.artist == "null") ? false : true }
 
     (big-media :show-album-bg true
-               :album-image-size 124
+               :album-image-size 128
                :show-album-image true
                :style "margin: 16px; margin-top: 0; box-shadow: 
                               0 5px 6px 1px rgba(0, 0, 0, .6), 

@@ -45,6 +45,7 @@
           (button :class "url"
                   :onclick "wl-copy '${json_media.url}'"
                   :tooltip "Copy link to Clipboard"
+                  :visible { json_media != "" && json_media.url != "null" }
           "󰌷")
           (button :class "previous"
                   :onclick "playerctl previous --player=${json_media.player}"

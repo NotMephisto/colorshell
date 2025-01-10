@@ -1,9 +1,9 @@
 (defwidget big-media [ show-album-bg show-album-image ?album-image-size ?style ?visible ]
-    (box :class "big-media ${ show-album-bg ? 'album-bg' : '' } ${ show-album-image ? 'album-image' : '' }"
-         :style "${ show-album-bg ? 'background-image: url(\"${json_media.artUrl}\");' : '' } ${style}" 
-         :visible { visible == "" ? true : "${ visible ? true : false }" }
-         :space-evenly false
-         :orientation "vertical"
+  (box :class "big-media ${ show-album-bg ? 'album-bg' : '' } ${ show-album-image ? 'album-image' : '' }"
+       :style "${ show-album-bg ? "background-image: url(\"${ json_media.artUrl =~ "^(http(.*)://(.*))$" ? json_media.artUrl : "${ "${ json_media.artUrl =~ "^(file://(.*))$" ? '' : 'file://' }" + json_media.artUrl }" }\")" : "" }; ${style}" 
+       :visible { visible == false ? false : true }
+       :space-evenly false
+       :orientation "vertical"
 
     (box :orientation "horizontal"
          :space-evenly false 
@@ -12,32 +12,28 @@
       (box :class "album-image"
            :width { album-image-size != "" ? album-image-size : 98 }
            :height { album-image-size != "" ? "${album-image-size - 11}" : 87 }
-           :style "background-image: image(url('${json_media.artUrl}'));"
+           :style "background-image: url('${ json_media.artUrl =~ "^(http(.*)://(.*))$" ? json_media.artUrl : "${ "${ json_media.artUrl =~ "^(file://(.*))$" ? '' : 'file://' }" + json_media.artUrl }" }');"
            :valign "center"
-           :visible { show-album-image ? true : false })
+           :visible { json_media.artUrl == "null" || !show-album-image ? false : true })
 
       (box :orientation "vertical"
            :space-evenly false
            :class "right"
-           :hexpand true
            :valign "center"
 
         (box :class "media-info"
              :space-evenly false
-             :halign "fill"
              :orientation "vertical"
 
           (label :class "title"
                  :text "${json_media.title}"
                  :xalign 0
-                 :wrap false
-                 :hexpand true
+                 :limit-width 40
                  :show-truncated true)
           (label :class "artist"
                  :text "${json_media.artist}"
                  :xalign 0
-                 :wrap false
-                 :hexpand true
+                 :limit-width 40
                  :show-truncated true)
         )
 

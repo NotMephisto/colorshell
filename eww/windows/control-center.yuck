@@ -12,14 +12,18 @@
     :exclusive false
     :namespace "eww-cc"
 
-    (box :class "cc"
-         :orientation "vertical"
-         :space-evenly false
+  (box :orientation "horizontal"
+    (eventbox 
+      (box :class "cc"
+           :orientation "vertical"
+           :space-evenly false
+
         (top-bar)
         (tiles)
         (revealer :reveal { window_state_floating-media != "open" }
                   :transition "slideup"
                   :duration "380ms"
+
           (big-media :show-album-bg true
                      :show-album-image true
                      :visible { json_media == "" || (json_media.title == "null" 
@@ -29,10 +33,13 @@
         (box :class "bottom button-row"
              :halign "end"
              :space-evenly false
+
           (button :class "clear-all"
                   :onclick "sh scripts/notification-clear.sh" 
                   :visible { arraylength(json_notification_history["history"]) > 0 }
           "󰎟  Clear")
         )
+      )
     )
+  )
 )

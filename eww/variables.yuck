@@ -32,6 +32,10 @@
 
 
 ; Polls
+(defpoll day_name :interval "2s"
+`date +"%A"`)
+(defpoll month_name :interval "2s"
+`date +"%B"`)
 (defpoll hostname :initial "GNU/Linux"
                   :interval "24h"
 `cat /etc/hostname`)
