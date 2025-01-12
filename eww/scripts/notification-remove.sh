@@ -19,3 +19,5 @@ else
     echo "[error] Notification history not reachable or id not provided"
     exit 1
 fi
+
+exit 0

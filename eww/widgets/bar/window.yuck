@@ -7,7 +7,7 @@
        :orientation "horizontal"
 
     (image :class "icon"
-           :icon "${ json_active_window.initialClass =~ 'zen-(.*)$' ? 'zen-browser' : json_active_window.initialClass }"
+           :icon "${ json_active_window.initialClass =~ 'zen' ? 'zen-browser' : json_active_window.initialClass }"
            :icon-size "toolbar")
 
     (box :class "info"

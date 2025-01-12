@@ -215,7 +215,7 @@ tooltip {
 
 }
 
-box.separator {
+.separator {
     background: darken($color: $foreground, $amount: 20);
 
     &.horizontal {
@@ -225,7 +225,6 @@ box.separator {
 
     &.vertical {
         margin: 4px 10px;
-        padding: 0 1px;
+        padding: 1px 0;
     }
 }
-

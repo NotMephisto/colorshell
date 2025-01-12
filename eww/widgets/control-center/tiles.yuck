@@ -53,6 +53,7 @@
             :onunchecked "${ondisable}"
             :visible { visible == "" || visible ? true : false }
             :checked { enabled == "" || !enabled ? false : true }
+            :timeout "2s"
             :class "tile-checkbox ${class}"
 
     (box :class "tile"

@@ -29,6 +29,8 @@
                      :visible { json_media == "" || (json_media.title == "null" 
                                 && json_media.artist == "null") ? false : true })
         )
+        (separator :orientation "vertical"
+                   :alpha ".08")
         (notifications)
         (box :class "bottom button-row"
              :halign "end"

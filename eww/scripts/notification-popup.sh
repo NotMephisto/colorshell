@@ -30,10 +30,14 @@ if ! [[ $@ == "" ]]; then
 
     # Critical urgency is handled by eww, no need to count down
     case $urgency in
-        0*)
+        0)
             sleep $timeout_low
             ;;
-        1*)
+        1)
+            sleep $timeout_normal
+            ;;
+        2)  ;;
+        *)
             sleep $timeout_normal
             ;;
     esac
