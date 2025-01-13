@@ -1,27 +1,14 @@
 # Retrozinn's Hyprland Dots
-My customized Hyprland dotfiles that I keep improving almost everyday 🤩 !
+My customized Hyprland dotfiles that I keep improving almost everyday 🤩 ! <br>
+I can't stop changing between widget tools 💀
 
 > [!note]
-> Finally, the Eww edition is ready! You can now use it if you want to! :heart: <br>
-> If you're searching for the previous dotfiles with Waybar and Swaync, go
-> to the [`waybar-edition`](https://github.com/retrozinndev/Hyprland-Dots/tree/waybar-edition) branch!
+> This is very work in progress, it's an Aylur's GTK Shell version of my dots! I absolutely <br>
+> don't recommend installing this one, since it's WIP.
+> If you're searching for the stable dotfiles, go to the [`ryo`](https://github.com/retrozinndev/Hyprland-Dots/tree/ryo) branch!
 
 ## 🌄 Screenshots
-<div align="center"
- 
-  <img src="repo/shots/desktop.png" width="45%">
-  <img src="repo/shots/control_center.png" width="45%">
-  <img src="repo/shots/showing_off_rice.png" width="45%">
-  <img src="repo/shots/runner.png" width="45%">
-  <img src="repo/shots/floating_github.png" width="45%">
-  <img src="repo/shots/volume_control.png" width="45%">
-  <img src="repo/shots/floating_media.png" width="45%">
-  <img src="repo/shots/power_menu.png" width="45%">
-
-  more shots in [`repo/shots`](https://github.com/retrozinndev/Hyprland-Dots/tree/ryo/repo/shots)
-  
-</div>
-
+None yet.
 
 ## 🎨 Colors
 All the colors of the interface are dynamically generated from your wallpaper! This is possible by using [pywal16] (fork of pywal), a cli tool to generate color schemes on the fly.
@@ -52,6 +39,7 @@ In order to install this style right away, just run this installation script:
 - Browser: [Zen Browser]
 - Text Editor: [Neovim], my config is [here](https://github.com/retrozinndev/nvim-conf.lua)
 - Terminal Emulator: [Kitty]
+- Bar and Widgets: [AGS](https://aylur.github.io/ags/)(Aylur's GTK Shell) and [Astal](https://aylur.github.io/astal)
 - Shell: [Nushell]
 - See more on the [wiki]!
 
