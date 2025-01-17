@@ -31,6 +31,10 @@ the links down below.
 
 - [WallHere](https://wallhere.com/en/wallpaper/2284648)
 
+## Gruvbox-styled Wallpapers
+
+- [Gruvbox Wallpapers](https://gruvbox-wallpapers.pages.dev)
+
 ## Genshin Impact Wallpaper(s)
 
 Those can be get on web events from Genshin Impact, the game, and also on [HoYoLAB](https://hoyolab.com)
