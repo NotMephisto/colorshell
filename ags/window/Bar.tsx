@@ -5,8 +5,10 @@ import Gdk from "gi://Gdk?version=3.0";
 import { Clock } from "../widget/bar/Clock";
 import { Logo } from "../widget/bar/Logo";
 import { CCToggle } from "../widget/bar/CCToggle";
-//import { Tray } from "../widget/bar/Tray";
+import { Tray } from "../widget/bar/Tray";
 import { Workspaces } from "../widget/bar/Workspaces";
+import { Audio } from "../widget/bar/Audio";
+import { FocusedWindow } from "../widget/bar/FocusedWindow";
 
 export function Bar(monitor: number = 0, width: (number|undefined) = undefined, height: (number|undefined) = undefined) {
     return (
@@ -23,6 +25,7 @@ export function Bar(monitor: number = 0, width: (number|undefined) = undefined, 
 
                 <Logo />
                 <Workspaces />
+                <FocusedWindow />
             </Box>
 
             <Box className={ "widgets-center" } halign={ Gtk.Align.CENTER }
@@ -34,7 +37,8 @@ export function Bar(monitor: number = 0, width: (number|undefined) = undefined, 
             <Box className={ "widgets-right" } halign={ Gtk.Align.END }
                  vertical={ false } homogeneous={ false }>
 
-                {/*<Tray />*/}
+                <Tray />
+                <Audio />
                 <CCToggle />
             </Box>
         </CenterBox>

@@ -1,16 +1,2 @@
 @use "./style/bar";
 @use "./style/wal";
-
-* {
-  all: unset;
-  transition: 120ms linear;
-}
-
-button {
-  padding: 6px;
-  border-radius: 12px;
-
-  &:hover {
-    background: wal.$color1;
-  }
-}

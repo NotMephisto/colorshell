@@ -1,31 +1,95 @@
-@use "./_wal";
+@use "./wal";
+@use "./mixins";
 
 .bar-container {
   padding: 6px;
   padding-bottom: 0px;
-  .bar-centerbox > * {
+
+  & * {
+    all: unset;
+    transition: 120ms linear;
+
+    menu {
+      padding: 4px;
+      background: wal.$background;
+      border-radius: 14px;
+
+      & > separator {
+        margin: 0 4px;
+        color: wal.$background;
+      }
+
+      & > menuitem {
+        padding: 8px 0px;
+        border-radius: 10px;
+        font-size: 12px;
+        font-weight: 600;
+
+        &:hover {
+          background: wal.$color1;
+        }
+      }
+    }
+
+    button {
+      padding: 6px 8px;
+      border-radius: 12px;
+
+      &:hover {
+        background: wal.$color1;
+      }
+    }
+  }
+  & > .bar-centerbox > * {
     background: rgba($color: wal.$background, $alpha: .6);
     padding: 6px;
     border-radius: 18px;
   }
 }
 
-label {
+.bar-container label {
   font-size: 12px;
   font-family: "Cantarell", "Noto Sans";
   font-weight: 500;
 }
 
 .workspaces {
+  padding: 2px 2px;
   & button {
+    all: unset;
+    border-radius: 16px;
     transition: 80ms linear;
     padding: 0 12px;
     background: wal.$color1;
-    margin: 3px 2px;
+    margin: 1px 2px;
 
     &.focus {
       background: wal.$foreground;
       padding: 0 20px;
+    }
+  }
+}
+
+.focused-window {
+  padding: 0 6px;
+
+  & > .icon {
+    margin-right: 6px;
+  }
+
+  & > .text-content {
+    & > .class {
+      font-size: 9px;
+      font-weight: 500;
+      font-family: monospace;
+      color: adjust-hue($color: wal.$foreground, $degrees: 100deg);
+      margin-top: 1px;
+    }
+    
+    & > .title {
+      font-size: 11.5px;
+      font-weight: 500;
+      margin-top: -2px;
     }
   }
 }
@@ -37,6 +101,39 @@ label {
 
   & label {
     font-size: 14px;
+  }
+}
+
+.tray {
+  padding: 0 6px;
+
+  & .item {
+    all: unset;
+
+    &:hover {
+      background: none;
+    }
+
+    margin: 0 6px;
+    padding: 0;
+
+    &:first-child {
+      margin-left: 0;
+    }
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+}
+
+.audio {
+  & .sink .icon {
+    margin-right: 6px;
+  }
+
+  & .source .icon {
+    margin-right: 4px;
   }
 }
 

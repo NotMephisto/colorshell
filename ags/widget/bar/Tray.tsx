@@ -1,17 +1,26 @@
-import { Box, Label } from "astal/gtk3/widget";
+import { bind } from "astal";
+import { Astal, Gtk, Widget } from "astal/gtk3";
 import AstalTray from "gi://AstalTray"
 
 const astalTray = AstalTray.get_default();
-let items: Array<AstalTray.TrayItem> = astalTray.items;
-
-const handlerId = astalTray.connect("item-added", () => {
-    items = astalTray.items;
-    console.log(astalTray.items);
-}) as number;
 
 export function Tray() {
-    return (
-        <Box className={"tray"}>
-        </Box>
-    );
+    return new Widget.Box({
+        className: "tray",
+        children: bind(astalTray, "items").as((items: Array<AstalTray.TrayItem>) => 
+            items.map((item: AstalTray.TrayItem) => 
+                new Widget.MenuButton({
+                    className: "item",
+                    tooltipMarkup: bind(item, "tooltipMarkup"),
+                    menuModel: bind(item, "menuModel"),
+                    usePopover: false,
+                    actionGroup: bind(item, "actionGroup").as((actionGroup: any) => ["dbusmenu", actionGroup]),
+                    child: new Widget.Icon({
+                        gIcon: bind(item, "gicon"),
+                        iconSize: Gtk.IconSize.SMALL_TOOLBAR
+                    })
+                } as Widget.MenuButtonProps)
+            )
+        )
+    } as Widget.BoxProps);
 }
