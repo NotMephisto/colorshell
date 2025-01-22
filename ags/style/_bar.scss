@@ -1,0 +1,47 @@
+@use "./_wal";
+
+.bar-container {
+  padding: 6px;
+  padding-bottom: 0px;
+  .bar-centerbox > * {
+    background: rgba($color: wal.$background, $alpha: .6);
+    padding: 6px;
+    border-radius: 18px;
+  }
+}
+
+label {
+  font-size: 12px;
+  font-family: "Cantarell", "Noto Sans";
+  font-weight: 500;
+}
+
+.workspaces {
+  & button {
+    transition: 80ms linear;
+    padding: 0 12px;
+    background: wal.$color1;
+    margin: 3px 2px;
+
+    &.focus {
+      background: wal.$foreground;
+      padding: 0 20px;
+    }
+  }
+}
+
+.logo button {
+  $padding-inline: 12px;
+  padding-left: $padding-inline;
+  padding-right: calc($padding-inline + 3.9px);
+
+  & label {
+    font-size: 14px;
+  }
+}
+
+.cc-toggle button {
+  $padding-inline: 12px;
+  padding-left: $padding-inline;
+  padding-right: calc($padding-inline + 2px);
+}

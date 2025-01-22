@@ -10,7 +10,7 @@ echo "######################################"
 printf "\n"
 
 CONFIG_DIR="$HOME/.config"
-DOTFILES_DIRS=("hypr" "eww" "kitty" "anyrun" "wal" "fastfetch" "mako")
+DOTFILES_DIRS=("hypr" "ags" "kitty" "anyrun" "wal" "fastfetch")
 DOTFILES_BACKUP_DIR="$HOME/hyprland-dotfiles-bkp"
 
 echo "Welcome to my dotfiles installation script!"
