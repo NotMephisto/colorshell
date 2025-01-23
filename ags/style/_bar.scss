@@ -40,10 +40,23 @@
       }
     }
   }
+
   & > .bar-centerbox > * {
     background: rgba($color: wal.$background, $alpha: .6);
     padding: 6px;
     border-radius: 18px;
+
+    & > * {
+      margin: 0 2px;
+
+      &:first-child {
+        margin-left: 0;
+      }
+
+      &:last-child {
+        margin-right: 0;
+      }
+    }
   }
 }
 
@@ -101,6 +114,19 @@
 
   & label {
     font-size: 14px;
+  }
+}
+
+.media-eventbox {
+  & > .media > box {
+    border-radius: 12px;
+    background: wal.$color2;
+    padding: 0 6px;
+
+    & .icon {
+      margin-right: 6px;
+      font-size: 14px;
+    }
   }
 }
 

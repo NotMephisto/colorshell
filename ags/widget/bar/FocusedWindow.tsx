@@ -7,10 +7,11 @@ const hyprland = AstalHyprland.get_default();
 export function FocusedWindow() {
     return new Widget.Box({
         className: "focused-window",
+        visible: bind(hyprland, "focusedClient").as(Boolean),
         children: [
             new Widget.Icon({
                 className: "icon",
-                icon: bind(hyprland, "focusedClient").as((client: AstalHyprland.Client) => {
+                icon: bind(hyprland, "focusedClient").as(Boolean) && bind(hyprland, "focusedClient").as((client: AstalHyprland.Client) => {
                     switch(client.initialClass) {
                         case "zen":
                             return "zen-browser";
@@ -28,12 +29,12 @@ export function FocusedWindow() {
                     new Widget.Label({
                         className: "class",
                         xalign: 0,
-                        label: bind(hyprland, "focusedClient").as((client: AstalHyprland.Client) => client.get_class())
+                        label: bind(hyprland, "focusedClient").as(Boolean) && bind(hyprland, "focusedClient").as((client: AstalHyprland.Client) => client.get_class())
                     } as Widget.LabelProps),
                     new Widget.Label({
                         className: "title",
                         xalign: 0,
-                        label: bind(hyprland, "focusedClient").as((client: AstalHyprland.Client) => client.get_title())
+                        label: bind(hyprland, "focusedClient").as(Boolean) && bind(hyprland, "focusedClient").as((client: AstalHyprland.Client) => client.get_title())
                     } as Widget.LabelProps)
                 ]
             })

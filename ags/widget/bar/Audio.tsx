@@ -1,5 +1,5 @@
 import { bind } from "astal";
-import { Widget } from "astal/gtk3";
+import { Gtk, Widget } from "astal/gtk3";
 import AstalWp from "gi://AstalWp?version=0.1";
 
 const wp = AstalWp.get_default();

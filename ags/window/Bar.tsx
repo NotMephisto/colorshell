@@ -9,6 +9,7 @@ import { Tray } from "../widget/bar/Tray";
 import { Workspaces } from "../widget/bar/Workspaces";
 import { Audio } from "../widget/bar/Audio";
 import { FocusedWindow } from "../widget/bar/FocusedWindow";
+import { Media } from "../widget/bar/Media";
 
 export function Bar(monitor: number = 0, width: (number|undefined) = undefined, height: (number|undefined) = undefined) {
     return (
@@ -32,6 +33,7 @@ export function Bar(monitor: number = 0, width: (number|undefined) = undefined, 
                  vertical={ false } homogeneous={ false }>
 
                 <Clock />
+                <Media />
             </Box>
 
             <Box className={ "widgets-right" } halign={ Gtk.Align.END }
