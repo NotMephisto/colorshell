@@ -1,6 +1,5 @@
 # Retrozinn's Hyprland Dots
-My customized Hyprland dotfiles that I keep improving almost everyday 🤩 ! <br>
-I can't stop changing between widget tools 💀
+My Hyprland dotfiles that I keep improving almost everyday 🤩! (i love doing this) <br>
 
 > [!note]
 > This is very work in progress, it's an Aylur's GTK Shell version of my dots! I absolutely <br>
@@ -8,7 +7,8 @@ I can't stop changing between widget tools 💀
 > If you're searching for the stable dotfiles, go to the [`ryo`](https://github.com/retrozinndev/Hyprland-Dots/tree/ryo) branch!
 
 ## 🌄 Screenshots
-None yet.
+![Desktop](repo/shots/desktop.png)
+![Kitty](repo/shots/kitty.png)
 
 ## 🎨 Colors
 All the colors of the interface are dynamically generated from your wallpaper! This is possible by using [pywal16] (fork of pywal), a cli tool to generate color schemes on the fly.
