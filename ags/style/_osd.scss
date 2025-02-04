@@ -1,0 +1,37 @@
+@use "./wal";
+
+.osd-window {
+  all: unset;
+
+  .osd {
+    margin-bottom: 100px;
+    background: rgba($color: wal.$background, $alpha: .5);
+    padding: 14px 16px;
+    border-radius: 20px;
+
+    .icon {
+      margin-right: 14px;
+      font-size: 24px;
+    }
+
+    .volume {
+      margin-top: -6px;
+
+      .value {
+        margin-bottom: 5px;
+      }
+
+      levelbar {
+        trough block {
+          border-radius: 6px;
+          background: wal.$background;
+
+          &.filled {
+            padding: 3px 0;
+            background: wal.$color1;
+          }
+        }
+      }
+    }
+  }
+}

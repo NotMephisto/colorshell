@@ -1,0 +1,54 @@
+@use "./wal";
+
+.control-center-container {
+  all: unset;
+  background: rgba(wal.$background, .6);
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+  margin: 32px 0;
+
+  & * {
+    all: unset;
+    transition: 120ms linear;
+  }
+
+  & {
+    & button {
+      padding: 4px 6px;
+      background: scale-color($color: wal.$color1, $lightness: -20%);
+      border-radius: 12px;
+    }
+
+    & .quickactions {
+      padding: 10px 16px;
+      & .button-row {
+        & > button {
+          margin: 5px 2px;
+          border-radius: 2px;
+          padding: 0 8px;
+          background: rgba($color: scale-color($color: wal.$color1, $lightness: -20%), $alpha: .7);
+
+          & label {
+            font-size: 16px;
+          }
+
+          &:hover {
+            background: rgba($color: scale-color($color: wal.$color1, $lightness: -20%), $alpha: 1);
+          }
+
+          &:first-child {
+            margin-left: 0;
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+          }
+
+          &:last-child {
+            margin-right: 0;
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+          }
+        }
+      }
+    }
+  }
+}

@@ -19,7 +19,8 @@ export function Audio() {
                             } as Widget.LabelProps),
                             new Widget.Label({
                                 className: "icon nf",
-                                label: bind(wp!.defaultSpeaker, "volume").as((volume: number) => Math.round(volume * 100).toString() + "%")
+                                label: bind(wp!.defaultSpeaker, "volume").as((volume: number) => 
+                                    Math.round(volume * 100).toString() + "%")
                             } as Widget.LabelProps)
                         ]
                     })
@@ -33,7 +34,8 @@ export function Audio() {
                                 label: "󰍬"
                             } as Widget.LabelProps),
                             new Widget.Label({
-                                label: bind(wp!.defaultMicrophone, "volume").as((volume: number) => Math.round(volume * 100).toString() + "%")
+                                label: bind(wp!.defaultMicrophone, "volume").as((volume: number) => 
+                                    Math.round(volume * 100).toString() + "%")
                             } as Widget.LabelProps)
                         ]
                     })

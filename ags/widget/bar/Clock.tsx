@@ -1,16 +1,14 @@
-import { Box, Button } from "astal/gtk3/widget";
-import { GLib, Variable } from "astal";
 import { Widget } from "astal/gtk3";
-
-const dateTimeFormat = "%A %d, %H:%M"
-const time = new Variable<string>("").poll(600, () => 
-    GLib.DateTime.new_now_local().format(dateTimeFormat)!);
+import { getDateTime } from "../../scripts/time";
+import { GLib } from "astal";
 
 export function Clock(): JSX.Element {
     return new Widget.Box({
         className: "clock",
         child: new Widget.Button({
-            label: time()
+            label: getDateTime().as((dateTime: GLib.DateTime) => {
+                return dateTime.format("%A %d, %H:%M")
+            })
         } as Widget.ButtonProps)
     } as Widget.BoxProps);
 }

@@ -1,6 +1,6 @@
 // handles reloading stylesheet and pywal colors
 
-import { readFile, monitorFile, Process, Gio } from "astal";
+import { readFile, monitorFile, Process } from "astal";
 import { App } from "astal/gtk3";
 import { getUserDirs } from "./user";
 

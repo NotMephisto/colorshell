@@ -1,6 +1,7 @@
 import { bind } from "astal";
 import { Gtk, Widget } from "astal/gtk3";
 import AstalHyprland from "gi://AstalHyprland";
+import { getAppIcon } from "../../scripts/apps";
 
 const hyprland = AstalHyprland.get_default();
 
@@ -11,14 +12,8 @@ export function FocusedWindow() {
         children: [
             new Widget.Icon({
                 className: "icon",
-                icon: bind(hyprland, "focusedClient").as(Boolean) && bind(hyprland, "focusedClient").as((client: AstalHyprland.Client) => {
-                    switch(client.initialClass) {
-                        case "zen":
-                            return "zen-browser";
-
-                        default:
-                            return client.initialClass;
-                    }}),
+                icon: bind(hyprland, "focusedClient").as((client: AstalHyprland.Client) => 
+                    getAppIcon(client.initialClass) || "image-missing"),
                 iconSize: Gtk.IconSize.SMALL_TOOLBAR
             }),
             new Widget.Box({
@@ -29,12 +24,14 @@ export function FocusedWindow() {
                     new Widget.Label({
                         className: "class",
                         xalign: 0,
-                        label: bind(hyprland, "focusedClient").as(Boolean) && bind(hyprland, "focusedClient").as((client: AstalHyprland.Client) => client.get_class())
+                        label: bind(hyprland, "focusedClient").as((client: AstalHyprland.Client) =>
+                            client?.["class"])
                     } as Widget.LabelProps),
                     new Widget.Label({
                         className: "title",
                         xalign: 0,
-                        label: bind(hyprland, "focusedClient").as(Boolean) && bind(hyprland, "focusedClient").as((client: AstalHyprland.Client) => client.get_title())
+                        label: bind(hyprland, "focusedClient").as((client: AstalHyprland.Client) =>
+                            client?.["title"])
                     } as Widget.LabelProps)
                 ]
             })
