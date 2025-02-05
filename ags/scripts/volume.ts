@@ -36,33 +36,91 @@ export class Wireplumber {
         return this.getDefaultSource().get_volume() * 100;
     }
 
-    public setSinkVolume(newSinkVolume: number) {
+    public setSinkVolume(newSinkVolume: number): void {
         this.defaultSink.set_volume(
             (newSinkVolume > this.maxSinkVolume ? this.maxSinkVolume : newSinkVolume) / 100
         );
     }
 
-    public setSourceVolume(newSourceVolume: number) {
+    public setSourceVolume(newSourceVolume: number): void {
         this.defaultSource.set_volume(
             newSourceVolume > this.maxSourceVolume ? this.maxSourceVolume : newSourceVolume / 100
         );
     }
 
-    public increaseSinkVolume(volumeIncrease: number) {
-        if(volumeIncrease > this.maxSinkVolume 
-            || (this.maxSinkVolume + volumeIncrease) > this.maxSinkVolume) {
+    public increaseSinkVolume(volumeIncrease: number): void {
+        if((this.getSinkVolume() + volumeIncrease) > this.maxSinkVolume) {
             this.setSinkVolume(this.maxSinkVolume);
+            return;
         }
 
         this.setSinkVolume(this.getSinkVolume() + volumeIncrease);
     }
 
-    public increaseSourceVolume(volumeIncrease: number) {
-        if(volumeIncrease > this.maxSourceVolume //TODO
-            || (this.maxSinkVolume + volumeIncrease) > this.maxSinkVolume) {
-            this.setSinkVolume(this.maxSinkVolume);
+    public increaseSourceVolume(volumeIncrease: number): void {
+        if((this.getSourceVolume() + volumeIncrease) > this.maxSourceVolume) {
+            this.setSourceVolume(this.maxSourceVolume);
+            return;
         }
 
-        this.setSinkVolume(this.getSinkVolume() + volumeIncrease);
+        this.setSourceVolume(this.getSourceVolume() + volumeIncrease);
+    }
+
+    public decreaseSinkVolume(volumeDecrease: number): void {
+        const absDecrease = Math.abs(volumeDecrease);
+
+        if((this.getSinkVolume() - absDecrease) < 0) {
+            this.setSinkVolume(0);
+            return;
+        }
+
+        this.setSinkVolume(this.getSinkVolume() - absDecrease);
+    }
+
+    public decreaseSourceVolume(volumeDecrease: number): void {
+        const absDecrease = Math.abs(volumeDecrease);
+
+        if((this.getSourceVolume() - absDecrease) < 0) 
+            return this.setSourceVolume(0);
+
+        this.setSourceVolume(this.getSourceVolume() - absDecrease);
+    }
+
+    public muteSink(): void {
+        this.getDefaultSink().set_mute(true);
+    }
+
+    public muteSource(): void {
+        this.getDefaultSource().set_mute(true);
+    }
+
+    public unmuteSink(): void {
+        this.getDefaultSink().set_mute(false);
+    }
+
+    public unmuteSource(): void {
+        this.getDefaultSource().set_mute(false);
+    }
+
+    public isMutedSink(): boolean {
+        return this.getDefaultSink().get_mute();
+    }
+
+    public isMutedSource(): boolean {
+        return this.getDefaultSource().get_mute();
+    }
+
+    public toggleMuteSink(): void {
+        if(this.isMutedSink()) 
+            return this.unmuteSink();
+
+        return this.muteSink();
+    }
+
+    public toggleMuteSource(): void {
+        if(this.isMutedSource())
+            return this.unmuteSource();
+
+        return this.muteSource();
     }
 }

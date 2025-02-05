@@ -13,7 +13,11 @@ export function FocusedWindow() {
             new Widget.Icon({
                 className: "icon",
                 icon: bind(hyprland, "focusedClient").as((client: AstalHyprland.Client) => 
-                    getAppIcon(client.initialClass) || "image-missing"),
+                    client ? 
+                        (getAppIcon(client.initialClass) || client.initialClass)
+                    :
+                        "image-missing"
+                ),
                 iconSize: Gtk.IconSize.SMALL_TOOLBAR
             }),
             new Widget.Box({
@@ -25,13 +29,13 @@ export function FocusedWindow() {
                         className: "class",
                         xalign: 0,
                         label: bind(hyprland, "focusedClient").as((client: AstalHyprland.Client) =>
-                            client?.["class"])
+                            client ? client.class : "")
                     } as Widget.LabelProps),
                     new Widget.Label({
                         className: "title",
                         xalign: 0,
                         label: bind(hyprland, "focusedClient").as((client: AstalHyprland.Client) =>
-                            client?.["title"])
+                            client ? client.title : "")
                     } as Widget.LabelProps)
                 ]
             })

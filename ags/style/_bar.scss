@@ -188,6 +188,15 @@
 }
 
 .audio {
+  &:hover > box {
+    background: wal.$color1;
+  }
+
+  & > box {
+    padding: 0 9px;
+    border-radius: 12px;
+  }
+
   & .sink .icon {
     margin-right: 6px;
   }

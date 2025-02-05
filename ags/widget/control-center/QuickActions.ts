@@ -8,45 +8,6 @@ const uptime = new Variable<string>("Just turned on")
         return Process.exec("uptime -p").replace(/^up /, "")
 })();
 
-const quickActionsBox: Widget.Box = new Widget.Box({
-    className: "quickactions",
-    hexpand: true,
-    children: [
-        new Widget.Box({
-            orientation: Gtk.Orientation.VERTICAL,
-            halign: Gtk.Align.START,
-            children: [
-                new Widget.Label({
-                    className: "hostname",
-                    xalign: 0,
-                    label: hostname.toString()
-                } as Widget.LabelProps),
-                new Widget.Label({
-                    className: "uptime",
-                    xalign: 0,
-                    label: uptime.as((uptime: string) => `󱡢  ${uptime}`)
-                } as Widget.LabelProps)
-            ]
-        } as Widget.BoxProps),
-        new Widget.Box({
-            orientation: Gtk.Orientation.HORIZONTAL,
-            className: "button-row",
-            halign: Gtk.Align.END,
-            children: [
-                LockButton(),
-                ColorPickerButton(),
-                ScreenshotButton(),
-                SelectWallpaperButton(),
-                LogoutButton()
-            ]
-        } as Widget.BoxProps)
-    ]
-} as Widget.BoxProps);
-
-export function QuickActionsWidget(): Widget.Box {
-    return quickActionsBox;
-}
-
 function LockButton(): Widget.Button {
     return new Widget.Button({
         label: "󰌾",
@@ -93,3 +54,39 @@ function LogoutButton(): Widget.Button {
         )
     } as Widget.ButtonProps);
 }
+
+export const QuickActions: Widget.Box = new Widget.Box({
+    className: "quickactions",
+    children: [
+        new Widget.Box({
+            orientation: Gtk.Orientation.VERTICAL,
+            halign: Gtk.Align.START,
+            hexpand: true,
+            children: [
+                new Widget.Label({
+                    className: "hostname",
+                    xalign: 0,
+                    label: hostname.toString()
+                } as Widget.LabelProps),
+                new Widget.Label({
+                    className: "uptime",
+                    xalign: 0,
+                    label: uptime.as((uptime: string) => `󱡢  ${uptime}`)
+                } as Widget.LabelProps)
+            ]
+        } as Widget.BoxProps),
+        new Widget.Box({
+            orientation: Gtk.Orientation.HORIZONTAL,
+            className: "button-row",
+            halign: Gtk.Align.END,
+            hexpand: true,
+            children: [
+                LockButton(),
+                ColorPickerButton(),
+                ScreenshotButton(),
+                SelectWallpaperButton(),
+                LogoutButton()
+            ]
+        } as Widget.BoxProps)
+    ]
+} as Widget.BoxProps);

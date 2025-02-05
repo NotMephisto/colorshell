@@ -1,8 +1,12 @@
 import { App } from "astal/gtk3"
+import { Bar } from "./window/Bar";
+import { OSD } from "./window/OSD";
+import { ControlCenter } from "./window/ControlCenter";
 
 import { runStyleHandler } from "./scripts/style-handler";
-//import { monitorPaths } from "./scripts/reload-handler"; // Only for debugging purposes(testing new widgets and stuff)
 import { handleArguments } from "./scripts/arg-handler";
+import { monitorPaths } from "./scripts/reload-handler";
+
 
 export const astalInstanceName = "astal"
 
@@ -17,6 +21,16 @@ App.start({
         console.log(`[LOG] Running Stylesheet handler`);
         runStyleHandler();
         //console.log(`[LOG] Starting to monitor scripts to automatically reload instance`);
-        //monitorPaths();
+        //monitorPaths(); // Only for debugging purposes(testing new widgets and stuff)
     }
 });
+
+// Windows list
+export function getWindowsMap(): Object {
+    return {
+        "bar": Bar,
+        "osd": OSD,
+        "control-center": ControlCenter,
+        //"floating-notifications": FloatingNotifications
+    };
+}

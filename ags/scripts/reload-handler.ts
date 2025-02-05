@@ -4,7 +4,7 @@ import { getUserDirs } from "./user";
 
 const monitoringPaths = [ "./scripts", "./window", "./app.ts", "env.d.ts" ];
 
-interface InstanceProps {
+export interface InstanceProps {
     instanceName?: string;
     log?: boolean;
 }

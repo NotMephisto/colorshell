@@ -1,16 +1,22 @@
 import { bind } from "astal";
-import { Gtk, Widget } from "astal/gtk3";
+import { Astal, Widget } from "astal/gtk3";
 import AstalWp from "gi://AstalWp?version=0.1";
+import { Wireplumber } from "../../scripts/volume";
 
 const wp = AstalWp.get_default();
 
 export function Audio() {
-    return wp && new Widget.Button({
+    return wp && new Widget.EventBox({
         className: "audio",
         child: new Widget.Box({
             children: [
                 new Widget.EventBox({
                     className: "sink",
+                    onScroll: (_, event) => 
+                        event.delta_y > 0 ? 
+                            Wireplumber.getDefault().decreaseSinkVolume(5)
+                        :
+                            Wireplumber.getDefault().increaseSinkVolume(5),
                     child: new Widget.Box({
                         children: [
                             new Widget.Label({
@@ -22,11 +28,16 @@ export function Audio() {
                                 label: bind(wp!.defaultSpeaker, "volume").as((volume: number) => 
                                     Math.round(volume * 100).toString() + "%")
                             } as Widget.LabelProps)
-                        ]
+                       ]
                     })
                 } as Widget.EventBoxProps),
                 new Widget.EventBox({
                     className: "source",
+                    onScroll: (_, event) => 
+                        event.delta_y > 0 ?
+                            Wireplumber.getDefault().decreaseSourceVolume(5)
+                        :
+                            Wireplumber.getDefault().increaseSourceVolume(5),
                     child: new Widget.Box({
                         children: [
                             new Widget.Label({
@@ -42,5 +53,5 @@ export function Audio() {
                 } as Widget.EventBoxProps)
             ]
         } as Widget.BoxProps)
-    } as Widget.ButtonProps);
+    } as Widget.EventBoxProps);
 }
