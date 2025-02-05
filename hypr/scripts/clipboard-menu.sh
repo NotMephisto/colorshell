@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-cliphist list | anyrun --plugins libstdin.so | read pipe
+selection=$(cliphist list | anyrun --plugins libstdin.so | cliphist decode)
 
-if [[ ! -z "$pipe" ]]; then 
-    echo $pipe | cliphist decode | wl-copy
+if [[ ! -z "$selection" ]]; then
+    echo -e $selection | sed -e 's/\n$//g' | wl-copy
 fi
