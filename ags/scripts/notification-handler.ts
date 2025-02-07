@@ -1,5 +1,4 @@
 import AstalNotifd from "gi://AstalNotifd";
-import { Windows } from "./windows";
 import { timeout } from "astal/time";
 
 const notifd: AstalNotifd.Notifd = new AstalNotifd.Notifd({
@@ -7,13 +6,10 @@ const notifd: AstalNotifd.Notifd = new AstalNotifd.Notifd({
     dontDisturb: false
 });
 
-const windows = Windows.getDefault();
-
-export let notifications: Array<AstalNotifd.Notification> = [];
+export let notifications: Array<AstalNotifd.Notification> = getNotifd().notifications;
 export let notificationHistory: Array<AstalNotifd.Notification> = [];
 
 notifd.connect("notified", (_source: AstalNotifd.Notifd, id: number, _replaced: boolean) => {
-    windows.isVisible(windows.getWindows().floating_notifications) && windows.open(windows.getWindows().floating_notifications);
     addNotification(getNotifd().get_notification(id));
 });
 

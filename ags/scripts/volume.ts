@@ -1,23 +1,45 @@
+import {  GObject } from "astal";
 import AstalWp from "gi://AstalWp";
 
-export class Wireplumber {
-    private astalWireplumber: (AstalWp.Wp|null) = AstalWp.get_default();
-    private defaultSink: AstalWp.Endpoint = this.astalWireplumber!.get_default_speaker()!;
-    private defaultSource: AstalWp.Endpoint = this.astalWireplumber!.get_default_microphone()!;
-    private static inst: Wireplumber = new Wireplumber();
+export const Wireplumber = GObject.registerClass({
+    GTypeName: "Wireplumber",
+    Signals: {}
+}, class WireplumberClass extends GObject.Object {
+    private static astalWireplumber: (AstalWp.Wp|null) = AstalWp.get_default();
+    private static inst: WireplumberClass;
+
+    private defaultSink: AstalWp.Endpoint = WireplumberClass.astalWireplumber!.get_default_speaker()!;
+    private defaultSource: AstalWp.Endpoint = WireplumberClass.astalWireplumber!.get_default_microphone()!;
 
     private maxSinkVolume: number = 100;
     private maxSourceVolume: number = 100;
 
-    constructor() {
-        if(!this.astalWireplumber) 
+    _init(...props: any[]) {
+        super._init(props);
+
+        if(!WireplumberClass.astalWireplumber) 
             throw new Error("Audio features will not work correctly! Please install wireplumber first", {
                 cause: "Wireplumber library not found"
             });
     }
 
-    public static getDefault(): Wireplumber {
-        return Wireplumber.inst;
+    public static getDefault(): WireplumberClass {
+        if(!WireplumberClass.inst) 
+            WireplumberClass.inst = new WireplumberClass();
+
+        return WireplumberClass.inst;
+    }
+
+    public static getWireplumber(): AstalWp.Wp {
+        return WireplumberClass.astalWireplumber!;
+    }
+
+    public getMaxSinkVolume(): number {
+        return this.maxSinkVolume;
+    }
+
+    public getMaxSourceVolume(): number {
+        return this.maxSourceVolume;
     }
 
     public getDefaultSink(): AstalWp.Endpoint {
@@ -29,11 +51,11 @@ export class Wireplumber {
     }
 
     public getSinkVolume(): number {
-        return this.getDefaultSink().get_volume() * 100;
+        return Math.floor(this.getDefaultSink().get_volume() * 100);
     }
 
     public getSourceVolume(): number {
-        return this.getDefaultSource().get_volume() * 100;
+        return Math.floor(this.getDefaultSource().get_volume() * 100);
     }
 
     public setSinkVolume(newSinkVolume: number): void {
@@ -123,4 +145,4 @@ export class Wireplumber {
 
         return this.muteSource();
     }
-}
+});

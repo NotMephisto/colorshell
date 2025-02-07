@@ -4,23 +4,65 @@
 .control-center-container {
   background: rgba(wal.$background, .65);
   border-radius: 24px;
-  padding: 24px 22px;
+  padding: 20px 14px;
 
-  & {
-    & button {
-      padding: 4px 6px;
+  & > box {
+    margin: 9px;
+
+    &:first-child {
+      margin-top: 0;
+    }
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  & .quickactions {
+    & .hostname {
+      font-size: 15px;
+      font-weight: 600;
     }
 
-    & .quickactions {
-      background: wal.$color1;
-      & .hostname {
-        font-size: 15px;
-        font-weight: 600;
+    & .uptime {
+      font-size: 12px;
+    }
+
+    & .button-row {
+      & button {
+        padding: 4px 6px;
+      }
+    }
+  }
+
+  & .sliders {
+    padding: 2px 6px;
+
+    & > box {
+      margin: 8px 0;
+
+      &:first-child {
+        margin-top: 0;
       }
 
-      & .uptime {
-        font-size: 12px;
+      &:last-child {
+        margin-bottom: 0;
       }
+    }
+
+    icon {
+      background-size: 48px;
+    }
+
+    trough {
+      background: color.adjust($color: wal.$color1, $lightness: -20%);
+      min-height: .8em;
+      border-radius: 8px;
+    }
+
+    trough highlight {
+      background: wal.$color1;
+      min-height: inherit;
+      border-radius: inherit;
     }
   }
 }

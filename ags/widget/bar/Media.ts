@@ -1,4 +1,4 @@
-import { bind } from "astal";
+import { bind, Process } from "astal";
 import { Gtk, Widget } from "astal/gtk3";
 import AstalMpris from "gi://AstalMpris";
 import { Separator, SeparatorProps } from "../Separator";
@@ -13,7 +13,7 @@ const playerIcons = {
     firefox: '󰈹'
 }
 
-export function Media(): JSX.Element {
+export function Media(): Gtk.Widget {
     const mediaControlsRevealer: Widget.Revealer = new Widget.Revealer({
         transitionType: Gtk.RevealerTransitionType.SLIDE_RIGHT,
         transitionDuration: 260,
@@ -24,6 +24,13 @@ export function Media(): JSX.Element {
             homogeneous: false,
             children: bind(mpris, "players").as((players: Array<AstalMpris.Player>) =>
                 players[0] ? [ 
+                    new Widget.Button({
+                        className: "link",
+                        label: "󰌷",
+                        visible: bind(players[0], "metadata").as(metadata =>
+                            metadata?.["xesam:url"] ? true : false),
+                        onClick: () => Process.exec(`echo ${players[0].metadata.url}"`)
+                    } as Widget.ButtonProps),
                     new Widget.Button({
                         className: "previous",
                         label: "󰒮",
@@ -82,7 +89,7 @@ export function Media(): JSX.Element {
                                 label: bind(players[0], "artist").as((artist: string) => artist || "No Artist")
                             } as Widget.LabelProps)
                         ] : new Widget.Label({
-                            label: "Crazy to think this widget didn't disappear yet!"
+                            label: "Crazy to think this widget haven't disappeared yet!"
                         } as Widget.LabelProps)
                     )
                 } as Widget.BoxProps),

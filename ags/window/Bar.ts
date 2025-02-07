@@ -9,7 +9,6 @@ import { FocusedClient } from "../widget/bar/FocusedClient";
 import { Media } from "../widget/bar/Media";
 
 export const Bar: Widget.Window = new Widget.Window({
-    className: "bar",
     monitor: 0,
     namespace: "top-bar",
     anchor: Astal.WindowAnchor.TOP,
@@ -18,8 +17,6 @@ export const Bar: Widget.Window = new Widget.Window({
     canFocus: false,
     visible: true,
     widthRequest: Gdk.Screen.get_default()?.get_monitor_geometry(0)?.width,
-    hexpand: false,
-    vexpand: false,
     child: new Widget.Box({
         className: "bar-container",
         child: new Widget.CenterBox({

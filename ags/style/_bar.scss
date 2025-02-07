@@ -1,3 +1,4 @@
+@use "sass:color";
 @use "./wal";
 @use "./mixins";
 
@@ -5,7 +6,7 @@
   padding: 6px;
   padding-bottom: 0px;
 
-  & * {
+  & {
     button {
       padding: 6px 8px;
       border-radius: 12px;
@@ -73,9 +74,9 @@
     & > .text-content {
       & > .class {
         font-size: 9px;
-        font-weight: 500;
         font-family: monospace;
-        color: adjust-hue($color: wal.$foreground, $degrees: 100deg);
+        font-weight: 600;
+        color: color.adjust($color: wal.$foreground, $lightness: -11%);
         margin-top: 1px;
       }
       
@@ -100,7 +101,7 @@
     & > .media > box {
       border-radius: 12px;
       background: wal.$color1;
-      padding: 0 6px;
+      padding: 0 7px;
 
       & .icon {
         margin-right: 6px;
@@ -110,18 +111,24 @@
 
     &.reveal {
       & .media > box {
+        transition: 50ms linear;
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
       }
       & .media-controls {
-        padding-left: 3px;
+        padding-left: 6px;
         border-top-right-radius: 12px;
         border-bottom-right-radius: 12px;
-        background: scale-color($color: wal.$color1, $lightness: -20%);
+        transition: unset;
+        background: linear-gradient(to left, color.adjust($color: wal.$color1, $lightness: -15%) 45px, wal.$color1);
 
         & > button {
           margin: 0px 1px;
           border-radius: 4px;
+
+          &:hover {
+            background: wal.$color2;
+          }
 
           &:first-child {
             border-top-left-radius: 12px;
@@ -167,6 +174,11 @@
       background: wal.$color1;
     }
 
+    & .notification-bell {
+      padding-left: 10px;
+      padding-right: 4px;
+    }
+
     & > box {
       padding: 0 9px;
       border-radius: 12px;
@@ -179,11 +191,5 @@
     & .source .icon {
       margin-right: 4px;
     }
-  }
-
-  .cc-toggle button {
-    $padding-inline: 12px;
-    padding-left: $padding-inline;
-    padding-right: calc($padding-inline + 2px);
   }
 }

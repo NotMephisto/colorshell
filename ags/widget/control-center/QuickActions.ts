@@ -62,6 +62,7 @@ export const QuickActions: Widget.Box = new Widget.Box({
             orientation: Gtk.Orientation.VERTICAL,
             halign: Gtk.Align.START,
             hexpand: true,
+            className: "left",
             children: [
                 new Widget.Label({
                     className: "hostname",
@@ -77,7 +78,7 @@ export const QuickActions: Widget.Box = new Widget.Box({
         } as Widget.BoxProps),
         new Widget.Box({
             orientation: Gtk.Orientation.HORIZONTAL,
-            className: "button-row",
+            className: "right button-row",
             halign: Gtk.Align.END,
             hexpand: true,
             children: [

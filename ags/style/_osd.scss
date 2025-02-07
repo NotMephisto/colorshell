@@ -1,37 +1,45 @@
+@use "sass:color";
 @use "./wal";
 
-.osd-window {
-  all: unset;
+.osd {
+  background: color.change($color: wal.$background, $alpha: 65%);
+  padding: 14px 16px;
+  border-radius: 20px;
 
-  .osd {
-    margin-bottom: 100px;
-    background: rgba($color: wal.$background, $alpha: .5);
-    padding: 14px 16px;
-    border-radius: 20px;
+  .icon {
+    margin-right: 14px;
+    font-size: 24px;
+  }
 
-    .icon {
-      margin-right: 14px;
-      font-size: 24px;
+  .volume {
+    margin-top: -6px;
+
+    .device {
+      margin-bottom: 5px;
+      font-size: 14px;
+      font-weight: 600;
     }
 
-    .volume {
-      margin-top: -6px;
+    levelbar {
+      trough block {
+        border-radius: 2px;
+        background: color.adjust($color: wal.$color1, $lightness: -36%);
 
-      .value {
-        margin-bottom: 5px;
-      }
+        &.empty {
+          border-radius: 2px;
+        }
 
-      levelbar {
-        trough block {
-          border-radius: 6px;
-          background: wal.$background;
-
-          &.filled {
-            padding: 3px 0;
-            background: wal.$color1;
-          }
+        &.filled {
+          padding: 3px 0;
+          background: wal.$color1;
         }
       }
+    }
+
+    .value {
+      font-size: 11px;
+      font-weight: 400;
+      padding: 0 4px;
     }
   }
 }

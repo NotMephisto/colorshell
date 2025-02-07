@@ -1,0 +1,54 @@
+import { bind } from "astal";
+import { Gtk, Widget } from "astal/gtk3";
+import { Wireplumber } from "../../scripts/volume";
+
+export const Sliders: Gtk.Widget = new Widget.Box({
+    className: "sliders",
+    orientation: Gtk.Orientation.VERTICAL,
+    expand: true,
+    children: [
+        new Widget.Box({
+            className: "sink speaker",
+            children: [
+                new Widget.Icon({
+                    icon: "audio-volume-high-symbolic"
+                } as Widget.IconProps),
+                new Widget.Slider({
+                    drawValue: false,
+                    hexpand: true,
+                    value: bind(Wireplumber.getDefault().getDefaultSink(), "volume").as((volume: number) => 
+                        Math.floor(volume * 100)),
+                    max: Wireplumber.getDefault().getMaxSinkVolume(),
+                    onDragged: (slider: Gtk.Scale) => Wireplumber.getDefault().setSinkVolume(slider.get_value())
+                } as Widget.SliderProps)
+            ]
+        } as Widget.BoxProps),
+        new Widget.Box({
+            className: "source microphone",
+            children: [
+                new Widget.Icon({
+                    icon: "microphone-sensitivity-high-symbolic"
+                } as Widget.IconProps),
+                new Widget.Slider({
+                    drawValue: false,
+                    hexpand: true,
+                    value: bind(Wireplumber.getDefault().getDefaultSource(), "volume").as((volume: number) => 
+                        Math.floor(volume * 100)),
+                    max: Wireplumber.getDefault().getMaxSourceVolume(),
+                    onDragged: (slider: Gtk.Scale) => Wireplumber.getDefault().setSourceVolume(slider.get_value())
+                } as Widget.SliderProps)
+            ]
+        } as Widget.BoxProps),
+        /*new Widget.Box({
+            className: "brightness screen",
+            children: [
+                new Widget.Slider({
+                    drawValue: false,
+                    hexpand: true,
+                    value: 216,
+                    max: 255
+                } as Widget.SliderProps)
+            ]
+        } as Widget.BoxProps)*/
+    ]
+} as Widget.BoxProps);

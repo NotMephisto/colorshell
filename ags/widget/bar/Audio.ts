@@ -1,6 +1,6 @@
 import { bind, Process } from "astal";
 import { Widget } from "astal/gtk3";
-import AstalWp from "gi://AstalWp?version=0.1";
+import AstalWp from "gi://AstalWp";
 import { Wireplumber } from "../../scripts/volume";
 
 const wp = AstalWp.get_default();
@@ -26,8 +26,8 @@ export function Audio() {
                             } as Widget.LabelProps),
                             new Widget.Label({
                                 className: "icon nf",
-                                label: bind(wp!.defaultSpeaker, "volume").as((volume: number) => 
-                                    Math.round(volume * 100).toString() + "%")
+                                label: bind(Wireplumber.getDefault().getDefaultSink(), "volume").as((volume: number) => 
+                                    Math.floor(volume * 100) + "%")
                             } as Widget.LabelProps)
                        ]
                     })
@@ -46,12 +46,18 @@ export function Audio() {
                                 label: "󰍬"
                             } as Widget.LabelProps),
                             new Widget.Label({
-                                label: bind(wp!.defaultMicrophone, "volume").as((volume: number) => 
-                                    Math.round(volume * 100).toString() + "%")
+                                label: bind(Wireplumber.getDefault().getDefaultSource(), "volume").as((volume: number) => 
+                                    Math.floor(volume * 100) + "%")
                             } as Widget.LabelProps)
                         ]
                     })
-                } as Widget.EventBoxProps)
+                } as Widget.EventBoxProps),
+                new Widget.Box({
+                    className: "notification-bell",
+                    child: new Widget.Label({
+                        label: "󰂚"
+                    } as Widget.LabelProps)
+                } as Widget.BoxProps)
             ]
         } as Widget.BoxProps)
     } as Widget.EventBoxProps);

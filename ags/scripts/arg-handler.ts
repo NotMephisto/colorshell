@@ -1,5 +1,7 @@
-import { Windows } from "./windows";
+import { Gtk } from "astal/gtk3";
+import { Windows } from "../windows";
 import { restartInstance } from "./reload-handler";
+import { Wireplumber } from "./volume";
 
 export function handleArguments(request: string): any {
     const args: Array<string> = request.split(" ");
@@ -13,8 +15,11 @@ export function handleArguments(request: string): any {
         case "h":
             return getHelp(); // stop it, get some help
 
+        case "volume":
+            return handleVolumeArgs(args);
+
         case "reload":
-            restartInstance({ log: true, instanceName: "astal" });
+            restartInstance({ log: false, instanceName: "astal" });
             return "Reloading instance..."
 
         default:
@@ -23,48 +28,80 @@ export function handleArguments(request: string): any {
 }
 
 // Didn't want to bloat the switch statement, so I just separated it into functions
-export function handleWindowArgs(args: Array<string>): string {
-    const windows = Windows.getDefault().getWindows();
-    const window = windows[args[1] as never];
+function handleWindowArgs(args: Array<string>): string {
+    const specifiedWindow: (Gtk.Window|undefined) = Windows.getWindow(args[1]);
 
-    if(args[1] == undefined || args[1] == "") 
+    if(!specifiedWindow) 
         return "Window argument not specified!";
 
-    if(!Object.hasOwn(windows, args[1]!)) 
-        return `Window "${args[1]}" not found windows list!`
+    if(!Windows.getList().has(args[1])) 
+        return `Name "${args[1]}" not found windows map! Make sure to add new Windows on the Map!`
 
     switch(args[0]) {
         case "open":
-            if(!Windows.getDefault().isVisible(window)) {
-                Windows.getDefault().open(window);
+            if(!Windows.isVisible(specifiedWindow)) {
+                Windows.open(specifiedWindow);
                 return `Setting visibility of window "${args[1]}" to true`;
             }
 
             return `Window is already open, ignored`;
 
         case "close":
-            if(Windows.getDefault().isVisible(window)) {
-                Windows.getDefault().close(window);
+            if(Windows.isVisible(specifiedWindow)) {
+                Windows.close(specifiedWindow);
                 return `Setting visibility of window "${args[1]}" to false`
             }
 
             return `Window is already closed, ignored`
 
         case "toggle":
-            if(!Windows.getDefault().isVisible(window)) {
-                Windows.getDefault().open(window);
+            if(!Windows.isVisible(specifiedWindow)) {
+                Windows.open(specifiedWindow);
                 return `Toggle opening window "${args[1]}"`;
             }
 
-            Windows.getDefault().close(window);
+            Windows.close(specifiedWindow);
             return `Toggle closing window "${args[1]}"`
     }
 
     return "Couldn't handle window management arguments"
 }
 
-export function getHelp(): string {
-    return `Manage Astal Windows and do more stuff. From
+function handleVolumeArgs(args: Array<string>) {
+    if(!args[1]) 
+        return `Please specify what you want to do!\n\n${volumeHelp()}`
+
+    if(!/(sink|source)\-mute/.test(args[1]) && !args[2])
+        return `You forgot to add a value to be set!`;
+
+    const command: Array<string> = args[1].split('-');
+
+    switch(command[1]) {
+        case "set":
+            return `Done! Set ${command[0]} volume to ${args[2]}`;
+    }
+
+    return `Couldn't resolve arguments! "${args.join(' ').replace(new RegExp(`^${args[0]}`), "")}"`;
+
+    function volumeHelp(): string {
+        return `
+Control speaker and microphone volumes easily!
+Options:
+  sink-set [number]: set sink(speaker) volume with [number], 0 to ${Wireplumber.getDefault().getMaxSinkVolume()}.
+  sink-mute: toggle mute for the sink(speaker) device.
+  sink-increase [number]: increases sink(speaker) volume with [number].
+  sink-decrease [number]: decreases sink(speaker) volume with [number].
+  source-set [number]: set source(microphone) volume with [number], 0 to ${Wireplumber.getDefault().getMaxSourceVolume()}.
+  source-mute: toggle mute for the source(microphone) device.
+  source-increase [number]: increases source(microphone) volume with [number].
+  source-decrease [number]: decreases source(microphone) volume with [number]
+`.trim();
+    }
+}
+
+function getHelp(): string {
+    return `
+Manage Astal Windows and do more stuff. From
 retrozinndev's Hyprland Dots, using Astal and AGS by Aylur.
 
 Options:
@@ -75,5 +112,6 @@ Options:
   help, -h, --help: shows this help message.
 
 2024 (c) retrozinndev's Hyprland-Dots, licensed under the MIT License.
-https://github.com/retrozinndev/Hyprland-Dots`
+https://github.com/retrozinndev/Hyprland-Dots
+`.trim();
 }

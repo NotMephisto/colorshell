@@ -1,48 +1,80 @@
-import { bind } from "astal";
+import { bind, Binding, Variable } from "astal";
 import { Astal, Gtk, Widget } from "astal/gtk3";
-import { Time } from "astal/time";
-import AstalWp from "gi://AstalWp";
-import { Windows } from "../scripts/windows";
+import { Wireplumber } from "../scripts/volume";
+import AstalWp from "gi://AstalWp?version=0.1";
 
-export const OSD: Widget.Window = OSDWindow();
-
-function OSDWindow() {
-    return new Widget.Window({
-        className: "osd-window",
-        namespace: "osd",
-        layer: Astal.Layer.OVERLAY,
-        anchor: Astal.WindowAnchor.BOTTOM,
-        canFocus: false,
-        monitor: 0,
-        visible: false,
-        child: new Widget.Box({
-            className: "osd",
-            children: [
-                new Widget.Label({
-                    className: "icon",
-                    label: "󰕾",
-                    css: ".icon { color: white; }"
-                } as Widget.LabelProps),
-                new Widget.Box({
-                    className: "volume",
-                    orientation: Gtk.Orientation.VERTICAL,
-                    valign: Gtk.Align.CENTER,
-                    children: [
-                        new Widget.Label({
-                            className: "value",
-                            label: bind(AstalWp.get_default()?.defaultSpeaker!, "volume").as((volume: number) => `${Math.round(volume * 100)}%`),
-                            halign: Gtk.Align.CENTER
-                        } as Widget.LabelProps),
-                        new Widget.LevelBar({
-                            className: "levelbar",
-                            width_request: 120,
-                            value: bind(AstalWp.get_default()?.defaultSpeaker!, "volume").as((volume: number) => Math.round(volume * 100)),
-                            maxValue: 100,
-                            halign: Gtk.Align.CENTER
-                        } as Widget.LevelBarProps)
-                    ]
-                } as Widget.BoxProps)
-            ]
-        } as Widget.BoxProps)
-    } as Widget.WindowProps);
+export enum OSDModes {
+    SINK,
+    BRIGHTNESS
 }
+
+let osdMode: Variable<OSDModes> = new Variable<OSDModes>(OSDModes.SINK);
+let osdIcon: Binding<string | undefined> = osdMode().as((mode: OSDModes) => {
+    switch(mode) {
+        case OSDModes.SINK: return "󰕾";
+        case OSDModes.BRIGHTNESS: return "󰃠";
+        default: return "󱧣";
+    }
+});
+
+export function setOSDMode(newMode: OSDModes): void {
+    osdMode.set(newMode);
+}
+
+export const OSD: Widget.Window = new Widget.Window({
+    namespace: "osd",
+    layer: Astal.Layer.OVERLAY,
+    anchor: Astal.WindowAnchor.BOTTOM,
+    canFocus: false,
+    margin_bottom: 80,
+    monitor: 0,
+    visible: false,
+    focusOnClick: false,
+    child: new Widget.Box({
+        className: "osd",
+        children: [
+            new Widget.Label({
+                className: "icon",
+                label: osdIcon
+            } as Widget.LabelProps),
+            new Widget.Box({
+                className: "volume",
+                orientation: Gtk.Orientation.VERTICAL,
+                valign: Gtk.Align.CENTER,
+                children: [
+                    new Widget.Label({
+                        className: "device",
+                        label: bind(Wireplumber.getDefault().getDefaultSink(), "name").as((name: string) => 
+                            name || "Speaker"),
+                        halign: Gtk.Align.CENTER
+                    } as Widget.LabelProps),
+                    new Widget.Box({
+                        vexpand: false,
+                        expand: false,
+                        children: [
+                            new Widget.LevelBar({
+                                className: "levelbar",
+                                width_request: 120,
+                                value: bind(Wireplumber.getDefault().getDefaultSink(), "volume").as((volume: number) => 
+                                    Math.floor(volume * 100)),
+                                maxValue: bind(Wireplumber.getWireplumber(), "defaultSpeaker").as(() =>
+                                    Wireplumber.getDefault().getMaxSinkVolume()),
+                                vexpand: false,
+                                expand: false,
+                                halign: Gtk.Align.CENTER
+                            } as Widget.LevelBarProps),
+                            /*new Widget.Label({
+                                className: "value",
+                                label: bind(Wireplumber.getDefault().getDefaultSink(), "volume").as((volume: number) => 
+                                    `${Math.floor(volume * 100)}%`),
+                                vexpand: false,
+                                expand: false,
+                                halign: Gtk.Align.CENTER
+                            } as Widget.LabelProps)*/
+                        ]
+                    } as Widget.BoxProps)
+                ]
+            } as Widget.BoxProps)
+        ]
+    } as Widget.BoxProps)
+} as Widget.WindowProps);
