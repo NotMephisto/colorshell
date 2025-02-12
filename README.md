@@ -21,25 +21,14 @@ See more bindings inside the `~/.config/hypr/bindings.conf` file or check the [W
 ### ℹ️ Source
 All wallpapers inside this repo are not made by me! You can find all sources inside the [`WALLPAPERS.md`](https://github.com/retrozinndev/Hyprland-Dots/blob/ryo/WALLPAPERS.md) file.
 
-
-## Installation
-You'll need to have installed all needed packages before installing my dotfiles! Use your package manager to do so. See needed packages in [Wiki/Dependencies].
-
-In order to install this style right away, just run this installation script:
-
-> ℹ️ Notice: the installation script will make a backup folder containing all previous files in `~/hyprland-dots-bkp`.
-
-> 💡 Tip: Note the `$` character means that it's recommended to run this command without root privileges.
-
-```nushell
- $ git clone https://github.com/retrozinndev/Hyprland-Dots; cd Hyprland-Dots; sh apply.sh
-```
+## ⚙️ Installation
+See the Installation Guide on [Wiki/Installation].
 
 ### 🎉 Tools
 - Browser: [Zen Browser]
 - Text Editor: [Neovim], my config is [here](https://github.com/retrozinndev/nvim-conf.lua)
 - Terminal Emulator: [Kitty]
-- Bar and Widgets: [AGS](https://aylur.github.io/ags/)(Aylur's GTK Shell) and [Astal](https://aylur.github.io/astal)
+- Bar and Widgets: [AGS](https://aylur.github.io/ags)(Aylur's GTK Shell) and [Astal](https://aylur.github.io/astal)
 - Shell: [Nushell]
 - See more on the [wiki]!
 
@@ -58,7 +47,7 @@ Thanks to everyone who starred my dotfiles! 💖
 [zen browser]: https://zen-browser.app
 [neovim]: https://neovim.io
 [nushell]: https://nushell.sh
-[kitty]: https://sw.kovidgoyal.net/kitty/
+[kitty]: https://sw.kovidgoyal.net/kitty
 
 <!--  Web refs -->
 [mit license]: https://en.wikipedia.org/wiki/MIT_License
