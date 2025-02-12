@@ -24,20 +24,20 @@ export function FocusedClient() {
                 orientation: Gtk.Orientation.VERTICAL,
                 homogeneous: false,
                 valign: Gtk.Align.CENTER,
-                children: [
-                    new Widget.Label({
-                        className: "class",
-                        xalign: 0,
-                        label: bind(hyprland, "focusedClient").as((client: AstalHyprland.Client) =>
-                            client ? client.class : "")
-                    } as Widget.LabelProps),
-                    new Widget.Label({
-                        className: "title",
-                        xalign: 0,
-                        label: bind(hyprland, "focusedClient").as((client: AstalHyprland.Client) =>
-                            client ? client.title : "")
-                    } as Widget.LabelProps)
-                ]
+                children: bind(hyprland, "focusedClient").as((focusedClient: AstalHyprland.Client) =>
+                    focusedClient ? [
+                        new Widget.Label({
+                            className: "class",
+                            xalign: 0,
+                            label: bind(focusedClient, "class")
+                        } as Widget.LabelProps),
+                        new Widget.Label({
+                            className: "title",
+                            xalign: 0,
+                            label: bind(focusedClient, "title")
+                        } as Widget.LabelProps)
+                    ] : []
+                )
             })
         ]
     } as Widget.BoxProps);
