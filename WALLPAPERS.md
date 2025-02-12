@@ -27,6 +27,10 @@ the links down below.
 
 - [GitHub (hyprwm/Hyprland)](https://github.com/hyprwm/Hyprland)
 
+## Gruvbox-styled Wallpapers
+
+- [Gruvbox Wallpapers](https://gruvbox-wallpapers.pages.dev)
+
 ## Linux Girl Wallpaper
 
 - [WallHere](https://wallhere.com/en/wallpaper/2284648)
