@@ -1,5 +1,6 @@
 @use "sass:color";
 @use "./wal";
+@use "./functions" as funs;
 
 .control-center-container {
   background: rgba(wal.$background, .65);
@@ -29,7 +30,11 @@
 
     & .button-row {
       & button {
-        padding: 4px 6px;
+        padding: 7px;
+        margin: {
+          top: 2px;
+          bottom: 2px;
+        };
       }
     }
   }
@@ -49,20 +54,29 @@
       }
     }
 
-    icon {
-      background-size: 48px;
+    .icon.nf {
+      margin-right: 8px;
+      font-size: 15px;
     }
 
     trough {
-      background: color.adjust($color: wal.$color1, $lightness: -20%);
-      min-height: .8em;
+      background: funs.toRGB(color.adjust($color: wal.$color1, $lightness: -20%));
       border-radius: 8px;
     }
 
     trough highlight {
       background: wal.$color1;
-      min-height: inherit;
-      border-radius: inherit;
+      border-top-left-radius: inherit;
+      border-bottom-left-radius: inherit;
+    }
+
+    trough slider {
+      min-width: 1.2em;
+      min-height: 1.2em;
+      border-radius: 50%;
+      margin: -3px 0;
+      background: wal.$foreground;
+      margin-left: -1px;
     }
   }
 }

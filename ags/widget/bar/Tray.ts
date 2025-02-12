@@ -1,4 +1,4 @@
-import { bind } from "astal";
+import { bind, Gio } from "astal";
 import { Gtk, Widget } from "astal/gtk3";
 import AstalTray from "gi://AstalTray"
 
@@ -19,7 +19,7 @@ export function Tray() {
                     direction: Gtk.ArrowType.DOWN,
                     halign: Gtk.Align.CENTER,
                     child: new Widget.Icon({
-                        gIcon: bind(item, "gicon"),
+                        gicon: bind(item, "gicon"),
                         iconSize: Gtk.IconSize.SMALL_TOOLBAR
                     })
                 } as Widget.MenuButtonProps)

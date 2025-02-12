@@ -21,11 +21,11 @@ export function Audio() {
                     child: new Widget.Box({
                         children: [
                             new Widget.Label({
-                                className: "icon nf",
+                                className: "nf",
                                 label: "󰕾"
                             } as Widget.LabelProps),
                             new Widget.Label({
-                                className: "icon nf",
+                                className: "volume",
                                 label: bind(Wireplumber.getDefault().getDefaultSink(), "volume").as((volume: number) => 
                                     Math.floor(volume * 100) + "%")
                             } as Widget.LabelProps)
@@ -42,22 +42,21 @@ export function Audio() {
                     child: new Widget.Box({
                         children: [
                             new Widget.Label({
-                                className: "icon",
+                                className: "nf",
                                 label: "󰍬"
                             } as Widget.LabelProps),
                             new Widget.Label({
+                                className: "volume",
                                 label: bind(Wireplumber.getDefault().getDefaultSource(), "volume").as((volume: number) => 
                                     Math.floor(volume * 100) + "%")
                             } as Widget.LabelProps)
                         ]
                     })
                 } as Widget.EventBoxProps),
-                new Widget.Box({
-                    className: "notification-bell",
-                    child: new Widget.Label({
-                        label: "󰂚"
-                    } as Widget.LabelProps)
-                } as Widget.BoxProps)
+                new Widget.Label({
+                    className: "bell nf",
+                    label: "󰂚"
+                } as Widget.LabelProps)
             ]
         } as Widget.BoxProps)
     } as Widget.EventBoxProps);

@@ -1,39 +1,31 @@
 @use "sass:color";
-@use "./wal";
 @use "./mixins";
+@use "./colors";
 
 .bar-container {
+  @include mixins.reset-props;
+  @include mixins.default-styles;
+
   padding: 6px;
   padding-bottom: 0px;
 
-  & {
-    button {
-      padding: 6px 8px;
-      border-radius: 12px;
+  label {
+    @include mixins.reset-props;
 
-      &:hover {
-        background: wal.$color1;
-      }
-    }
-
-    label {
-      font-size: 12px;
-      font-family: "Cantarell", "Noto Sans";
-      font-weight: 500;
-    }
-
+    font-size: 12px;
+    font-weight: 500;
   }
 
   // Style widget groups
   & > .bar-centerbox > * {
-    background: rgba($color: wal.$background, $alpha: .6);
+    background: colors.$bg-translucent;
     padding: 5px;
     border-radius: 18px;
 
     // Style widgets
-    & > *,
-    & > * > button 
-    & > * {
+    & > button,
+    & > eventbox,
+    & > box {
       margin: 0 2px;
 
       &:first-child {
@@ -43,22 +35,33 @@
       &:last-child {
         margin-right: 0;
       }
+
+      & > button,
+      & > eventbox > box {
+        padding: 4px 8px;
+        border-radius: 12px;
+      }
+
+      & > button:hover,
+      & > eventbox:hover > box {
+        background: colors.$bg-primary;
+      }
     }
   }
 
   .workspaces {
+    @include mixins.reset-props;
     padding: 2px 2px;
 
     & button {
-      all: unset;
       border-radius: 16px;
       transition: 80ms linear;
       padding: 12px 12px;
-      background: wal.$color1;
+      background: colors.$bg-tertiary;
       margin: 1px 2px;
 
       &.focus {
-        background: wal.$foreground;
+        background: colors.$fg-primary;
         padding: 12px 20px;
       }
     }
@@ -76,58 +79,47 @@
         font-size: 9px;
         font-family: monospace;
         font-weight: 600;
-        color: color.adjust($color: wal.$foreground, $lightness: -11%);
-        margin-top: 1px;
+        color: colors.$fg-disabled;
+        margin-top: 0px;
       }
       
       & > .title {
-        font-size: 11.5px;
+        font-size: 12px;
         font-weight: 500;
         margin-top: -2px;
       }
     }
   }
 
-  .logo button {
-    padding: 0 11px;
-    padding-right: 16px;
+  .media-eventbox {
+    & > .media {
+      border-radius: 12px;
+      background: colors.$bg-primary;
+      padding: 0 8px;
+    }
 
-    & label {
+    & .nf {
+      margin-right: 4px;
       font-size: 14px;
     }
-  }
 
-  .media-eventbox {
-    & > .media > box {
-      border-radius: 12px;
-      background: wal.$color1;
-      padding: 0 7px;
-
-      & .icon {
-        margin-right: 6px;
-        font-size: 14px;
-      }
-    }
-
-    &.reveal {
-      & .media > box {
-        transition: 50ms linear;
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
-      }
-      & .media-controls {
+    & .media-controls {
+        transition: none;
         padding-left: 6px;
         border-top-right-radius: 12px;
         border-bottom-right-radius: 12px;
-        transition: unset;
-        background: linear-gradient(to left, color.adjust($color: wal.$color1, $lightness: -15%) 45px, wal.$color1);
+        background: linear-gradient(to left, colors.$bg-primary 45px, colors.$bg-primary);
 
         & > button {
-          margin: 0px 1px;
+          margin: 4px 1px;
           border-radius: 4px;
 
+          label {
+            font-size: 8px;
+          }
+
           &:hover {
-            background: wal.$color2;
+            background: colors.$bg-secondary;
           }
 
           &:first-child {
@@ -142,6 +134,13 @@
             margin-right: 0;
           }
         }
+      }
+
+
+    &.reveal {
+      & .media > box {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
       }
     }
   }
@@ -170,26 +169,32 @@
   }
 
   .audio {
-    &:hover > box {
-      background: wal.$color1;
-    }
+    @include mixins.reset-props;
 
-    & .notification-bell {
-      padding-left: 10px;
-      padding-right: 4px;
+    &:hover > box {
+      background: colors.$bg-primary;
     }
 
     & > box {
-      padding: 0 9px;
+      padding: 0 8px;
       border-radius: 12px;
-    }
 
-    & .sink .icon {
-      margin-right: 6px;
-    }
+      & > * > * {
+        margin: 0 2px;
+      }
 
-    & .source .icon {
-      margin-right: 4px;
+      & .nf {
+        margin: {
+          right: 3px;
+          left: 2px;
+        };
+
+        font-size: 12px;
+      }
+
+      & .bell {
+        margin: 0 4px;
+      }
     }
   }
 }

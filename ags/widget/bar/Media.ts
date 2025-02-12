@@ -1,4 +1,4 @@
-import { bind, Process } from "astal";
+import { bind, GLib, Process } from "astal";
 import { Gtk, Widget } from "astal/gtk3";
 import AstalMpris from "gi://AstalMpris";
 import { Separator, SeparatorProps } from "../Separator";
@@ -19,25 +19,29 @@ export function Media(): Gtk.Widget {
         transitionDuration: 260,
         revealChild: false,
         child: new Widget.Box({
-            className: "media-controls",
+            className: "media-controls button-row",
             expand: false,
             homogeneous: false,
             children: bind(mpris, "players").as((players: Array<AstalMpris.Player>) =>
                 players[0] ? [ 
                     new Widget.Button({
-                        className: "link",
-                        label: "󰌷",
-                        visible: bind(players[0], "metadata").as(metadata =>
-                            metadata?.["xesam:url"] ? true : false),
-                        onClick: () => Process.exec(`echo ${players[0].metadata.url}"`)
+                        className: "link nf",
+                        label: "󰌹",
+                        tooltipText: "Copy link to Clipboard",
+                        visible: bind(players[0], "metadata").as((_metadata: GLib.HashTable) =>
+                            players[0].get_meta("xesam:url") === null),
+                        onClick: () => Process.exec(`wl-copy ${players[0].get_meta("xesam:url")?.get_string()[0]}`)
                     } as Widget.ButtonProps),
                     new Widget.Button({
-                        className: "previous",
+                        className: "previous nf",
                         label: "󰒮",
+                        tooltipText: "Previous",
                         onClick: () => players[0].canGoPrevious && players[0].previous()
                     } as Widget.ButtonProps),
                     new Widget.Button({
-                        className: "pause",
+                        className: "pause nf",
+                        tooltipText: bind(players[0], "playback_status").as((status: AstalMpris.PlaybackStatus) =>
+                            status === AstalMpris.PlaybackStatus.PLAYING ? "Pause" : "Play"),
                         label: bind(players[0], "playbackStatus").as((status: AstalMpris.PlaybackStatus) => 
                             status === AstalMpris.PlaybackStatus.PLAYING ? "󰏤" : "󰐊"),
                         onClick: () => {
@@ -48,7 +52,7 @@ export function Media(): Gtk.Widget {
                         }
                     } as Widget.ButtonProps),
                     new Widget.Button({
-                        className: "next",
+                        className: "next nf",
                         label: "󰒭",
                         onClick: () => players[0].canGoNext && players[0].next()
                     } as Widget.ButtonProps)
@@ -69,7 +73,7 @@ export function Media(): Gtk.Widget {
                     children: bind(mpris, "players").as((players: Array<AstalMpris.Player>) =>
                         players[0] ? [
                             new Widget.Label({
-                                className: "icon",
+                                className: "player-icon nf",
                                 label: bind(players[0], "busName").as((busName: string) => {
                                     const playerName: string = busName.split('.')[busName.split('.').length-1];
                                     return playerIcons[playerName as keyof typeof playerIcons] || "󰎇";

@@ -10,9 +10,10 @@ export const Sliders: Gtk.Widget = new Widget.Box({
         new Widget.Box({
             className: "sink speaker",
             children: [
-                new Widget.Icon({
-                    icon: "audio-volume-high-symbolic"
-                } as Widget.IconProps),
+                new Widget.Label({
+                    className: "nf icon",
+                    label: "󰕾"
+                } as Widget.LabelProps),
                 new Widget.Slider({
                     drawValue: false,
                     hexpand: true,
@@ -26,9 +27,10 @@ export const Sliders: Gtk.Widget = new Widget.Box({
         new Widget.Box({
             className: "source microphone",
             children: [
-                new Widget.Icon({
-                    icon: "microphone-sensitivity-high-symbolic"
-                } as Widget.IconProps),
+                new Widget.Label({
+                    className: "nf icon",
+                    label: "󰍬"
+                } as Widget.LabelProps),
                 new Widget.Slider({
                     drawValue: false,
                     hexpand: true,
@@ -42,6 +44,10 @@ export const Sliders: Gtk.Widget = new Widget.Box({
         /*new Widget.Box({
             className: "brightness screen",
             children: [
+                new Widget.Label({
+                    className: "icon nf",
+                    label: "󰃠"
+                } as Widget.LabelProps),
                 new Widget.Slider({
                     drawValue: false,
                     hexpand: true,

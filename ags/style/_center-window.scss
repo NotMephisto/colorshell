@@ -1,0 +1,40 @@
+@use "sass:color";
+@use "./wal";
+@use "./functions" as funs; // Did you know that you can use the 'as' keyword? I just found out!
+
+.center-window-container {
+  background: wal.$background;
+  border-radius: 18px;
+  padding: 12px;
+
+  & .left {
+    .top {
+      .time {
+        font-size: 22px;
+        font-weight: 800;
+      }
+
+      .date {
+        font-size: 14px;
+        font-weight: 500;
+        color: funs.toRGB(color.adjust($color: wal.$foreground, $lightness: -15%));
+      }
+    }
+  }
+
+  & .calendar-box {
+    padding: 5px;
+    & calendar {
+      border-radius: 6px;
+      padding: 2px;
+
+      &.view {
+        background: funs.toRGB(color.adjust($color: wal.$color1, $lightness: -35%));
+
+        & header {
+          background: funs.toRGB(color.adjust($color: wal.$background, $lightness: -20%));
+        }
+      }
+    }
+  }
+}

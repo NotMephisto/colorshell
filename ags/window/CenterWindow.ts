@@ -3,7 +3,6 @@ import { GLib } from "astal";
 
 import { getDateTime } from "../scripts/time";
 
-
 export const CenterWindow: Widget.Window = new Widget.Window({
     className: "center-window",
     namespace: "center-window",
@@ -12,7 +11,8 @@ export const CenterWindow: Widget.Window = new Widget.Window({
     layer: Astal.Layer.OVERLAY,
     exclusivity: Astal.Exclusivity.NORMAL,
     visible: false,
-    height_request: 600,
+    height_request: 400,
+    margin_top: 10,
     anchor: Astal.WindowAnchor.TOP,
     child: new Widget.Box({
         className: "center-window-container",
@@ -23,7 +23,7 @@ export const CenterWindow: Widget.Window = new Widget.Window({
                 width_request: 300,
                 children: [
                     new Widget.Box({
-                        className: "top time date",
+                        className: "top",
                         orientation: Gtk.Orientation.VERTICAL,
                         children: [
                             new Widget.Label({
@@ -37,7 +37,7 @@ export const CenterWindow: Widget.Window = new Widget.Window({
                                     dateTime.format("%A, %B %d %Y"))
                             } as Widget.LabelProps)
                         ]
-                    } as Widget.BoxProps)
+                    } as Widget.BoxProps),
                 ]
             } as Widget.BoxProps),
             new Widget.Box({
@@ -46,6 +46,7 @@ export const CenterWindow: Widget.Window = new Widget.Window({
                     new Widget.Box({
                         className: "calendar-box",
                         child: new Gtk.Calendar({
+                            visible: true,
                             show_heading: true,
                             show_day_names: true,
                             show_week_numbers: false

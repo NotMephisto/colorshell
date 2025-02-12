@@ -23,7 +23,7 @@ export function reloadStyle(): void {
 export function compileStyle(): void {
     console.log("[LOG] Compiling sass (stylesheet)");
     Process.exec(`mkdir -p ${stylePath}`);
-    Process.exec(`bash -c "sass -I ./style ./style.scss ${stylePath}/style.css"`);
+    Process.exec(`sh -c "sass -I ./style ./style.scss ${stylePath}/style.css"`);
 }
 
 export function applyStyle(): void {

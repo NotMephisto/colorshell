@@ -19,7 +19,7 @@ export function handleArguments(request: string): any {
             return handleVolumeArgs(args);
 
         case "reload":
-            restartInstance({ log: false, instanceName: "astal" });
+            restartInstance();
             return "Reloading instance..."
 
         default:

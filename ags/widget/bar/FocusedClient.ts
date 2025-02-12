@@ -17,13 +17,13 @@ export function FocusedClient() {
                         (getAppIcon(client.initialClass) || client.initialClass)
                     :
                         "image-missing"
-                ),
-                iconSize: Gtk.IconSize.SMALL_TOOLBAR
+                )
             }),
             new Widget.Box({
                 className: "text-content",
                 orientation: Gtk.Orientation.VERTICAL,
                 homogeneous: false,
+                valign: Gtk.Align.CENTER,
                 children: [
                     new Widget.Label({
                         className: "class",

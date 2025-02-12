@@ -1,63 +1,97 @@
 import AstalNotifd from "gi://AstalNotifd";
 import { timeout } from "astal/time";
+import { Connectable } from "astal/binding";
+import { GObject, register, property, signal } from "astal";
+import { Windows } from "../windows";
 
-const notifd: AstalNotifd.Notifd = new AstalNotifd.Notifd({
-    ignoreTimeout: false,
-    dontDisturb: false
-});
+@register()
+class Notifications extends GObject.Object implements Connectable {
 
-export let notifications: Array<AstalNotifd.Notification> = getNotifd().notifications;
-export let notificationHistory: Array<AstalNotifd.Notification> = [];
+    private static instance: Notifications;
+    private notifd: AstalNotifd.Notifd;
 
-notifd.connect("notified", (_source: AstalNotifd.Notifd, id: number, _replaced: boolean) => {
-    addNotification(getNotifd().get_notification(id));
-});
+    public notifications: Array<AstalNotifd.Notification> = [];
+    public notificationHistory: Array<AstalNotifd.Notification> = [];
 
-function addNotification(notification: AstalNotifd.Notification) {
-    prependArray(notifications, getNotifd().get_notification(notification.id));
+    @signal()
+    declare "notification-added": (notification: AstalNotifd.Notification) => void;
 
-    // default timeout if undefined
-    let notificationTimeout = 4000;
 
-    switch(notification.urgency) {
-        case AstalNotifd.Urgency.LOW:
-            notificationTimeout = 2000;
-            break;
-        case AstalNotifd.Urgency.NORMAL:
-            notificationTimeout = 4000;
-            break;
+    public static getDefault(): Notifications {
+        if(!Notifications.instance) { 
+            Notifications.instance = new Notifications();
+            this.instance._init();
+        }
+
+        return Notifications.instance;
     }
 
-    notification.urgency !== AstalNotifd.Urgency.CRITICAL && timeout(notificationTimeout, () => {
-        notificationTimeout--;
-        if(notificationTimeout === 0) {
-            removeNotification(notification.id);
-            addToNotificationHistory(notification);
-        };
-    });
-}
+    constructor() { 
+        super();
+        this.notifd = new AstalNotifd.Notifd({
+            ignoreTimeout: true,
+            dontDisturb: false
+        } as AstalNotifd.Notifd.ConstructorProps);
 
-export function removeNotification(notificationId: number) {
-    notifications = notifications.filter((notification: AstalNotifd.Notification) => 
-        notification.id !== notificationId);
-}
+        this.getNotifd().connect("notified", (_source: AstalNotifd.Notifd, id: number, _replaced: boolean) => {
+            this.addNotification(this.getNotifd().get_notification(id));
+        });
+    }
 
-function addToNotificationHistory(notification: AstalNotifd.Notification) {
-    prependArray(notificationHistory, notification);
-}
+    public addNotification(notification: AstalNotifd.Notification) {
+        this.prependArray(this.notifications, this.getNotifd().get_notification(notification.id));
 
-export function removeFromNotificationHistory(notificationId: number) {
-    notifications = notifications.filter((curNotification: AstalNotifd.Notification) => 
-        curNotification.id !== notificationId);
-}
+        // default timeout if undefined
+        let notificationTimeout = 4000;
 
-function prependArray(array: Array<any>, item: any) {
-    let tmpArray = array;
-    tmpArray.reverse();
-    tmpArray.push(item);
-    array = tmpArray.reverse();
-}
+        switch(notification.urgency) {
+            case AstalNotifd.Urgency.LOW:
+                notificationTimeout = 2000;
+                break;
+            case AstalNotifd.Urgency.NORMAL:
+                notificationTimeout = 4000;
+                break;
+        }
 
-export function getNotifd(): AstalNotifd.Notifd {
-    return notifd;
+        notification.urgency !== AstalNotifd.Urgency.CRITICAL ? 
+            timeout(notificationTimeout, () => {
+                    this.notifications.map((item: AstalNotifd.Notification) =>
+                        item.id === notification.id && (() => {
+                            this.removeNotification(notification.id);
+                            this.addToNotificationHistory(notification);
+                        })())
+            }) 
+        : this.addToNotificationHistory(notification);
+
+        this.emit("notification-added", notification);
+    }
+
+    public removeNotification(notificationId: number) {
+        if(this.notifications.length === 1) 
+            Windows.close(Windows.getWindow("floating-notifications")!);
+
+        this.notifications = this.notifications.filter((notification: AstalNotifd.Notification) => 
+            notification.id !== notificationId);
+
+        this.emit("notification-removed", notificationId);
+    }
+
+    public addToNotificationHistory(notification: AstalNotifd.Notification) {
+        this.prependArray(this.notificationHistory, notification);
+    }
+
+    public removeFromNotificationHistory(notificationId: number) {
+        this.notificationHistory = this.notificationHistory.filter((curNotification: AstalNotifd.Notification) => 
+            curNotification.id !== notificationId);
+    }
+
+    private prependArray(array: Array<any>, item: any): Array<any> {
+        let tmpArray = array.reverse();
+        tmpArray.push(item);
+        return tmpArray.reverse();
+    }
+
+    public getNotifd(): AstalNotifd.Notifd {
+        return this.notifd;
+    }
 }

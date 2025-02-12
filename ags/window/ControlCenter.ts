@@ -20,7 +20,7 @@ export const ControlCenter: Widget.Window = new Widget.Window({
     layer: Astal.Layer.OVERLAY,
     margin_top: 10,
     margin_right: 10,
-    width_request: 450,
+    width_request: 400,
     monitor: 0,
     visible: false
 } as Widget.WindowProps, widgetsContainer);

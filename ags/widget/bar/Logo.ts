@@ -7,7 +7,8 @@ export function Logo() {
         //tooltipText: tr("bar.logo.tooltip"),
         child: new Widget.Button({
             onClick: () => AstalHyprland.get_default().dispatch("exec", "anyrun"),
-            label: ""
+            className: "nf",
+            label: "",
         } as Widget.ButtonProps)
     } as Widget.BoxProps);
 }

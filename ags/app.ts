@@ -26,6 +26,7 @@ App.start({
 
         Wireplumber.getDefault().getDefaultSink().connect("notify::volume", () => 
             !Windows.isVisible(ControlCenter) && triggerOSD(OSDModes.SINK));
+
     }
 });
 

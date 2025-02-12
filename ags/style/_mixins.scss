@@ -1,8 +1,81 @@
 @use "sass:color";
 @use "./wal";
+@use "./colors";
+@use "./functions" as funs;
 
 @mixin reset-props {
   all: unset;
   transition: 120ms linear;
-  color: color.adjust($color: wal.$foreground, $lightness: -15%);
+  font-family: "Cantarell", "Noto Sans", 
+    "Noto Sans CJK JP", "Noto Sans CJK KR", 
+    "Noto Sans CJK HK", "Noto Sans CJK SC", 
+    "Noto Sans CJK TC", sans-serif, 
+    "Symbols Nerd Font Mono";
+  color: colors.$fg-primary;
+}
+
+@mixin default-styles {
+  .button-row {
+    & > button {
+      background: colors.$bg-secondary;
+      margin: 0 1px;
+      padding: 0 6px;
+      border-radius: 2px;
+
+      &:hover {
+        background: colors.$bg-tertiary;
+      }
+
+      &:first-child {
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+      }
+
+      &:last-child {
+        border-top-right-radius: 10px;
+        border-bottom-right-radius: 10px;
+      }
+    }
+  }
+
+  label.nf,
+  button.nf label {
+    font-size: 12px;
+    font-family: "Symbols Nerd Font Mono", "Noto Sans Nerd Font Mono",
+      "0xProto Nerd Font Mono", "Fira Code Nerd Font Mono", 
+      "Symbols Nerd Font", "Noto Sans Nerd Font", "Fira Code Nerd Font",
+      "Font Awesome";
+  }
+
+  & menu {
+    padding: 4px;
+    background: wal.$background;
+    border-radius: 14px;
+                                 
+    & separator {
+      margin: 0 4px;
+      color: wal.$background;
+    }
+                                 
+    & menuitem {
+      padding: 8px 16px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+                                 
+      &:hover {
+        background: wal.$color1;
+      }
+    }
+  }
+
+  & tooltip {
+    padding: 8px;
+    border-radius: 14px;
+
+    & label {
+      font-size: 14px;
+      color: colors.$fg-primary;
+    }
+  }
 }

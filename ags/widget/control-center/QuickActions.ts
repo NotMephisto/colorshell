@@ -10,6 +10,7 @@ const uptime = new Variable<string>("Just turned on")
 
 function LockButton(): Widget.Button {
     return new Widget.Button({
+        className: "nf",
         label: "󰌾",
         onClick: () => AstalHyprland.get_default().dispatch("exec", "hyprlock")
     } as Widget.ButtonProps)
@@ -17,6 +18,7 @@ function LockButton(): Widget.Button {
 
 function ColorPickerButton(): Widget.Button {
     return new Widget.Button({
+        className: "nf",
         label: "󰴱",
         onClick: () => AstalHyprland.get_default().dispatch(
             "exec", 
@@ -27,6 +29,7 @@ function ColorPickerButton(): Widget.Button {
 
 function ScreenshotButton(): Widget.Button {
     return new Widget.Button({
+        className: "nf",
         label: "󰹑",
         onClick: () => Process.exec_async(
             "bash -c 'hyprshot -m region -o $HOME/Screenshots'",
@@ -37,6 +40,7 @@ function ScreenshotButton(): Widget.Button {
 
 function SelectWallpaperButton(): Widget.Button {
     return new Widget.Button({
+        className: "nf",
         label: "󰸉",
         onClick: () => Process.exec_async(
             "bash -c 'sh $HOME/.config/hypr/scripts/change-wallpaper.sh'",
@@ -47,6 +51,7 @@ function SelectWallpaperButton(): Widget.Button {
 
 function LogoutButton(): Widget.Button {
     return new Widget.Button({
+        className: "nf",
         label: "󰗽",
         onClick: () => Process.exec_async(
             "bash -c 'wlogout -b 5'",

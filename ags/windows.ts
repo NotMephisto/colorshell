@@ -6,6 +6,7 @@ import { ControlCenter } from "./window/ControlCenter";
 import { CenterWindow } from "./window/CenterWindow";
 import { FloatingNotifications } from "./window/FloatingNotifications";
 import { GObject } from "astal";
+import { LogoutMenu } from "./window/LogoutMenu";
 
 /**
  * get open windows / interact with windows(e.g.: close, open or toggle)
@@ -20,7 +21,7 @@ export const Windows = GObject.registerClass({
         WindowsClass.windowsMap.set("osd", OSD);
         WindowsClass.windowsMap.set("control-center", ControlCenter);
         WindowsClass.windowsMap.set("center-window", CenterWindow);
-        WindowsClass.windowsMap.set("floating-notifications", FloatingNotifications);
+        WindowsClass.windowsMap.set("logout-menu", LogoutMenu);
     }
 
     public _init(...args: any[]) {
