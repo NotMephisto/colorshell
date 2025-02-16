@@ -8,8 +8,11 @@ export const BigMedia: Gtk.Widget = new Widget.Box({
     className: "big-media",
     orientation: Gtk.Orientation.VERTICAL,
     homogeneous: false,
+    width_request: 250,
+    visible: bind(AstalMpris.get_default(), "players").as((players: Array<AstalMpris.Player>) => 
+        players[0] ? true : false),
     children: bind(AstalMpris.get_default(), "players").as((players: Array<AstalMpris.Player>) =>
-        players[0] ? [
+        players[0] && [
             new Widget.Box({
                 halign: Gtk.Align.CENTER,
                 child: new Widget.Box({
@@ -72,45 +75,70 @@ export const BigMedia: Gtk.Widget = new Widget.Box({
                     })
                 ]
             }),
-            new Widget.Box({
-                className: "controls button-row",
+            new Widget.CenterBox({
+                className: "bottom",
+                homogeneous: false,
                 hexpand: true,
-                halign: Gtk.Align.CENTER,
-                children: [
-                    new Widget.Button({
-                        className: "link nf",
-                        label: "󰌹",
-                        tooltipText: "Copy link to Clipboard",
-                        visible: bind(players[0], "metadata").as((_metadata: GLib.HashTable) =>
-                            players[0].get_meta("xesam:url") === null),
-                        onClick: () => Process.exec(`wl-copy ${players[0].get_meta("xesam:url")?.get_string()[0]}`)
-                    } as Widget.ButtonProps),
-                    new Widget.Button({
-                        className: "previous nf",
-                        label: "󰒮",
-                        tooltipText: "Previous",
-                        onClick: () => players[0].canGoPrevious && players[0].previous()
-                    } as Widget.ButtonProps),
-                    new Widget.Button({
-                        className: "pause nf",
-                        tooltipText: bind(players[0], "playback_status").as((status: AstalMpris.PlaybackStatus) =>
-                            status === AstalMpris.PlaybackStatus.PLAYING ? "Pause" : "Play"),
-                        label: bind(players[0], "playbackStatus").as((status: AstalMpris.PlaybackStatus) => 
-                            status === AstalMpris.PlaybackStatus.PLAYING ? "󰏤" : "󰐊"),
-                        onClick: () => {
-                            players[0].playbackStatus === AstalMpris.PlaybackStatus.PAUSED ?
-                                players[0].play()
-                            :
-                                players[0].pause()
-                        }
-                    } as Widget.ButtonProps),
-                    new Widget.Button({
-                        className: "next nf",
-                        label: "󰒭",
-                        tooltipText: "Next",
-                        onClick: () => players[0].canGoNext && players[0].next()
-                    } as Widget.ButtonProps)
-                ]
+                startWidget: new Widget.Label({
+                    className: "elapsed",
+                    valign: Gtk.Align.START,
+                    halign: Gtk.Align.START,
+                    label: bind(players[0], "position").as((pos: number) => {
+                        const sec: number = Math.floor(pos % 60);
+                        return pos > 0 && players[0].length > 0 ? 
+                            `${Math.floor(pos / 60)}:${sec < 10 ? "0" : ""}${sec}`
+                        : `0:00`;
+                    })
+                } as Widget.LabelProps),
+                centerWidget: new Widget.Box({
+                    className: "controls button-row",
+                    children: [
+                        new Widget.Button({
+                            className: "link nf",
+                            label: "󰌹",
+                            tooltipText: "Copy link to Clipboard",
+                            visible: bind(players[0], "metadata").as((_meta: GLib.HashTable) =>
+                                players[0].get_meta("xesam:url") === null),
+                            onClick: () => Process.exec(`wl-copy ${players[0].get_meta("xesam:url")?.get_string()[0]}`)
+                        } as Widget.ButtonProps),
+                        new Widget.Button({
+                            className: "previous nf",
+                            label: "󰒮",
+                            tooltipText: "Previous",
+                            onClick: () => players[0].canGoPrevious && players[0].previous()
+                        } as Widget.ButtonProps),
+                        new Widget.Button({
+                            className: "pause nf",
+                            tooltipText: bind(players[0], "playback_status").as((status: AstalMpris.PlaybackStatus) =>
+                                status === AstalMpris.PlaybackStatus.PLAYING ? "Pause" : "Play"),
+                            label: bind(players[0], "playbackStatus").as((status: AstalMpris.PlaybackStatus) => 
+                                status === AstalMpris.PlaybackStatus.PLAYING ? "󰏤" : "󰐊"),
+                            onClick: () => {
+                                players[0].playbackStatus === AstalMpris.PlaybackStatus.PAUSED ?
+                                    players[0].play()
+                                :
+                                    players[0].pause()
+                            }
+                        } as Widget.ButtonProps),
+                        new Widget.Button({
+                            className: "next nf",
+                            label: "󰒭",
+                            tooltipText: "Next",
+                            onClick: () => players[0].canGoNext && players[0].next()
+                        } as Widget.ButtonProps)
+                    ]
+                } as Widget.BoxProps),
+                endWidget: new Widget.Label({
+                    className: "length",
+                    valign: Gtk.Align.START,
+                    halign: Gtk.Align.END,
+                    label: bind(players[0], "length").as((len/* bananananananana */: number) => {
+                        const sec: number = Math.floor(len % 60);
+                        return len > 0 ? 
+                            `${Math.floor(len / 60)}:${sec < 10 ? "0" : ""}${sec}`
+                        : "0:00";
+                    })
+                } as Widget.LabelProps)
             })
-        ] : new Widget.Box({ className: "empty no-media" }))
+        ])
 } as Widget.BoxProps);

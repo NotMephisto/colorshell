@@ -1,8 +1,9 @@
 import { Astal, Gtk, Widget } from "astal/gtk3";
-import { GLib } from "astal";
+import { bind, GLib } from "astal";
 
 import { getDateTime } from "../scripts/time";
 import { BigMedia } from "../widget/center-window/BigMedia";
+import { Separator, SeparatorProps } from "../widget/Separator";
 
 export const CenterWindow: Widget.Window = new Widget.Window({
     className: "center-window",
@@ -12,7 +13,6 @@ export const CenterWindow: Widget.Window = new Widget.Window({
     layer: Astal.Layer.OVERLAY,
     exclusivity: Astal.Exclusivity.NORMAL,
     visible: false,
-    height_request: 400,
     margin_top: 10,
     anchor: Astal.WindowAnchor.TOP,
     child: new Widget.Box({
@@ -21,7 +21,6 @@ export const CenterWindow: Widget.Window = new Widget.Window({
             new Widget.Box({
                 className: "vertical left",
                 orientation: Gtk.Orientation.VERTICAL,
-                width_request: 300,
                 children: [
                     new Widget.Box({
                         className: "top",
@@ -36,18 +35,15 @@ export const CenterWindow: Widget.Window = new Widget.Window({
                             new Widget.Label({
                                 className: "date",
                                 label: getDateTime().as((dateTime: GLib.DateTime) =>
-                                    dateTime.format("%A, %B %d %Y"))
+                                    dateTime.format("%A, %B %d"))
                             } as Widget.LabelProps)
                         ]
                     } as Widget.BoxProps),
-                    BigMedia
-                ]
-            } as Widget.BoxProps),
-            new Widget.Box({
-                className: "vertical right",
-                children: [
                     new Widget.Box({
                         className: "calendar-box",
+                        vexpand: false,
+                        hexpand: true,
+                        valign: Gtk.Align.START,
                         child: new Gtk.Calendar({
                             visible: true,
                             show_heading: true,
@@ -55,6 +51,20 @@ export const CenterWindow: Widget.Window = new Widget.Window({
                             show_week_numbers: false
                         } as Gtk.Calendar.ConstructorProps)
                     } as Widget.BoxProps)
+                ]
+            } as Widget.BoxProps),
+            Separator({
+                visible: bind(BigMedia, "visible"),
+                orientation: Gtk.Orientation.VERTICAL,
+                alpha: .5,
+                cssColor: "gray",
+                size: 1
+            } as SeparatorProps),
+            new Widget.Box({
+                className: "vertical right",
+                orientation: Gtk.Orientation.VERTICAL,
+                children: [
+                    BigMedia
                 ]
             } as Widget.BoxProps)
         ]

@@ -69,16 +69,6 @@
     }
   }
 
-  & tooltip {
-    padding: 8px;
-    border-radius: 14px;
-
-    & label {
-      font-size: 14px;
-      color: colors.$fg-primary;
-    }
-  }
-
   & trough {
     background: funs.toRGB(color.adjust($color: wal.$color1, $lightness: -20%));
     border-radius: 8px;

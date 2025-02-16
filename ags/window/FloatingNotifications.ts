@@ -16,14 +16,22 @@ function NotificationWidget(notification: AstalNotifd.Notification): Gtk.Widget 
                 hexpand: true,
                 vexpand: false,
                 children: [
+                    new Widget.Icon({
+                        className: "icon",
+                        visible: notification.appIcon !== "",
+                        icon: notification.appIcon || "image-missing",
+                        iconSize: Gtk.IconSize.DND,
+                        css: ".icon { font-size: 24px; }"
+                    }),
                     new Widget.Label({
                         className: "app-name",
                         halign: Gtk.Align.START,
                         label: notification.appName || "Unknown Application"
                     } as Widget.LabelProps),
                     new Widget.Button({
-                        className: "close-button",
-                        onClick: () => Notifications.removeNotification(notification.id)
+                        className: "close nf",
+                        onClick: () => notification.dismiss(),
+                        label: "󰅖"
                     } as Widget.ButtonProps)
                 ]
             } as Widget.BoxProps),
@@ -71,8 +79,8 @@ export const FloatingNotifications: Widget.Window = new Widget.Window({
         className: "floating-notifications-container",
         orientation: Gtk.Orientation.VERTICAL,
         homogeneous: false,
-        children: bind(Notifications, "notifications").as((notifications: Array<AstalNotifd.Notification>) =>
-            notifications.map((notification: AstalNotifd.Notification) => 
-                NotificationWidget(notification)))
+        children: Notifications.notifications().as((notifications: Array<AstalNotifd.Notification>) =>
+            notifications.map((item: AstalNotifd.Notification) =>
+                NotificationWidget(item)))
     } as Widget.BoxProps)
 } as Widget.WindowProps);

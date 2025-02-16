@@ -2,6 +2,8 @@ import { bind, GLib, Process } from "astal";
 import { Gtk, Widget } from "astal/gtk3";
 import AstalMpris from "gi://AstalMpris";
 import { Separator, SeparatorProps } from "../Separator";
+import { CenterWindow } from "../../window/CenterWindow";
+import { Windows } from "../../windows";
 
 const mpris: AstalMpris.Mpris = AstalMpris.get_default();
 
@@ -66,7 +68,10 @@ export function Media(): Gtk.Widget {
 
     const mediaWidget = new Widget.EventBox({
         className: "media-eventbox",
-        visible: bind(mpris, "players").as((players: Array<AstalMpris.Player>) => players[0]).as(Boolean),
+        visible: bind(mpris, "players").as((players: Array<AstalMpris.Player>) => {
+            return players[0] && players[0].get_available() || CenterWindow.is_visible();
+        }),
+        onClick: () => Windows.toggle(CenterWindow),
         child: new Widget.Box({
             className: "media",
             children: [
@@ -85,6 +90,7 @@ export function Media(): Gtk.Widget {
                                 label: bind(players[0], "title").as((title: string) => title || "No Title")
                             } as Widget.LabelProps),
                             Separator({
+                                orientation: Gtk.Orientation.VERTICAL,
                                 size: 2,
                                 cssColor: `rgb(180, 180, 180)`,
                                 alpha: 1

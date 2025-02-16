@@ -8,69 +8,117 @@
   border-radius: 18px;
   padding: 12px;
 
-  & .left {
-    & > .top {
-      padding-bottom: 10px;
+  & .big-media {
+    padding: 6px;
 
-      & .time {
-        font-size: 28px;
-        font-weight: 800;
+    & > box > .image {
+      background-size: cover;
+      background-position: center center;
+      border-radius: 10px;
+    }
+
+    & > .info {
+      padding: {
+        top: 4px;
+        bottom: 6px;
+      };
+
+      & .title {
+        font-size: 16px;
+        font-weight: 700;
       }
 
-      & .date {
+      & .artist {
         font-size: 14px;
-        font-weight: 500;
+        font-weight: 600;
         color: colors.$fg-disabled;
       }
     }
 
-    & .big-media {
-      padding: 6px 16px;
+    & slider {
+      background: transparent;
+      min-height: .6em;
+    }
 
-      & > box > .image {
-        background-size: cover;
-        background-position: center center;
-        border-radius: 10px;
+    & trough {
+      border-radius: 4px;
+      min-height: .6em;
+    }
+
+    & trough highlight {
+      border-radius: 4px;
+      min-height: .6em;
+    }
+
+    & .bottom {
+      & .controls {
+        margin-top: 5px;
+        & button {
+          padding: 7px;
+          & label {
+            font-size: 10px;
+          }
+        }
       }
 
-      & > .info {
-        padding: {
-          top: 4px;
-          bottom: 6px;
-        };
-
-        & .title {
-          font-size: 16px;
-          font-weight: 700;
-        }
-
-        & .artist {
-          font-size: 14px;
-          font-weight: 600;
-          color: colors.$fg-disabled;
-        }
-      }
-
-      & > .controls {
-        padding: 8px 0;
+      & .elapsed,
+      & .length {
+        font-size: 12px;
+        color: colors.$fg-disabled;
       }
     }
   }
 
-  & .right {
-    & .calendar-box {
-      padding: 5px;
-      & calendar {
+  & .left .top {
+    padding-bottom: 10px;
+
+    & .time {
+      font-size: 28px;
+      font-weight: 800;
+    }
+
+    & .date {
+      font-size: 14px;
+      font-weight: 500;
+      color: colors.$fg-disabled;
+    }
+  }
+
+  & .calendar-box {
+    & calendar {
+      $border-radius: 10px;
+      font-weight: 600;
+      padding-bottom: 2px;
+
+      &.view {
+        background: colors.$bg-primary;
+        border-radius: $border-radius;
+      }
+
+      &.header {
+        background: colors.$bg-secondary;
+        border-top-left-radius: $border-radius;
+        border-top-right-radius: $border-radius;
+        padding: 4px;
+      }
+
+      &.button {
+        transition: 80ms linear;
         border-radius: 6px;
-        padding: 2px;
 
-        &.view {
-          background: funs.toRGB(color.adjust($color: wal.$color1, $lightness: -35%));
-
-          & header {
-            background: funs.toRGB(color.adjust($color: wal.$background, $lightness: -20%));
-          }
+        &:hover {
+          background-color: colors.$bg-tertiary;
         }
+      }
+
+      &:selected {
+        background: colors.$bg-secondary;
+        border-radius: 6px;
+      }
+
+      &.highlight {
+        background: transparent;
+        box-shadow: 0 2px 0 -1px rgba(colors.$bg-secondary, .5);
       }
     }
   }

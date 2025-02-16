@@ -91,11 +91,19 @@
     }
   }
 
+  .clock.open > button {
+    background-color: colors.$bg-primary;
+  }
+
   .media-eventbox {
     & > .media {
       border-radius: 12px;
       background: colors.$bg-primary;
       padding: 0 8px;
+    }
+
+    &:hover > .media {
+      box-shadow: inset 0 0 0 300px rgba(colors.$fg-primary, .2);
     }
 
     & .nf {
@@ -105,10 +113,9 @@
 
     & .media-controls {
         transition: none;
-        padding-left: 6px;
+        padding: 0 6px;
         border-top-right-radius: 12px;
         border-bottom-right-radius: 12px;
-        background: linear-gradient(to left, colors.$bg-primary 45px, colors.$bg-primary);
 
         & > button {
           margin: 4px 1px;
@@ -124,6 +131,12 @@
       & .media > box {
         border-top-right-radius: 0;
         border-bottom-right-radius: 0;
+        padding: 0 6px;
+      }
+
+      & .media {
+        padding-left: 0;
+        padding-right: 0;
       }
     }
   }
@@ -154,7 +167,8 @@
   .audio {
     @include mixins.reset-props;
 
-    &:hover > box {
+    &:hover > box,
+    &.open > box {
       background: colors.$bg-primary;
     }
 

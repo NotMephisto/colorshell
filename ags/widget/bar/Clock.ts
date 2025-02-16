@@ -1,12 +1,13 @@
 import { Widget } from "astal/gtk3";
 import { getDateTime } from "../../scripts/time";
-import { GLib } from "astal";
+import { bind, GLib } from "astal";
 import { Windows } from "../../windows";
 import { CenterWindow } from "../../window/CenterWindow";
 
 export function Clock(): JSX.Element {
     return new Widget.Box({
-        className: "clock",
+        className: bind(CenterWindow, "visible").as((visible: boolean) =>
+            visible ? "clock open" : "clock"),
         child: new Widget.Button({
             onClick: () => Windows.toggle(CenterWindow),
             label: getDateTime().as((dateTime: GLib.DateTime) => {

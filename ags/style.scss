@@ -2,11 +2,13 @@
 
 @use "./style/wal";
 @use "./style/mixins";
+@use "./style/colors";
 
 @use "./style/bar";
 @use "./style/osd";
 @use "./style/control-center";
 @use "./style/center-window";
+@use "./style/float-notifications";
 
 
 * {
@@ -15,4 +17,18 @@
 
 window * {
   @include mixins.default-styles;
+}
+
+tooltip {
+  padding: 16px;
+
+  & > box {
+    padding: 7px 8px;
+    border-radius: 10px;
+    background: rgba(colors.$bg-primary, .98);
+    font-size: 13.1px;
+    font-weight: 500;
+    color: colors.$fg-primary;
+    box-shadow: 0 1px 4px 1px rgba(colors.$bg-primary, .6);
+  }
 }

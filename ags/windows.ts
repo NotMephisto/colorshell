@@ -1,4 +1,4 @@
-import { Gtk, Widget } from "astal/gtk3";
+import { Gtk } from "astal/gtk3";
 
 import { Bar } from "./window/Bar";
 import { OSD } from "./window/OSD";
@@ -22,6 +22,7 @@ export const Windows = GObject.registerClass({
         WindowsClass.windowsMap.set("control-center", ControlCenter);
         WindowsClass.windowsMap.set("center-window", CenterWindow);
         WindowsClass.windowsMap.set("logout-menu", LogoutMenu);
+        WindowsClass.windowsMap.set("floating-notifications", FloatingNotifications);
     }
 
     public _init(...args: any[]) {

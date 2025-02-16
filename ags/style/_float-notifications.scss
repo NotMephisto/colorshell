@@ -1,0 +1,41 @@
+@use "./colors";
+
+.floating-notifications-container {
+  padding: {
+    right: 6px;
+    top: 6px;
+  };
+
+  & > .notification {
+    background: colors.$bg-primary;
+    border-radius: 16px;
+    padding: 12px;
+    margin: 6px 0;
+
+    & > .top {
+      & .app-name {
+        font-size: 12px;
+        color: colors.$fg-disabled;
+      }
+    }
+
+    & .content {
+      & .image {
+        $size: 78px;
+        min-width: $size;
+        min-height: $size;
+        background-size: cover;
+        background-position: center 0;
+        margin: 6px;
+      }
+    }
+
+    &:first-child {
+      margin-top: 0;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
