@@ -1,5 +1,5 @@
 # Retrozinn's Hyprland Dots
-My Hyprland dotfiles that I keep improving almost everyday 🤩! (i love doing this) <br>
+My Hyprland dotfiles that I keep improving almost everyday! 🤩 (i love doing this) <br>
 
 > [!note]
 > This is very work in progress, it's an Aylur's GTK Shell version of my dots! I absolutely <br>
@@ -9,6 +9,7 @@ My Hyprland dotfiles that I keep improving almost everyday 🤩! (i love doing t
 > **TODO List:**
 > - Notification Popup
 > - Notification History
+> - Control Center Tiles(Wi-Fi, Bluetooth...)
 > - Monitor Brightness controlling(not as important as ones above, can be released without this feature)
 
 ## 🌄 Screenshots
