@@ -2,11 +2,11 @@
 @use "./wal";
 @use "./functions" as funs;
 
-$bg-primary: funs.toRGB(color.adjust($color: wal.$color1, $lightness: -35%));
+$bg-primary: funs.toRGB(color.adjust($color: wal.$color1, $lightness: -34%));
 $bg-secondary: funs.toRGB(color.adjust($color: wal.$color1, $lightness: -16%));
 $bg-tertiary: funs.toRGB(color.adjust($color: $bg-secondary, $lightness: 10%));
 $bg-light: wal.$foreground;
-$bg-translucent: funs.toRGB(color.change($color: $bg-primary, $alpha: 72%));
+$bg-translucent: funs.toRGB(color.change($color: $bg-primary, $alpha: 75%));
 $fg-primary: wal.$foreground;
 $fg-light: $bg-primary;
 $fg-disabled: funs.toRGB(color.adjust($color: wal.$foreground, $lightness: -11%));

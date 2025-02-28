@@ -13,7 +13,7 @@
     @include mixins.reset-props;
 
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 600;
   }
 
   // Style widget groups
@@ -191,6 +191,24 @@
 
       & .bell {
         margin: 0 4px;
+      }
+    }
+  }
+
+  .logo {
+    & > box {
+      border-radius: 12px;
+      transition: 100ms linear;
+      padding: 0 8px;
+
+      & > label {
+        font-size: 14px;
+        margin-right: 1px;
+      }
+    }
+    &:hover {
+      & > box {
+        background: colors.$bg-primary;
       }
     }
   }

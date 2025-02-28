@@ -1,10 +1,12 @@
 import { Variable } from "astal";
 import { Astal, Gtk, Widget } from "astal/gtk3";
+import { PopupWindow, PopupWindowProps } from "../widget/PopupWindow";
 
 // TODO
 
 export interface RunnerProps {
-    anchor?: Astal.WindowAnchor;
+    halign?: Gtk.Align;
+    valign?: Gtk.Align;
     width?: number;
     height?: number;
     entryPlaceHolder?: string;
@@ -20,8 +22,10 @@ export function Runner(props?: RunnerProps) {
         
     } as Widget.BoxProps);
 
-    return new Widget.Window({
+    return PopupWindow({
         namespace: "runner",
+        halign: props?.halign || Gtk.Align.CENTER,
+        valign: props?.valign || Gtk.Align.CENTER,
         widthRequest: props?.width || 600,
         heightRequest: props?.height || 500,
         child: new Widget.Box({
@@ -33,5 +37,5 @@ export function Runner(props?: RunnerProps) {
                 } as Widget.EntryProps),
             ]
         } as Widget.BoxProps)
-    } as Widget.WindowProps);
+    } as PopupWindowProps);
 }

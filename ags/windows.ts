@@ -5,28 +5,25 @@ import { OSD } from "./window/OSD";
 import { ControlCenter } from "./window/ControlCenter";
 import { CenterWindow } from "./window/CenterWindow";
 import { FloatingNotifications } from "./window/FloatingNotifications";
-import { GObject } from "astal";
+import { GObject, register } from "astal";
 import { LogoutMenu } from "./window/LogoutMenu";
+import { Wallpaper } from "./window/Wallpaper";
 
 /**
  * get open windows / interact with windows(e.g.: close, open or toggle)
  */
-export const Windows = GObject.registerClass({
-    GTypeName: "Windows"
-}, class WindowsClass extends GObject.Object {
+@register({ GTypeName: "Windows" })
+class WindowsClass extends GObject.Object {
     private static windowsMap: Map<string, Gtk.Window> = new Map<string, Gtk.Window>();
 
     static {
-        WindowsClass.windowsMap.set("bar", Bar);
-        WindowsClass.windowsMap.set("osd", OSD);
-        WindowsClass.windowsMap.set("control-center", ControlCenter);
-        WindowsClass.windowsMap.set("center-window", CenterWindow);
-        WindowsClass.windowsMap.set("logout-menu", LogoutMenu);
-        WindowsClass.windowsMap.set("floating-notifications", FloatingNotifications);
-    }
-
-    public _init(...args: any[]) {
-        super._init(args);
+        this.setWindow("bar", Bar);
+        this.setWindow("osd", OSD);
+        this.setWindow("control-center", ControlCenter);
+        this.setWindow("center-window", CenterWindow);
+        this.setWindow("logout-menu", LogoutMenu);
+        this.setWindow("floating-notifications", FloatingNotifications);
+        this.setWindow("wallpaper", Wallpaper);
     }
 
     public static setWindow(name: string, window: Gtk.Window): void {
@@ -56,4 +53,6 @@ export const Windows = GObject.registerClass({
     public static toggle(window: Gtk.Window): void {
         window.is_visible() ? WindowsClass.close(window) : WindowsClass.open(window);
     }
-});
+}
+
+export { WindowsClass as Windows };

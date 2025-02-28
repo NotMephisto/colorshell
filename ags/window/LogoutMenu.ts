@@ -1,6 +1,6 @@
 import { Astal, Gdk, Gtk, Widget } from "astal/gtk3";
 import { getDateTime } from "../scripts/time";
-import { execAsync, GLib, Process } from "astal";
+import { execAsync, GLib } from "astal";
 
 
 const { TOP, LEFT, RIGHT, BOTTOM } = Astal.WindowAnchor;
@@ -10,19 +10,25 @@ export const LogoutMenu: Widget.Window = new Widget.Window({
     anchor: TOP | LEFT | RIGHT | BOTTOM,
     layer: Astal.Layer.OVERLAY,
     exclusivity: Astal.Exclusivity.IGNORE,
+    keymode: Astal.Keymode.EXCLUSIVE,
     monitor: 0,
     visible: false,
+    onKeyPressEvent: (_, event: Gdk.Event) => {
+        event.get_keyval()[1] === Gdk.KEY_Escape &&
+            execAsync("astal close logout-menu")
+    },
     child: new Widget.EventBox({
         className: "logout-menu",
-        onClick: () => Process.exec_async("astal close logout-menu", () => {}),
+        onClick: () => execAsync("astal close logout-menu"),
         child: new Widget.Box({
-            homogeneous: false,
+            expand: true,
             orientation: Gtk.Orientation.VERTICAL,
             children: [
                 new Widget.Box({
                     className: "top",
-                    expand: true,
+                    expand: false,
                     orientation: Gtk.Orientation.VERTICAL,
+                    valign: Gtk.Align.START,
                     children: [
                         new Widget.Label({
                             className: "time",
@@ -45,17 +51,17 @@ export const LogoutMenu: Widget.Window = new Widget.Window({
                         new Widget.Button({
                             className: "poweroff nf",
                             label: "󰐥",
-                            onClick: "ask user if it's fr!"
+                            onClick: () => execAsync("systemctl poweroff")
                         } as Widget.ButtonProps),
                         new Widget.Button({
                             className: "reboot nf",
                             label: "󰜉",
-                            onClick: "ask user if it's fr!"
+                            onClick: () => execAsync("systemctl reboot")
                         } as Widget.ButtonProps),
                         new Widget.Button({
                             className: "suspend nf",
                             label: "󰤄",
-                            onClick: "ask user if it's fr!"
+                            onClick: () => execAsync("systemctl suspend")
                         } as Widget.ButtonProps),
                         new Widget.Button({
                             className: "logout nf",

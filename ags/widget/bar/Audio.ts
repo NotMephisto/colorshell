@@ -1,13 +1,10 @@
 import { bind, Process } from "astal";
 import { Widget } from "astal/gtk3";
-import AstalWp from "gi://AstalWp";
 import { Wireplumber } from "../../scripts/volume";
 import { ControlCenter } from "../../window/ControlCenter";
 
-const wp = AstalWp.get_default();
-
 export function Audio() {
-    return wp && new Widget.EventBox({
+    return new Widget.EventBox({
         className: bind(ControlCenter, "visible").as((visible: boolean) => 
             visible ? "audio open" : "audio"),
         onClick: () => Process.exec_async("astal toggle control-center", () => {}),

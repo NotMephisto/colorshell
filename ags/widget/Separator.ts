@@ -20,11 +20,11 @@ export function Separator(props: SeparatorProps) {
         }
         .separator-horizontal {
             padding-bottom: ${props.size || 1 }px;
-            margin: 7px 4px;
+            margin: 4px 4px;
         }
         .separator-vertical {
             padding-right: ${props.size || 1 }px;
-            margin: 4px 7px;
+            margin: 7px 7px;
         }`,
     } as Widget.BoxProps);
 }

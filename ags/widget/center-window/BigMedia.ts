@@ -1,4 +1,4 @@
-import { AstalIO, bind, GLib, Process, timeout } from "astal";
+import { AstalIO, bind, Binding, GLib, Process, timeout } from "astal";
 import { Gtk, Widget } from "astal/gtk3";
 import AstalMpris from "gi://AstalMpris";
 
@@ -19,10 +19,9 @@ export const BigMedia: Gtk.Widget = new Widget.Box({
                     className: "image",
                     hexpand: false,
                     orientation: Gtk.Orientation.VERTICAL,
-                    visible: bind(players[0], "coverArt").as((coverArt: string) => 
-                        coverArt !== ""),
-                    css: bind(players[0], "coverArt").as((coverArt: string) => 
-                        `.image { background-image: url('${coverArt}'); }`),
+                    visible: getAlbumArt(players[0]).as(Boolean),
+                    css: getAlbumArt(players[0]).as((artUrl: string|undefined) => 
+                        artUrl ? `.image { background-image: url('${artUrl}'); }` : undefined),
                     width_request: 132,
                     height_request: 128
                 } as Widget.BoxProps)
@@ -35,13 +34,15 @@ export const BigMedia: Gtk.Widget = new Widget.Box({
                         className: "title",
                         tooltipText: bind(players[0], "title").as((title: string) => !title ? "No Title" : title),
                         label: bind(players[0], "title").as((title: string) => !title ? "No Title" : title),
-                        truncate: true
+                        truncate: true,
+                        maxWidthChars: 25,
                     } as Widget.LabelProps),
                     new Widget.Label({
                         className: "artist",
                         tooltipText: bind(players[0], "artist").as((artist: string) => !artist ? "No Artist" : artist),
                         label: bind(players[0], "artist").as((artist: string) => !artist ? "No Artist" : artist),
-                        truncate: true
+                        maxWidthChars: 28,
+                        truncate: true,
                     } as Widget.LabelProps)
                 ]
             } as Widget.BoxProps),
@@ -102,6 +103,15 @@ export const BigMedia: Gtk.Widget = new Widget.Box({
                             onClick: () => Process.exec(`wl-copy ${players[0].get_meta("xesam:url")?.get_string()[0]}`)
                         } as Widget.ButtonProps),
                         new Widget.Button({
+                            className: "shuffle nf",
+                            visible: bind(players[0], "shuffleStatus").as((shuffleStatus: AstalMpris.Shuffle) =>
+                                shuffleStatus !== AstalMpris.Shuffle.UNSUPPORTED),
+                            label: bind(players[0], "shuffleStatus").as((shuffleStatus: AstalMpris.Shuffle) =>
+                                shuffleStatus === AstalMpris.Shuffle.ON ? "󰒝" : "󰒞"),
+                            tooltipText: "Toggle Shuffle",
+                            onClick: () => players[0].shuffle()
+                        } as Widget.ButtonProps),
+                        new Widget.Button({
                             className: "previous nf",
                             label: "󰒮",
                             tooltipText: "Previous",
@@ -125,6 +135,20 @@ export const BigMedia: Gtk.Widget = new Widget.Box({
                             label: "󰒭",
                             tooltipText: "Next",
                             onClick: () => players[0].canGoNext && players[0].next()
+                        } as Widget.ButtonProps),
+                        new Widget.Button({
+                            className: "repeat nf",
+                            visible: bind(players[0], "loopStatus").as((loopStatus: AstalMpris.Loop) =>
+                                loopStatus !== AstalMpris.Loop.UNSUPPORTED),
+                            label: bind(players[0], "loopStatus").as((loopStatus: AstalMpris.Loop) => {
+                                switch(loopStatus) {
+                                    case AstalMpris.Loop.TRACK: return "󰑘";
+                                    case AstalMpris.Loop.PLAYLIST: return "󰑖";
+                                    default: return "󰑗";
+                                }
+                            }),
+                            tooltipText: "Toggle Loop",
+                            onClick: () => players[0].loop()
                         } as Widget.ButtonProps)
                     ]
                 } as Widget.BoxProps),
@@ -142,3 +166,24 @@ export const BigMedia: Gtk.Widget = new Widget.Box({
             })
         ])
 } as Widget.BoxProps);
+
+
+/**
+ * This function handles album art/cover of playing media. If a file is provided
+ * by the player, it adds the "file://" uri as a prefix, so you can use it in css.
+ *
+ * @param player the player you want to pull album art from
+ * @returns Binding to player.artUrl containing the album art uri, or an undefined binding ig none was found.
+* */
+function getAlbumArt(player: AstalMpris.Player): Binding<string|undefined> {
+    return bind(player, "artUrl").as((artUrl: string) => {
+        const finalUrl: string = artUrl;
+
+        if(/^(https|http)$/.test(finalUrl.split("://")[0])) 
+            return artUrl;
+        else if(artUrl.startsWith("/")) 
+            return "file://" + artUrl;
+        
+        return undefined;
+    });
+}

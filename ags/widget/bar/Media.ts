@@ -82,12 +82,14 @@ export function Media(): Gtk.Widget {
                                 className: "player-icon nf",
                                 label: bind(players[0], "busName").as((busName: string) => {
                                     const playerName: string = busName.split('.')[busName.split('.').length-1];
-                                    return playerIcons[playerName as keyof typeof playerIcons] || "󰎇";
+                                    return playerIcons[playerName.toLowerCase() as keyof typeof playerIcons] || "󰎇";
                                 })
                             } as Widget.LabelProps),
                             new Widget.Label({
                                 className: "title",
-                                label: bind(players[0], "title").as((title: string) => title || "No Title")
+                                label: bind(players[0], "title").as((title: string) => title || "No Title"),
+                                maxWidthChars: 20,
+                                truncate: true
                             } as Widget.LabelProps),
                             Separator({
                                 orientation: Gtk.Orientation.VERTICAL,
@@ -97,7 +99,9 @@ export function Media(): Gtk.Widget {
                             } as SeparatorProps),
                             new Widget.Label({
                                 className: "artist",
-                                label: bind(players[0], "artist").as((artist: string) => artist || "No Artist")
+                                label: bind(players[0], "artist").as((artist: string) => artist || "No Artist"),
+                                maxWidthChars: 18,
+                                truncate: true
                             } as Widget.LabelProps)
                         ] : new Widget.Label({
                             label: "Crazy to think this widget haven't disappeared yet!"

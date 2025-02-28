@@ -3,7 +3,7 @@ import { Connectable } from "astal/binding";
 
 
 /** !!TODO!! Needs more work and testing
- * I(retrozinndev) don't have a monitor that has software-controlled brightness
+ * I(retrozinndev) don't have a monitor that has software-controlled brightness :(
  */
 @register({ GTypeName: "Brightness" })
 class Brightness extends GObject.Object implements Connectable {
@@ -16,7 +16,7 @@ class Brightness extends GObject.Object implements Connectable {
 
     constructor(backlightDevice?: string) {
         super();
-        this.backlight = backlightDevice || "";
+        this.backlight = backlightDevice || "intel_backlight";
         this.max = Number.parseInt(exec(`brightnessctl -d ${backlightDevice} max`))
         this.brightness = Number.parseInt(exec(`brightnessctl -d ${backlightDevice} get`))
 

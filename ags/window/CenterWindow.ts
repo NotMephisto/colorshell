@@ -1,20 +1,19 @@
-import { Astal, Gtk, Widget } from "astal/gtk3";
+import { Gtk, Widget } from "astal/gtk3";
 import { bind, GLib } from "astal";
 
 import { getDateTime } from "../scripts/time";
 import { BigMedia } from "../widget/center-window/BigMedia";
 import { Separator, SeparatorProps } from "../widget/Separator";
+import { PopupWindow, PopupWindowProps } from "../widget/PopupWindow";
 
-export const CenterWindow: Widget.Window = new Widget.Window({
+export const CenterWindow: Widget.Window = PopupWindow({
     className: "center-window",
     namespace: "center-window",
-    canFocus: true,
     monitor: 0,
-    layer: Astal.Layer.OVERLAY,
-    exclusivity: Astal.Exclusivity.NORMAL,
     visible: false,
-    margin_top: 10,
-    anchor: Astal.WindowAnchor.TOP,
+    marginTop: 10,
+    valign: Gtk.Align.START,
+    halign: Gtk.Align.CENTER,
     child: new Widget.Box({
         className: "center-window-container",
         children: [
@@ -69,4 +68,4 @@ export const CenterWindow: Widget.Window = new Widget.Window({
             } as Widget.BoxProps)
         ]
     } as Widget.BoxProps)
-} as Widget.WindowProps);
+} as PopupWindowProps);

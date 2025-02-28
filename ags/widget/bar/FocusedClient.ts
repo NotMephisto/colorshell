@@ -12,6 +12,8 @@ export function FocusedClient() {
         children: [
             new Widget.Icon({
                 className: "icon",
+                vexpand: true,
+                css: ".icon { font-size: 18px; }",
                 icon: bind(hyprland, "focusedClient").as((client: AstalHyprland.Client) => 
                     client ? 
                         (getAppIcon(client.initialClass) || client.initialClass)
@@ -29,15 +31,15 @@ export function FocusedClient() {
                         new Widget.Label({
                             className: "class",
                             xalign: 0,
-                            max_width_chars: 65,
-                            truncate: false,
+                            maxWidthChars: 50,
+                            truncate: true,
                             label: bind(focusedClient, "class")
                         } as Widget.LabelProps),
                         new Widget.Label({
                             className: "title",
                             xalign: 0,
-                            max_width_chars: 48,
-                            truncate: false,
+                            maxWidthChars: 45,
+                            truncate: true,
                             label: bind(focusedClient, "title")
                         } as Widget.LabelProps)
                     ] : []

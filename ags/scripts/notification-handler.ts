@@ -4,6 +4,7 @@ import { Subscribable } from "astal/binding";
 import { GObject, property, register, Variable } from "astal";
 import { Windows } from "../windows";
 import { FloatingNotifications } from "../window/FloatingNotifications";
+import { Gtk, Widget } from "astal/gtk3";
 
 @register({ GTypeName: "Notifications" })
 class NotificationsClass extends GObject.Object implements Subscribable {
@@ -74,7 +75,6 @@ class NotificationsClass extends GObject.Object implements Subscribable {
 
         notification.urgency !== AstalNotifd.Urgency.CRITICAL &&
             timeout(notificationTimeout, () => {
-                notification.dismiss();
                 this.notifications.set(this.notifications.get().filter((item) => item.id !== notification.id));
                 this.addHistory(notification);
             });
@@ -104,6 +104,69 @@ class NotificationsClass extends GObject.Object implements Subscribable {
     subscribe(callback: (list: Array<AstalNotifd.Notification>) => void) {
         return this.notifications.subscribe(callback);
     }
+}
+
+function NotificationWidget(notification: AstalNotifd.Notification): Gtk.Widget {
+    return new Widget.Box({
+        className: "notification",
+        homogeneous: false,
+        expand: false,
+        orientation: Gtk.Orientation.VERTICAL,
+        children: [
+            new Widget.Box({
+                className: "top",
+                orientation: Gtk.Orientation.HORIZONTAL,
+                hexpand: true,
+                vexpand: false,
+                children: [
+                    new Widget.Icon({
+                        className: "icon",
+                        visible: notification.appIcon !== "",
+                        icon: notification.appIcon || "image-missing",
+                        iconSize: Gtk.IconSize.DND,
+                        css: ".icon { font-size: 24px; }"
+                    }),
+                    new Widget.Label({
+                        className: "app-name",
+                        halign: Gtk.Align.START,
+                        label: notification.appName || "Unknown Application"
+                    } as Widget.LabelProps),
+                    new Widget.Button({
+                        className: "close nf",
+                        onClick: () => notification.dismiss(),
+                        label: "󰅖"
+                    } as Widget.ButtonProps)
+                ]
+            } as Widget.BoxProps),
+            new Widget.Box({
+                className: "content",
+                orientation: Gtk.Orientation.HORIZONTAL,
+                children: [
+                    new Widget.Box({
+                        className: "image",
+                        visible: notification.image !== "",
+                        css: `box.image { background-image: url('${notification.image}'); }`
+                    } as Widget.BoxProps),
+                    new Widget.Box({
+                        className: "text",
+                        orientation: Gtk.Orientation.VERTICAL,
+                        children: [
+                            new Widget.Label({
+                                className: "summary",
+                                useMarkup: true,
+                                label: notification.summary
+                            }),
+                            new Widget.Label({
+                                className: "body",
+                                useMarkup: true,
+                                label: notification.body
+                            } as Widget.LabelProps)
+                        ]
+                    } as Widget.BoxProps)
+                ]
+            } as Widget.BoxProps)
+        ]
+    } as Widget.BoxProps);
 }
 
 export const Notifications = new NotificationsClass();

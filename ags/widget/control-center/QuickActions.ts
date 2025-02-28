@@ -1,4 +1,4 @@
-import { Process, Variable } from "astal";
+import { execAsync, Process, Variable } from "astal";
 import { Gtk, Widget } from "astal/gtk3";
 import AstalHyprland from "gi://AstalHyprland";
 
@@ -53,10 +53,7 @@ function LogoutButton(): Widget.Button {
     return new Widget.Button({
         className: "nf",
         label: "󰗽",
-        onClick: () => Process.exec_async(
-            "bash -c 'wlogout -b 5'",
-            () => {}
-        )
+        onClick: () => execAsync("astal open logout-menu")
     } as Widget.ButtonProps);
 }
 

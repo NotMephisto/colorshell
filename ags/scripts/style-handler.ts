@@ -41,7 +41,7 @@ function watch(): void {
             `${path}`,
             (file: string) => {
                 // Ignore tmp files
-                if(!file.endsWith('~')) {
+                if(!file.endsWith('~') && !Number.isNaN(file)) {
                     console.log(`[LOG] Stylesheet ${file} file updated`)
                     compileStyle();
                     applyStyle();
