@@ -14,6 +14,12 @@
   color: colors.$fg-primary;
 }
 
+@mixin hover-shadow {
+  &:hover {
+    box-shadow: inset 0 0 0 500px rgba(colors.$fg-primary, .1);
+  }
+}
+
 @mixin default-styles {
   .button-row {
     & > button {
@@ -38,6 +44,10 @@
     }
   }
 
+  selection {
+    background: colors.$bg-tertiary;
+  }
+
   label.nf,
   button.nf label {
     font-size: 12px;
@@ -45,28 +55,6 @@
       "0xProto Nerd Font Mono", "Fira Code Nerd Font Mono", 
       "Symbols Nerd Font", "Noto Sans Nerd Font", "Fira Code Nerd Font",
       "Font Awesome";
-  }
-
-  & menu {
-    padding: 4px;
-    background: wal.$background;
-    border-radius: 14px;
-                                 
-    & separator {
-      margin: 0 4px;
-      color: wal.$background;
-    }
-                                 
-    & menuitem {
-      padding: 8px 16px;
-      border-radius: 10px;
-      font-size: 12px;
-      font-weight: 600;
-                                 
-      &:hover {
-        background: wal.$color1;
-      }
-    }
   }
 
   & trough {

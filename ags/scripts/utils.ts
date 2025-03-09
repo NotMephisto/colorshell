@@ -1,4 +1,4 @@
-import { GLib } from "astal";
+import { execAsync, GLib } from "astal";
 
 export function getUserDirs() {
     return {
@@ -7,5 +7,13 @@ export function getUserDirs() {
         cache: GLib.getenv("XDG_CACHE_HOME"),
         config: GLib.getenv("XDG_CONFIG_HOME"),
         data: GLib.getenv("XDG_DATA_HOME")
-    } as const;
+    };
+}
+
+export function makeDirectory(dir: string): void {
+    execAsync([ "mkdir", "-p", dir ]);
+}
+
+export function deleteFile(path: string): void {
+    execAsync([ "rm", "-r", path ]);
 }

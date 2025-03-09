@@ -31,6 +31,7 @@ export function FocusedClient(): Gtk.Widget {
                         new Widget.Label({
                             className: "class",
                             xalign: 0,
+                            visible: bind(focusedClient, "class").as(Boolean),
                             maxWidthChars: 55,
                             truncate: true,
                             tooltipText: bind(focusedClient, "class").as((clientClass: string) => 
@@ -41,6 +42,7 @@ export function FocusedClient(): Gtk.Widget {
                             className: "title",
                             xalign: 0,
                             maxWidthChars: 50,
+                            visible: bind(focusedClient, "title").as(Boolean),
                             truncate: true,
                             tooltipText: bind(focusedClient, "title").as((clientTitle: string) => 
                                 clientTitle.length > 55 ? clientTitle : ""),

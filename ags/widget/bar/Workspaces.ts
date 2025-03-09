@@ -1,10 +1,10 @@
 import { bind } from "astal";
-import { Gdk, Gtk, Widget } from "astal/gtk3";
+import { Gtk, Widget } from "astal/gtk3";
 import AstalHyprland from "gi://AstalHyprland";
 
 const hyprland = AstalHyprland.get_default();
 
-export function Workspaces() {
+export function Workspaces(): Gtk.Widget {
     const workspacesEventBox = new Widget.EventBox({
         onScroll: (_, event) => 
             event.delta_y > 0 ? hyprland.dispatch("workspace", "e-1") : hyprland.dispatch("workspace", "e+1"),

@@ -2,6 +2,9 @@ import { Gtk } from "astal/gtk3";
 import { Windows } from "../windows";
 import { restartInstance } from "./reload-handler";
 import { Wireplumber } from "./volume";
+import { startRunnerDefault } from "../window/Runner";
+import { AskPopup } from "../widget/AskPopup";
+import { execAsync } from "astal";
 
 export function handleArguments(request: string): any {
     const args: Array<string> = request.split(" ");
@@ -20,7 +23,18 @@ export function handleArguments(request: string): any {
 
         case "reload":
             restartInstance();
-            return "Reloading instance..."
+            return "Restarting instance..."
+        
+        case "runner":
+            startRunnerDefault();
+            return "Opening runner..."
+
+        case "test":
+            return AskPopup({
+                onAccept: () => execAsync("notify-send -u normal haha dumb"),
+                text: "Would you accept?",
+                title: "Dumb Question"
+            });
 
         default:
             return "command not found! try checking help";
@@ -143,6 +157,7 @@ Options:
   toggle [window_name]: toggles visibility of specified window.
   reload: creates a new astal instance and removes this one.
   volume: wireplumber volume controller, see "volume help".
+  runner: open the application runner.
   help, -h, --help: shows this help message.
 
 2025 (c) retrozinndev's Hyprland-Dots, licensed under the MIT License.

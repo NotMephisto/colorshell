@@ -9,7 +9,7 @@
 # Made by retrozinndev (João Dias)
 # From https://github.com/retrozinndev/Hyprland-Dots
 
-style="darken" # lighten / darken
+style="lighten" # lighten / darken
 dmenu=$(sh "$XDG_CONFIG_HOME/hypr/scripts/get-dmenu.sh")
 
 if [[ -z "$WALLPAPERS_DIR" ]]; then
@@ -46,7 +46,7 @@ function Reload_wallpaper() {
 
 function Reload_pywal() {
     echo "[LOG] Reloading pywal colorscheme"
-    wal -q -t --cols16 $style -i "$wall"
+    wal -t --cols16 $style -i "$wall"
 }
 
 # Prompt wallpaper list
@@ -55,8 +55,7 @@ wall="$WALLPAPERS_DIR/$(ls $WALLPAPERS_DIR | $dmenu)"
 # Check if input wallpaper is empty
 if [[ $wall == "$WALLPAPERS_DIR/" ]]; then
     echo "No wallpaper has been selected by user!"
-    if [[ $RANDOM_WALLPAPER_WHEN_EMPTY == true ]]
-    then
+    if [[ $RANDOM_WALLPAPER_WHEN_EMPTY == true ]]; then
         wall="$WALLPAPERS_DIR/$(ls $WALLPAPERS_DIR | shuf -n 1)"
         echo "Selected random from $WALLPAPERS_DIR: $wall"
     else

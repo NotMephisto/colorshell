@@ -42,7 +42,7 @@ export const Sliders: Gtk.Widget = new Widget.Box({
             ]
         } as Widget.BoxProps),
         /*new Widget.Box({
-            className: "brightness screen",
+            className: "brightness",
             children: [
                 new Widget.Label({
                     className: "icon nf",

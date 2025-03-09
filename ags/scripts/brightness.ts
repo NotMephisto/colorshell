@@ -1,4 +1,4 @@
-import { exec, execAsync, GObject, monitorFile, Process, readFileAsync, register, signal } from "astal";
+import { exec, execAsync, GObject, monitorFile, readFileAsync, register, signal } from "astal";
 import { Connectable } from "astal/binding";
 
 

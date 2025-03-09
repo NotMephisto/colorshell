@@ -11,7 +11,7 @@ function menuFromModel(model: Gio.MenuModel, actionGroup: Gio.ActionGroup | null
     return menu;
 }
 
-export function Tray() {
+export function Tray(): Gtk.Widget {
     return new Widget.Box({
         className: "tray",
         visible: bind(astalTray, "items").as((items: Array<AstalTray.TrayItem>) => items.length > 0),
@@ -29,9 +29,10 @@ export function Tray() {
                                 tooltipMarkup: bind(item, "tooltipMarkup"),
                                 onClick: (_, event: Astal.ClickEvent) => {
                                     if(event.button === Astal.MouseButton.SECONDARY) {
+                                        item.about_to_show();
                                         menu.popup_at_widget(_, Gdk.Gravity.NORTH, Gdk.Gravity.SOUTH_WEST, null);
                                     } else if(event.button === Astal.MouseButton.PRIMARY) 
-                                        item.secondary_activate(event.x, event.y);
+                                        item.activate(event.x, event.y);
                                 },
                                 halign: Gtk.Align.CENTER,
                                 child: new Widget.Icon({

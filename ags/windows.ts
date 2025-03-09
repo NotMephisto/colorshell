@@ -7,7 +7,7 @@ import { CenterWindow } from "./window/CenterWindow";
 import { FloatingNotifications } from "./window/FloatingNotifications";
 import { GObject, register } from "astal";
 import { LogoutMenu } from "./window/LogoutMenu";
-import { Wallpaper } from "./window/Wallpaper";
+import { AppsWindow } from "./window/AppsWindow";
 
 /**
  * get open windows / interact with windows(e.g.: close, open or toggle)
@@ -23,7 +23,7 @@ class WindowsClass extends GObject.Object {
         this.setWindow("center-window", CenterWindow);
         this.setWindow("logout-menu", LogoutMenu);
         this.setWindow("floating-notifications", FloatingNotifications);
-        this.setWindow("wallpaper", Wallpaper);
+        this.setWindow("apps-window", AppsWindow);
     }
 
     public static setWindow(name: string, window: Gtk.Window): void {

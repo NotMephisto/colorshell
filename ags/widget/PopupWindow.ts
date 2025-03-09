@@ -4,33 +4,40 @@ import { Astal, Gdk, Gtk, Widget } from "astal/gtk3";
 
 const { TOP, BOTTOM, LEFT, RIGHT }: typeof Astal.WindowAnchor = Astal.WindowAnchor;
 
-export interface PopupWindowProps {
-    className?: string | Binding<string | undefined>;
-    namespace: string | Binding<string | undefined>;
-    visible?: boolean | Binding<boolean | undefined>;
-    halign?: Gtk.Align | Binding<Gtk.Align | undefined>;
-    valign?: Gtk.Align | Binding<Gtk.Align | undefined>;
-    hexpand?: boolean | Binding<boolean | undefined>;
-    vexpand?: boolean | Binding<boolean | undefined>;
-    expand?: boolean | Binding<boolean | undefined>;
-    monitor?: number | Binding<number | undefined>;
-    marginTop?: number | Binding<number | undefined>;
-    marginBottom?: number | Binding<number | undefined>;
-    marginLeft?: number | Binding<number | undefined>;
-    marginRight?: number | Binding<number | undefined>;
-    widthRequest?: number | Binding<number | undefined>;
-    heightRequest?: number | Binding<number | undefined>;
-    layer?: Astal.Layer | Binding<Astal.Layer | undefined>;
-    onClose?: () => void;
-    child: Gtk.Widget;
-}
+export type PopupWindowProps = Pick<Widget.WindowProps, 
+    "namespace"
+    | "visible"
+    | "className"
+    | "hexpand"
+    | "vexpand"
+    | "halign"
+    | "valign"
+    | "expand"
+    | "layer"
+    | "widthRequest"
+    | "heightRequest"
+    | "child"
+    | "monitor"
+    | "exclusivity"> & {
+    marginTop?: number;
+    marginLeft?: number;
+    marginBottom?: number;
+    marginRight?: number;
+    onKeyPressEvent?: (self: Widget.Window, event: Gdk.Event) => void;
+    /** Do something else instead of hiding window on close action(clicking outside conent / pressing Escape) 
+     * Observation: onClose() function will still be ran after close action if defined.
+     */
+    closeAction?: (self: Widget.Window) => void;
+    onClose?: (self: Widget.Window) => void;
+};
 
 export function PopupWindow(props: PopupWindowProps): Widget.Window {
     return new Widget.Window({
         namespace: props?.namespace || "popup-window",
-        className: "popup-window",
+        className: `popup-window ${(props.namespace instanceof Binding ?
+            props.namespace.get() : props.namespace) || ""}`,
         anchor: TOP | BOTTOM | LEFT | RIGHT,
-        exclusivity: Astal.Exclusivity.NORMAL,
+        exclusivity: props.exclusivity || Astal.Exclusivity.NORMAL,
         keymode: Astal.Keymode.EXCLUSIVE,
         layer: props?.layer || Astal.Layer.OVERLAY,
         focusOnMap: true,
@@ -44,11 +51,18 @@ export function PopupWindow(props: PopupWindowProps): Widget.Window {
             if((posX < childAllocation.x || posX > (childAllocation.x + childAllocation.width)) || 
                (posY < childAllocation.y || posY > (childAllocation.y + childAllocation.height))) {
                 _.hide();
-                props?.onClose && props.onClose();
+                props?.onClose && props.onClose(_);
             }
         },
-        onKeyPressEvent: (_, event: Gdk.Event) => 
-            event.get_keyval()[1] === Gdk.KEY_Escape && _.hide(),
+        onKeyPressEvent: (_, event: Gdk.Event) => {
+            if(event.get_keyval()[1] === Gdk.KEY_Escape) {
+                !props.closeAction ? _.hide() : props.closeAction(_);
+                props.onClose && props.onClose(_);
+            }
+
+            props.onKeyPressEvent && 
+                props.onKeyPressEvent(_, event);
+        },
         child: new Widget.Box({
             className: (props?.className instanceof Binding) ? 
                 props.className.as((clsName: string|undefined) => 
@@ -62,10 +76,13 @@ export function PopupWindow(props: PopupWindowProps): Widget.Window {
             hexpand: props?.hexpand || false,
             visible: true,
             vexpand: props?.vexpand || false,
-            marginTop: props?.marginTop || 0,
-            marginBottom: props?.marginBottom || 0,
-            marginLeft: props?.marginLeft || 0,
-            marginRight: props?.marginRight || 0,
+            css: `.popup {
+                margin-top: ${props.marginTop || 0}px;
+                margin-bottom: ${props.marginBottom || 0}px;
+                margin-left: ${props.marginLeft || 0}px;
+                margin-right: ${props.marginRight || 0}px;
+            }`,
+            onButtonPressEvent: () => true,
             child: props.child
         } as Widget.BoxProps)
     } as Widget.WindowProps);;

@@ -1,14 +1,14 @@
-import { Widget } from "astal/gtk3";
+import { Gtk, Widget } from "astal/gtk3";
 import AstalHyprland from "gi://AstalHyprland";
 
-export function Logo() {
+export function Logo(): Gtk.Widget {
     return new Widget.EventBox({
         onClickRelease: () => AstalHyprland.get_default().dispatch("exec", "anyrun"),
         className: "logo",
         child: new Widget.Box({
             child: new Widget.Label({
                 className: "nf",
-                label: "",
+                label: ""
             } as Widget.LabelProps)
         } as Widget.BoxProps)
     } as Widget.EventBoxProps);

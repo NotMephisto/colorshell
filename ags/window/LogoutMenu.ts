@@ -1,6 +1,7 @@
 import { Astal, Gdk, Gtk, Widget } from "astal/gtk3";
 import { getDateTime } from "../scripts/time";
 import { execAsync, GLib } from "astal";
+import { AskPopup } from "../widget/AskPopup";
 
 
 const { TOP, LEFT, RIGHT, BOTTOM } = Astal.WindowAnchor;
@@ -26,7 +27,8 @@ export const LogoutMenu: Widget.Window = new Widget.Window({
             children: [
                 new Widget.Box({
                     className: "top",
-                    expand: false,
+                    hexpand: true,
+                    vexpand: false,
                     orientation: Gtk.Orientation.VERTICAL,
                     valign: Gtk.Align.START,
                     children: [
@@ -45,28 +47,53 @@ export const LogoutMenu: Widget.Window = new Widget.Window({
                 new Widget.Box({
                     className: "button-row",
                     homogeneous: true,
-                    expand: true,
+                    vexpand: true,
                     valign: Gtk.Align.CENTER,
+                    height_request: 360,
                     children: [
                         new Widget.Button({
                             className: "poweroff nf",
                             label: "󰐥",
-                            onClick: () => execAsync("systemctl poweroff")
+                            onClick: () => AskPopup({
+                                title: "Power Off",
+                                text: "Are you sure you want to power off? Unsaved work will be lost.",
+                                cancelText: "No! Let me go back",
+                                acceptText: "Yes, shutdown",
+                                onAccept: () => execAsync("systemctl poweroff")
+                            })
                         } as Widget.ButtonProps),
                         new Widget.Button({
                             className: "reboot nf",
                             label: "󰜉",
-                            onClick: () => execAsync("systemctl reboot")
+                            onClick: () => AskPopup({
+                                title: "Reboot",
+                                text: "Are you sure you want to Reboot? Unsaved work will be lost.",
+                                cancelText: "No! Let me go back",
+                                acceptText: "Yes, reboot",
+                                onAccept: () => execAsync("systemctl reboot")
+                            })
                         } as Widget.ButtonProps),
                         new Widget.Button({
                             className: "suspend nf",
                             label: "󰤄",
-                            onClick: () => execAsync("systemctl suspend")
+                            onClick: () => AskPopup({
+                                title: "Suspend",
+                                text: "Are you sure you want to Suspend?",
+                                cancelText: "No! Let me go back",
+                                acceptText: "Yes, suspend",
+                                onAccept: () => execAsync("systemctl suspend")
+                            })
                         } as Widget.ButtonProps),
                         new Widget.Button({
                             className: "logout nf",
                             label: "󰗽",
-                            onClick: () => execAsync("astal close logout-menu && bash -c 'loginctl terminate-user $USER'")
+                            onClick: () => AskPopup({
+                                title: "Log out",
+                                text: "Are you sure you want to log out? Your session will be ended.",
+                                cancelText: "No! Let me go back",
+                                acceptText: "Yes, please log out",
+                                onAccept: () => execAsync(`sh -c "loginctl terminate-user ${GLib.getenv("USER") || "$USER"}"`)
+                            })
                         } as Widget.ButtonProps),
                     ]
                 } as Widget.BoxProps)

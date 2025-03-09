@@ -4,16 +4,9 @@ import { Tiles } from "../widget/control-center/Tiles";
 import { Sliders } from "../widget/control-center/Sliders";
 import { PopupWindow, PopupWindowProps } from "../widget/PopupWindow";
 import { hidePages, PagesWidget } from "../widget/control-center/Pages";
+import { NotifHistory } from "../widget/control-center/NotifHistory";
 
-const widgetsContainer: Widget.Box = new Widget.Box({
-    className: "control-center-container",
-    orientation: Gtk.Orientation.VERTICAL,
-    widthRequest: 400,
-} as Widget.BoxProps, 
-QuickActions, 
-Sliders,
-Tiles,
-PagesWidget);
+const connections: Array<number> = [];
 
 export const ControlCenter: Widget.Window = PopupWindow({
     className: "control-center",
@@ -25,5 +18,29 @@ export const ControlCenter: Widget.Window = PopupWindow({
     halign: Gtk.Align.END,
     valign: Gtk.Align.START,
     visible: false,
-    child: widgetsContainer
+    vexpand: true,
+    child: new Widget.Box({
+        orientation: Gtk.Orientation.VERTICAL,
+        vexpand: true,
+        children: [
+            new Widget.Box({
+                className: "control-center-container",
+                orientation: Gtk.Orientation.VERTICAL,
+                widthRequest: 400,
+                vexpand: false,
+                hexpand: true,
+                children: [
+                    QuickActions, 
+                    Sliders,
+                    Tiles,
+                    PagesWidget
+                ]
+            } as Widget.BoxProps),
+            NotifHistory
+        ]
+    } as Widget.BoxProps)
 } as PopupWindowProps);
+
+connections.push(ControlCenter.connect("hide", (_) => {
+    hidePages();
+}));

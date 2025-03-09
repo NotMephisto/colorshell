@@ -55,23 +55,38 @@ export function Tile(props: TileProps): Widget.EventBox {
                         new Widget.Label({
                             className: "icon nf",
                             label: props.icon || "icon",
-                            css: `.icon { font-size: ${props.iconSize || "12px"} }`
+                            css: `label { font-size: ${props.iconSize || "12"}px; }`
                         } as Widget.LabelProps),
                         new Widget.Box({
                             className: "text",
                             orientation: Gtk.Orientation.VERTICAL,
                             vexpand: true,
+                            hexpand: true,
                             valign: Gtk.Align.CENTER,
                             children: [
                                 new Widget.Label({
                                     className: "title",
                                     xalign: 0,
+                                    halign: Gtk.Align.START,
                                     truncate: true,
                                     label: props.title
                                 } as Widget.LabelProps),
                                 new Widget.Label({
                                     className: "description",
-                                    visible: props.description,
+                                    visible: Boolean(props.description),
+                                    setup: (label: Widget.Label) => {
+                                        if(props.description instanceof Binding) {
+                                            const sub = props.description.subscribe((value) => {
+                                                label.set_visible(Boolean(value));
+                                            });
+
+                                            const destroyId = label.connect("destroy-event", () => {
+                                                label.disconnect(destroyId);
+                                                sub();
+                                            });
+                                        }
+                                    },
+                                    halign: Gtk.Align.START,
                                     truncate: true,
                                     xalign: 0,
                                     label: props.description

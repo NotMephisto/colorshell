@@ -6,6 +6,8 @@ import { BigMedia } from "../widget/center-window/BigMedia";
 import { Separator, SeparatorProps } from "../widget/Separator";
 import { PopupWindow, PopupWindowProps } from "../widget/PopupWindow";
 
+const BigMediaWidget = BigMedia();
+
 export const CenterWindow: Widget.Window = PopupWindow({
     className: "center-window",
     namespace: "center-window",
@@ -53,7 +55,7 @@ export const CenterWindow: Widget.Window = PopupWindow({
                 ]
             } as Widget.BoxProps),
             Separator({
-                visible: bind(BigMedia, "visible"),
+                visible: bind(BigMediaWidget, "visible"),
                 orientation: Gtk.Orientation.HORIZONTAL,
                 alpha: .5,
                 cssColor: "gray",
@@ -63,7 +65,7 @@ export const CenterWindow: Widget.Window = PopupWindow({
                 className: "vertical right",
                 orientation: Gtk.Orientation.VERTICAL,
                 children: [
-                    BigMedia
+                    BigMediaWidget
                 ]
             } as Widget.BoxProps)
         ]

@@ -12,6 +12,10 @@ export function updateApps(): void {
     appsList = astalApps.get_list();
 }
 
+export function getAstalApps(): AstalApps.Apps {
+    return astalApps;
+}
+
 export function getAppsByName(appName: string): (Array<AstalApps.Application>|undefined) {
     let found: Array<AstalApps.Application> = [];
 

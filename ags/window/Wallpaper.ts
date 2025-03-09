@@ -24,10 +24,9 @@ export const Wallpaper: Widget.Window = new Widget.Window({
     exclusivity: Astal.Exclusivity.IGNORE,
     keymode: Astal.Keymode.NONE,
     visible: true,
+    style: new Gtk.Style(),
+    css: ".wallpaper { all: unset; }",
     monitor: 0, //Needs rework for all monitors
-    child: new Widget.Box({
-        className: "wallpaper",
-    } as Widget.BoxProps),
     onButtonPressEvent: (_, event: Gdk.Event) => {
         const [ , x, y ] = event.get_coords();
         if(event.get_button()[1] === Gdk.BUTTON_SECONDARY) 

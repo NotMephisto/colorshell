@@ -1,0 +1,37 @@
+.logout-menu {
+  .top {
+    .time {
+      font-size: 128px;
+      font-weight: 900;
+    }
+    .date {
+      font-size: 24px;
+      font-weight: 500;
+    }
+  }
+  .button-row {
+    margin: 0 150px;
+
+    & > button {
+      & label {
+        font-size: 96px;
+      }
+
+      margin: {
+        left: 4px;
+        right: 4px;
+      }
+      border-radius: 6px;
+
+      &:first-child {
+        border-top-left-radius: 28px;
+        border-bottom-left-radius: 28px;
+      }
+
+      &:last-child {
+        border-top-right-radius: 28px;
+        border-bottom-right-radius: 28px;
+      }
+    }
+  }
+}

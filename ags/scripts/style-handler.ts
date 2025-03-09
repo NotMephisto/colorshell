@@ -1,8 +1,10 @@
 // handles reloading stylesheet and pywal colors
 
-import { readFile, monitorFile, Process } from "astal";
+import { readFile, monitorFile, AstalIO, exec, timeout } from "astal";
 import { App } from "astal/gtk3";
-import { getUserDirs } from "./user";
+import { getUserDirs } from "./utils";
+
+let watchDelay: (AstalIO.Time|null);
 
 const stylePath = `${getUserDirs().state}/ags/style`
 const watchPaths = [
@@ -22,8 +24,8 @@ export function reloadStyle(): void {
 
 export function compileStyle(): void {
     console.log("[LOG] Compiling sass (stylesheet)");
-    Process.exec(`mkdir -p ${stylePath}`);
-    Process.exec(`sh -c "sass -I ./style ./style.scss ${stylePath}/style.css"`);
+    exec(`mkdir -p ${stylePath}`);
+    exec(`sh -c "sass -I ./style ./style.scss ${stylePath}/style.css"`);
 }
 
 export function applyStyle(): void {
@@ -34,14 +36,15 @@ export function applyStyle(): void {
     );
 }
 
+/** Monitor changes on stylesheet at runtime */
 function watch(): void {
-    // Monitor changes on stylesheet at runtime
     watchPaths.map((path: string) =>
         monitorFile(
             `${path}`,
             (file: string) => {
                 // Ignore tmp files
-                if(!file.endsWith('~') && !Number.isNaN(file)) {
+                if(!watchDelay && !file.endsWith('~') && !Number.isNaN(file)) {
+                    watchDelay = timeout(250, () => watchDelay = null);
                     console.log(`[LOG] Stylesheet ${file} file updated`)
                     compileStyle();
                     applyStyle();
@@ -54,7 +57,7 @@ function watch(): void {
     monitorFile(
         `${getUserDirs().cache}/wal/colors.scss`,
         (file: string) => {
-            Process.exec(`bash -c "cp -f ${file} ./style/_wal.scss"`)
+            exec(`bash -c "cp -f ${file} ./style/_wal.scss"`)
         }
     );
 }

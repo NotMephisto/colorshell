@@ -11,19 +11,26 @@ export interface SeparatorProps {
 }
 
 export function Separator(props: SeparatorProps) {
+    const alpha: number = props.alpha ? 
+            (props.alpha > 1) ? 
+                props.alpha / 100
+            : props.alpha
+        : 1;
+
     return new Widget.Box({
-        className: `separator separator-${ props.orientation == Gtk.Orientation.VERTICAL ? "vertical" : "horizontal" } ${ props.class && props.class }`,
+        className: `separator separator-${ props.orientation == Gtk.Orientation.VERTICAL ? 
+            "vertical" : "horizontal" } ${ props.class && props.class }`,
         visible: props.visible,
         css: `.separator {
             background: ${ props.cssColor || "lightgray" };
-            opacity: ${ props.alpha || 1 };
+            opacity: ${alpha};
         }
         .separator-horizontal {
-            padding-bottom: ${props.size || 1 }px;
+            min-width: ${ props.size || 1 }px;
             margin: 4px 4px;
         }
         .separator-vertical {
-            padding-right: ${props.size || 1 }px;
+            min-height: ${ props.size || 1 }px;
             margin: 7px 7px;
         }`,
     } as Widget.BoxProps);

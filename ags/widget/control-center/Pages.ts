@@ -1,40 +1,45 @@
 import { timeout, Variable } from "astal";
 import { Gtk, Widget } from "astal/gtk3";
+import { Page } from "./pages/Page";
 
-const empty = new Widget.Box();
-const page = new Variable<Gtk.Widget>(empty);
-let connectionId: (number|undefined);
+const currentPage = new Variable<Page|undefined>(undefined);
 
 export const PagesWidget: Widget.Revealer = new Widget.Revealer({
     revealChild: false,
+    className: "pages",
     transitionType: Gtk.RevealerTransitionType.SLIDE_DOWN,
-    transitionDuration: 250,
-    child: page()
+    transitionDuration: 360,
+    child: currentPage((page: (Page|undefined)) => 
+        !page ? new Widget.Box() : page.getPage())
 } as Widget.RevealerProps);
 
-export function showPages(child: Gtk.Widget, onShow?: (self: Widget.Revealer) => void): void {
-    page.set(child);
+export function showPages(page: Page): void {
+    currentPage.set(page);
     PagesWidget.set_reveal_child(true);
-    connectionId !== undefined && PagesWidget.disconnect(connectionId);
-    connectionId = PagesWidget.connect("show", (_) =>
-        onShow && onShow(_));
+    page.props.onOpen && page.props.onOpen();
 }
 
-export function getPage(): (Gtk.Widget|null) {
-    return page.get();
+export function getPage(): (Page|undefined) {
+    return currentPage.get();
 }
 
-export function togglePage(page: Gtk.Widget): void {
-    PagesWidget.revealChild ? 
-        hidePages() 
-    : showPages(page);
+export function togglePage(page: Page): void {
+    if(!PagesWidget.revealChild) {
+        showPages(page);
+        return;
+    }
+
+    hidePages();
 }
 
-export function hidePages(onHide?: () => void) {
+export function hidePages() {
     PagesWidget.set_reveal_child(false);
-    console.log("heyyyyy");
-    timeout(300, () => {
-        page.set(empty);
-        onHide && onHide();
+    if(!currentPage.get()) return;
+
+    timeout(500, () => {
+        if(currentPage.get() && currentPage.get()?.props.onClose) 
+            currentPage.get()!.props.onClose!();
+
+        currentPage.set(undefined);
     });
 }

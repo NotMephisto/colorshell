@@ -1,9 +1,9 @@
 import { bind, Process } from "astal";
-import { Widget } from "astal/gtk3";
+import { Gtk, Widget } from "astal/gtk3";
 import { Wireplumber } from "../../scripts/volume";
 import { ControlCenter } from "../../window/ControlCenter";
 
-export function Audio() {
+export function Audio(): Gtk.Widget {
     return new Widget.EventBox({
         className: bind(ControlCenter, "visible").as((visible: boolean) => 
             visible ? "audio open" : "audio"),

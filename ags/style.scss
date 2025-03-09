@@ -9,6 +9,9 @@
 @use "./style/control-center";
 @use "./style/center-window";
 @use "./style/float-notifications";
+@use "./style/logout-menu";
+@use "./style/apps-window";
+@use "./style/runner";
 
 
 * {
@@ -17,6 +20,96 @@
 
 window * {
   @include mixins.default-styles;
+}
+
+window.ask-popup {
+  background: rgba(black, .4);
+}
+
+.ask-popup-box {
+  background: colors.$bg-translucent;
+  padding: 18px;
+  border-radius: 24px;
+
+  & .title {
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  & .buttons {
+    margin-top: 20px;
+
+    & button {
+      background: colors.$bg-primary;
+      border-radius: 12px;
+      padding: 6px;
+
+      margin: {
+        left: 4px;
+        right: 4px;
+      };
+
+      &:hover {
+        background: colors.$bg-secondary;
+      }
+    }
+  }
+}
+
+.notification {
+  background: colors.$bg-primary;
+  border-radius: 16px;
+
+  & > .top {
+    padding: 8px;
+    padding-bottom: 0;
+
+    & .app-icon {
+      margin-right: 6px;
+    }
+
+    & .app-name {
+      font-size: 12px;
+    }
+
+    & button.close {
+      padding: 2px;
+      border-radius: 8px;
+
+      &:hover {
+        background: colors.$bg-secondary;
+      }
+    }
+
+    & icon.close {
+      font-size: 16px;
+    }
+  }
+
+  & .content {
+    padding: 4px;
+    padding-top: 0;
+    & .image {
+      $size: 78px;
+      min-width: $size;
+      min-height: $size;
+      background-size: cover;
+      background-position: center;
+      margin: 6px;
+      border-radius: 8px;
+    }
+
+    & .summary {
+      font-size: 17.3px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    & .body {
+      font-size: 14.5px;
+      font-weight: 400;
+    }
+  }
 }
 
 tooltip {
@@ -30,5 +123,42 @@ tooltip {
     font-weight: 500;
     color: colors.$fg-primary;
     box-shadow: 0 1px 4px 1px rgba(colors.$bg-primary, .6);
+  }
+}
+
+menu {
+  padding: 4px;
+  background: wal.$background;
+  border-radius: 14px;
+                               
+  & separator {
+    margin: 0 4px;
+    color: wal.$background;
+  }
+                               
+  & menuitem {
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+                               
+    &:hover {
+      background: wal.$color1;
+    }
+  }
+}
+
+scrollbar trough {
+  @include mixins.reset-props;
+  background: colors.$bg-translucent;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  padding: 0 2px;
+
+  & slider {
+    @include mixins.reset-props;
+    min-width: .85em;
+    background: colors.$bg-tertiary;
+    border-radius: 12px;
   }
 }

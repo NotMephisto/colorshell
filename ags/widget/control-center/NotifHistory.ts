@@ -1,15 +1,16 @@
 import { bind } from "astal";
 import { Gtk, Widget } from "astal/gtk3";
 import AstalNotifd from "gi://AstalNotifd";
-import { Notifications } from "../../scripts/notification-handler";
+import { Notifications } from "../../scripts/notifications";
 
-export const NotificationHistory: Gtk.Widget = new Widget.Scrollable({
+export const NotifHistory: Gtk.Widget = new Widget.Scrollable({
     hscroll: Gtk.PolicyType.NEVER,
     vscroll: Gtk.PolicyType.AUTOMATIC,
+    expand: true,
     child: new Widget.Box({
         className: "notifications",
-        children: bind(Notifications, "notificationHistory").as((history: Array<AstalNotifd.Notification>) =>
-            history && history.length > 0 && history.map((notification: AstalNotifd.Notification) => 
+        children: bind(Notifications.getDefault(), "history").as((history: Array<AstalNotifd.Notification>) =>
+            history.map((notification: AstalNotifd.Notification) => 
                 new Widget.Box({
                     className: "notification",
                     hexpand: true,
@@ -35,7 +36,7 @@ export const NotificationHistory: Gtk.Widget = new Widget.Scrollable({
                                 new Widget.Button({
                                     className: "remove",
                                     label: "󱎘",
-                                    onClick: () => Notifications.removeFromNotificationHistory(notification.id)
+                                    onClick: () => Notifications.getDefault().removeHistory(notification.id)
                                 } as Widget.ButtonProps)
                             ]
                         } as Widget.BoxProps),
