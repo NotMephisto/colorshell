@@ -57,7 +57,7 @@ window.ask-popup {
 }
 
 .notification {
-  background: colors.$bg-primary;
+  background: colors.$bg-translucent-secondary;
   border-radius: 16px;
 
   & > .top {
@@ -87,8 +87,9 @@ window.ask-popup {
   }
 
   & .content {
-    padding: 4px;
+    padding: 6px;
     padding-top: 0;
+
     & .image {
       $size: 78px;
       min-width: $size;
@@ -108,6 +109,32 @@ window.ask-popup {
     & .body {
       font-size: 14.5px;
       font-weight: 400;
+    }
+  }
+
+  & .actions {
+    padding: 6px;
+
+    & button.action {
+      @include mixins.hover-shadow;
+
+      border-radius: 4px;
+      background: colors.$bg-secondary;
+      padding: 6px;
+
+      & label {
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      &:first-child {
+        border-top-left-radius: 12px;
+        border-bottom-left-radius: 12px;
+      }
+      &:last-child {
+        border-top-right-radius: 12px;
+        border-bottom-right-radius: 12px;
+      }
     }
   }
 }

@@ -47,7 +47,7 @@ export namespace Runner {
         width?: number;
         height?: number;
         entryPlaceHolder?: string;
-        resultsPlaceholder?: () => Array<Gtk.Widget>;
+        resultsPlaceholder?: () => Array<ResultWidget>;
     };
 
     export const prefixes = new Map<string, (entry: string) => (ResultWidget|Array<ResultWidget>|null)>([
@@ -58,7 +58,7 @@ export namespace Runner {
     export function RunnerWindow(props?: RunnerProps): (Widget.Window|null) {
         let subs: Array<() => void> = [];
         const entryText: Variable<string> = new Variable<string>("");
-        let results: (Array<ResultWidget>|null) = null;
+        let results: (Array<ResultWidget>|null) = props?.resultsPlaceholder ? props.resultsPlaceholder() : null;
         let selectedResultIndex = 0;
 
         const searchEntry = new Widget.Entry({

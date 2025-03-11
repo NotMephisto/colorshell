@@ -1,11 +1,10 @@
-import { execAsync, GLib, GObject, register, signal, writeFile } from "astal";
-import { Subscribable } from "astal/binding";
+import { execAsync, GLib, GObject, property, register, signal } from "astal";
+import { Connectable } from "astal/binding";
 import { Gdk } from "astal/gtk3";
 import { getDateTime } from "./time";
-import AstalWp from "gi://AstalWp";
 
 @register({ GTypeName: "ScreenRecording" })
-class Recording extends GObject.Object implements Subscribable {
+class Recording extends GObject.Object implements Connectable {
 
     private static instance: Recording;
 
@@ -17,27 +16,44 @@ class Recording extends GObject.Object implements Subscribable {
     declare outputChanged: (newPath: string) => void;
 
     #recording: boolean = false;
-    #subs = new Set<(isRec: boolean) => void>();
     #path: string = GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_VIDEOS) || `${GLib.get_home_dir()}/Recordings`;
     /** Default extension: mp4(h264) */
     #extension: string = "mp4";
-    #recordAudio: boolean|AstalWp.Endpoint = false; // TODO
+    #recordAudio: boolean = false;
+    #monitor: (number|null) = null;
+    #area: (Gdk.Rectangle|null) = null;
 
-    private notifySub() {
-        const subs = this.#subs;
-        for(const sub of subs) {
-            sub(this.recording);
-        }
+    @property(Boolean)
+    public get recording() { return this.#recording; }
+    private set recording(newValue: boolean) {
+        (!newValue && this.recording) ? 
+            this.stopRecording() 
+        : this.startRecording(this.#monitor || 0, this.#area || undefined);
+
+        this.#recording = newValue;
+        this.notify("recording");
     }
 
-    public get recording() { return this.#recording; }
-    private set recording(newValue: boolean) { this.#recording = newValue; }
-
+    @property(String)
     public get path() { return this.#path; }
-    public set path(newPath: string) { this.#path = newPath; }
+    public set path(newPath: string) {
+        this.#path = newPath;
+        this.notify("path");
+    }
 
+    @property(String)
     public get extension() { return this.#extension; }
-    public set extension(newExt: string) { this.#extension = newExt; }
+    public set extension(newExt: string) {
+        this.#extension = newExt;
+        this.notify("extension");
+    }
+
+    @property(Boolean)
+    public get recordAudio() { return this.#recordAudio; }
+    public set recordAudio(newValue: boolean) {
+        this.#recordAudio = newValue;
+        this.notify("record-audio");
+    }
 
     constructor() {
         super();
@@ -50,38 +66,25 @@ class Recording extends GObject.Object implements Subscribable {
         return this.instance;
     }
 
-    public get() {
-        return this.recording;
-    }
-
-    private emit(id: string, ...args: any[]) {
-        super.emit(id, ...args);
-        this.notifySub();
-    }
-
-
-    public startRecording(area?: Gdk.Rectangle) {
+    public startRecording(monitor?: number, area?: Gdk.Rectangle) {
         const output = `${getDateTime().get().format("%Y-%m-%d-%H%M%S")}_rec.${this.extension}`;
-        execAsync([ "wf-recorder", 
+        this.#recording = true;
+        this.emit("started");
+        execAsync([
+            "wf-recorder", 
             `${Boolean(area) ? 
                 `-g ${area?.x || 0},${area?.y || 0} ${area?.width || 1}x${area?.height || 1}` 
-            : ""}`,
-            "-f", output ]
-        ).then(() => {
+            : ""}`, 
+            `-f ${output}`
+        ]).then(() => {
             this.emit("stopped", `${this.path}/${output}`);
+            this.#recording = false;
+            this.notify("recording");
         });
-        writeFile("", "");
-        this.emit("started");
-        this.notifySub();
     }
 
     public stopRecording() {
 
-    }
-
-    public subscribe(callback: (isRec: boolean) => void) {
-        this.#subs.add(callback);
-        return () => this.#subs.delete(callback);
     }
 }
 

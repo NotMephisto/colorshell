@@ -7,6 +7,7 @@ $bg-secondary: funs.toRGB(color.adjust($color: wal.$color1, $lightness: -16%));
 $bg-tertiary: funs.toRGB(color.adjust($color: $bg-secondary, $lightness: 10%));
 $bg-light: wal.$foreground;
 $bg-translucent: funs.toRGB(color.change($color: $bg-primary, $alpha: 75%));
+$bg-translucent-secondary: funs.toRGB(color.change($color: $bg-translucent, $alpha: 78%));
 $fg-primary: wal.$foreground;
 $fg-light: $bg-primary;
 $fg-disabled: funs.toRGB(color.adjust($color: wal.$foreground, $lightness: -11%));

@@ -101,6 +101,22 @@ export function NotificationWidget(notification: AstalNotifd.Notification|number
                         ]
                     } as Widget.BoxProps)
                 ]
+            } as Widget.BoxProps),
+            new Widget.Box({
+                className: "actions button-row",
+                hexpand: true,
+                visible: notification.actions.length > 0,
+                children: notification.actions.map((action: AstalNotifd.Action) => 
+                    new Widget.Button({
+                        className: "action",
+                        label: action.label,
+                        hexpand: true,
+                        onClicked: () => {
+                            notification.invoke(action.id);
+                            onClose && onClose(notification);
+                        }
+                    } as Widget.ButtonProps)
+                )
             } as Widget.BoxProps)
         ]
     } as Widget.BoxProps)

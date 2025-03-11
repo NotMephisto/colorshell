@@ -74,8 +74,8 @@ export function PopupWindow(props: PopupWindowProps): Widget.Window {
             widthRequest: props?.widthRequest,
             heightRequest: props?.heightRequest,
             hexpand: props?.hexpand || false,
-            visible: true,
             vexpand: props?.vexpand || false,
+            visible: true,
             css: `.popup {
                 margin-top: ${props.marginTop || 0}px;
                 margin-bottom: ${props.marginBottom || 0}px;

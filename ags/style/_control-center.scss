@@ -145,6 +145,11 @@
     }
   }
 
+  & .sub-header {
+    font-size: 18px;
+    font-weight: 500;
+  }
+
   &.bluetooth {
     .connections button {
       @include mixins.hover-shadow;

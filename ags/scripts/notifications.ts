@@ -125,11 +125,13 @@ class Notifications extends GObject.Object {
     }
 
     public removeNotification(notif: (AstalNotifd.Notification|number)): void {
-        const notifId = (notif instanceof AstalNotifd.Notification) ? notif.id : notif;
+        const notification = (notif instanceof AstalNotifd.Notification) ? notif : AstalNotifd.get_default().get_notification(notif);
         this.#notifications = this.#notifications.filter((item: AstalNotifd.Notification) =>
-            item.id !== notifId);
+            item.id !== notification.id);
+
+        notification.dismiss();
         this.notify("notifications");
-        this.emit("notification-removed", notifId);
+        this.emit("notification-removed", notification.id);
     }
 
     connect(signal: string, callback: (...args: any[]) => void): number {
