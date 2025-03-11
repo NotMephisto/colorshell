@@ -92,6 +92,7 @@ export function NotificationWidget(notification: AstalNotifd.Notification|number
                                 className: "body",
                                 useMarkup: true,
                                 halign: Gtk.Align.START,
+                                xalign: 0,
                                 truncate: false,
                                 wrap: true,
                                 wrapMode: Pango.WrapMode.WORD,

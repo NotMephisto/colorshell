@@ -1,5 +1,10 @@
-import { GObject, property, register, signal, timeout } from "astal";
+import { AstalIO, GObject, property, register, signal, timeout } from "astal";
 import AstalNotifd from "gi://AstalNotifd";
+
+export const 
+    NOTIFICATION_TIMEOUT_URGENT: number = 0,
+    NOTIFICATION_TIMEOUT_NORMAL: number = 4000,
+    NOTIFICATION_TIMEOUT_LOW: number = 2000;
 
 @register({ GTypeName: "Notifications" })
 class Notifications extends GObject.Object {
@@ -29,6 +34,9 @@ class Notifications extends GObject.Object {
     @signal(Number)
     declare historyRemoved: (id: number) => void;
 
+    @signal(Number)
+    declare notificationReplaced: (id: number) => void;
+
 
     constructor() {
         super();
@@ -36,13 +44,33 @@ class Notifications extends GObject.Object {
         this.#connections = [
             AstalNotifd.get_default().connect("notified", (notifd, id, _replaced) => {
                 const notification = notifd.get_notification(id);
-                const notifTimeout = 4000;
+                const notifTimeout = notification.urgency === AstalNotifd.Urgency.LOW ? 
+                    NOTIFICATION_TIMEOUT_LOW 
+                : (notification.urgency === AstalNotifd.Urgency.CRITICAL ? 
+                   NOTIFICATION_TIMEOUT_URGENT
+                : NOTIFICATION_TIMEOUT_NORMAL);
 
                 this.addNotification(notification, () => {
-                    if(notification.urgency !== AstalNotifd.Urgency.CRITICAL)
-                        timeout(notifTimeout, () => {
+                    if(notification.urgency !== AstalNotifd.Urgency.CRITICAL ||
+                      (notification.urgency === AstalNotifd.Urgency.CRITICAL && 
+                        NOTIFICATION_TIMEOUT_URGENT > 0)) {
+
+                        let notifTimer: AstalIO.Time;
+                        let replacedConnectionId: number;
+                        const removeFun = () => { // Funny name haha lmao remove fun :skull:
                             this.removeNotification(id);
+                            replacedConnectionId && this.disconnect(replacedConnectionId);
+                        }
+
+                        replacedConnectionId = this.connect("notification-replaced", (_, id: number) => {
+                            if(notification.id === id) {
+                                notifTimer.cancel();
+                                notifTimer = timeout(notifTimeout, removeFun);
+                            }
                         });
+
+                        notifTimer = timeout(notifTimeout, removeFun);
+                    }
                 });
             }),
             AstalNotifd.get_default().connect("resolved", (notifd, id, _reason) => {
@@ -51,7 +79,8 @@ class Notifications extends GObject.Object {
             })
         ];
 
-        this.vfunc_dispose = () => {
+        this.run_dispose = () => {
+            super.run_dispose();
             this.#connections.map((id: number) => 
                 AstalNotifd.get_default().disconnect(id));
         };
@@ -84,6 +113,10 @@ class Notifications extends GObject.Object {
 
     private addNotification(notif: AstalNotifd.Notification, onAdded?: (notif: AstalNotifd.Notification) => void): void {
         const newArray = this.#notifications.reverse().filter((item) => item.id !== notif.id);
+        if(newArray !== this.notifications) {
+            this.emit("notification-replaced", notif.id);
+        }
+
         newArray.push(notif);
         this.#notifications = newArray.reverse();
         this.notify("notifications");
@@ -97,6 +130,14 @@ class Notifications extends GObject.Object {
             item.id !== notifId);
         this.notify("notifications");
         this.emit("notification-removed", notifId);
+    }
+
+    connect(signal: string, callback: (...args: any[]) => void): number {
+        return super.connect(signal, callback);
+    }
+
+    disconnect(id: number) {
+        super.disconnect(id);
     }
 }
 

@@ -7,19 +7,8 @@
     top: 6px;
   };
 
-  & revealer {
-    padding: 6px;
-
-    & > .notification {
-      box-shadow: 0 0 4px .5px colors.$bg-translucent;
-    }
-
-    &:first-child {
-      margin-top: 0;
-    }
-
-    &:last-child {
-      margin-bottom: 0;
-    }
+  & > .notification {
+    margin: 6px;
+    box-shadow: 0 0 4px .5px colors.$bg-translucent;
   }
 }
