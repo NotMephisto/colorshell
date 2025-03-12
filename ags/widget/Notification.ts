@@ -93,7 +93,7 @@ export function NotificationWidget(notification: AstalNotifd.Notification|number
                                     useMarkup: true,
                                     xalign: 0,
                                     truncate: true,
-                                    label: notification.summary
+                                    label: notification.summary.replace(/\&/g, "&amp;")
                                 }),
                                 new Widget.Label({
                                     className: "body",
@@ -103,7 +103,7 @@ export function NotificationWidget(notification: AstalNotifd.Notification|number
                                     truncate: false,
                                     wrap: true,
                                     wrapMode: Pango.WrapMode.WORD,
-                                    label: notification.body
+                                    label: notification.body.replace(/\&/g, "&amp;")
                                 } as Widget.LabelProps)
                             ]
                         } as Widget.BoxProps)
