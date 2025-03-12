@@ -1,14 +1,18 @@
 import { ResultWidget, ResultWidgetProps } from "../../widget/runner/ResultWidget";
 import AstalHyprland from "gi://AstalHyprland";
 import { GLib } from "astal";
+import { Runner } from "../../window/Runner";
 
-export function handleShell(command: string): ResultWidget {
-    const userShell = GLib.getenv("SHELL") || "/usr/bin/env bash";
+export class PluginShell implements Runner.Plugin {
+    public readonly prefix = '!';
+    #shell = GLib.getenv("SHELL") || "/usr/bin/env sh";
 
-    return new ResultWidget({
-        onClick: () => AstalHyprland.get_default().dispatch("exec", `${userShell} -c "${command}"`),
-        title: `Run: \`${command}\``,
-        description: userShell,
-        icon: "utilities-terminal-symbolic"
-    } as ResultWidgetProps);
+    public handle(command: string): ResultWidget {
+        return new ResultWidget({
+            onClick: () => AstalHyprland.get_default().dispatch("exec", `${this.#shell} -c "${command}"`),
+            title: `Run: \`${command}\``,
+            description: this.#shell,
+            icon: "utilities-terminal-symbolic"
+        } as ResultWidgetProps)
+    }
 }

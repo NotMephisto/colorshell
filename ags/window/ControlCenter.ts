@@ -18,10 +18,10 @@ export const ControlCenter: Widget.Window = PopupWindow({
     halign: Gtk.Align.END,
     valign: Gtk.Align.START,
     visible: false,
-    vexpand: true,
+    expand: true,
     child: new Widget.Box({
         orientation: Gtk.Orientation.VERTICAL,
-        vexpand: true,
+        expand: true,
         children: [
             new Widget.Box({
                 className: "control-center-container",

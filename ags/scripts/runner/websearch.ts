@@ -1,42 +1,40 @@
 import AstalHyprland from "gi://AstalHyprland";
 import { ResultWidget, ResultWidgetProps } from "../../widget/runner/ResultWidget";
+import { Runner } from "../../window/Runner";
 
-export enum SearchEngine {
-    GOOGLE,
-    DUCKDUCKGO,
-    YAHOO
-}
+const searchEngines = {
+    duckduckgo: "https://duckduckgo.com/?q=",
+    google: "https://google.com/search?q=",
+    yahoo: "https://search.yahoo.com/search?p="
+};
 
-export const SearchEngineMap: Map<SearchEngine, string> = new Map([
-    [ SearchEngine.DUCKDUCKGO, "https://duckduckgo.com/?q=" ],
-    [ SearchEngine.GOOGLE, "https://google.com/search?q=" ],
-    [ SearchEngine.YAHOO, "https://search.yahoo.com/search?p=" ]
-]);
+let engine: string = searchEngines.google;
 
-let searchEngine: SearchEngine = SearchEngine.GOOGLE;
+export class PluginWebSearch implements Runner.Plugin {
+    #engineString: string;
+    public readonly prefix = '?';
+    public readonly name = "Web Search";
 
-export function handleWebSearch(search: string): ResultWidget {
-
-    let engineString: string;
-
-    switch(searchEngine as SearchEngine) {
-        case SearchEngine.GOOGLE: 
-            engineString = "Google";
-        case SearchEngine.YAHOO: 
-            engineString = "Yahoo";
-        case SearchEngine.DUCKDUCKGO: 
-            engineString = "DuckDuckGo";
-        default: engineString = "Web";
-
+    constructor() {
+        switch(engine) {
+            case searchEngines.google: 
+                this.#engineString = "Google";
+            case searchEngines.yahoo: 
+                this.#engineString = "Yahoo";
+            case searchEngines.duckduckgo: 
+                this.#engineString = "DuckDuckGo";
+            default: this.#engineString = "Web";
+        }
     }
-
-    return new ResultWidget({
-        icon: "system-search-symbolic",
-        title: search || "",
-        description: `Search with ${engineString}`,
-        onClick: () => AstalHyprland.get_default().dispatch(
-            "exec", 
-            `xdg-open "${SearchEngineMap.get(searchEngine)! + search.replaceAll(" ", "%20")}"`
-        )
-    } as ResultWidgetProps);
+    public handle(search: string): ResultWidget {
+        return new ResultWidget({
+            icon: "system-search-symbolic",
+            title: search || "",
+            description: `Search with ${this.#engineString}`,
+            onClick: () => AstalHyprland.get_default().dispatch(
+                "exec", 
+                `xdg-open \"${engine + search}\"`
+            )
+        } as ResultWidgetProps);
+    }
 }

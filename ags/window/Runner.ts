@@ -2,9 +2,6 @@ import { AstalIO, timeout, Variable } from "astal";
 import { Gdk, Gtk, Widget } from "astal/gtk3";
 import { PopupWindow, PopupWindowProps } from "../widget/PopupWindow";
 import { updateApps } from "../scripts/apps";
-import { handleShell } from "../scripts/runner/shell";
-import { handleWebSearch } from "../scripts/runner/websearch";
-import { handleApplications } from "../scripts/runner/apps";
 import { ResultWidget, ResultWidgetProps } from "../widget/runner/ResultWidget";
 
 export let runnerInstance: (Widget.Window|null) = null;
@@ -50,26 +47,48 @@ export namespace Runner {
         resultsPlaceholder?: () => Array<ResultWidget>;
     };
 
-    export const prefixes = new Map<string, (entry: string) => (ResultWidget|Array<ResultWidget>|null)>([
-        [ "!", handleShell ],
-        [ "?", handleWebSearch ],
-    ]);
+    const plugins = new Set<Runner.Plugin>([]);
+
+    export interface Plugin {
+        /** prefix to call the plugin. if undefined, will be triggered like applications plugin */
+        readonly prefix?: string;
+        /** name of the plugin. e.g.: websearch, shell */
+        readonly name?: string;
+        /** handle the user input to return results (does not contain prefix) */
+        readonly handle: (inputText: string) => (ResultWidget|Array<ResultWidget>|null|undefined);
+    }
+
+    export function addPlugin(plugin: Runner.Plugin, force?: boolean) {
+        if(!force && plugin.prefix && plugins.has(plugin)) 
+            throw new Error(`Runner plugin with prefix ${plugin.prefix} already exists`);
+
+        plugins.add(plugin);
+    }
+
+    export function getPlugins(): Array<Runner.Plugin> {
+        return [...plugins.values()];
+    }
+
+    /** Removes a plugin from the runner plugin list
+     * @returns true if plugin was removed or false if plugin wasn't found
+      */
+    export function removePlugin(plugin: Plugin): boolean {
+        return plugins.delete(plugin);
+    }
 
     export function RunnerWindow(props?: RunnerProps): (Widget.Window|null) {
         let subs: Array<() => void> = [];
         const entryText: Variable<string> = new Variable<string>("");
-        let results: (Array<ResultWidget>|null) = props?.resultsPlaceholder ? props.resultsPlaceholder() : null;
-        let selectedResultIndex = 0;
 
         const searchEntry = new Widget.Entry({
             className: "search",
             onChanged: (entry) => entryText.set(entry.text),
             placeholderText: props?.entryPlaceHolder || "",
-            onActivate: (_) => {
+            onActivate: (entry) => {
                 const resultWidget = resultsList.get_selected_row()?.get_child();
                 if(resultWidget instanceof ResultWidget) {
                     resultWidget.onClick();
-                    _.isFocus = false;
+                    entry.isFocus = false;
                 }
             },
             primary_icon_name: "system-search"
@@ -80,54 +99,44 @@ export namespace Runner {
             expand: true
         } as Gtk.ListBox.ConstructorProps);
 
-        subs.push(entryText().subscribe((text: string) => {
-            const trimmedText = text.trim();
-            const pluginResult: (ResultWidget|Array<ResultWidget>|null|undefined) = handlePrefix(
-                trimmedText)?.(trimmedText.replace(trimmedText.charAt(0), ""));
-            results = Boolean(pluginResult) ? 
-                (!Array.isArray(pluginResult) ?
-                    [ pluginResult! ]
-                : pluginResult) 
-            : null;
+        function updateResultsList(entryText: string) {
+            const calledPlugins: Array<Plugin> = getPlugins().filter((plugin) => plugin.prefix && entryText.startsWith(plugin.prefix) ?
+                plugin : null).concat(getPlugins().filter(plugin => plugin.prefix === undefined));
 
-            if(resultsList.get_children().length > 0) {
-                resultsList.get_children().map((listItem: Gtk.Widget) => {
-                    resultsList.remove(listItem);
-                    listItem.destroy();
-                });
-            }
+            const widgets: Array<ResultWidget> = calledPlugins.map(plugin => plugin.handle(
+                plugin.prefix ? entryText.replace(plugin.prefix, "") : entryText
+            )).filter(value => value !== undefined && value !== null).flat(1);
+            
+            // Remove all previous results
+            resultsList.get_children().map((listItem: Gtk.Widget) => {
+                resultsList.remove(listItem);
+                listItem.destroy();
+            });
 
-            if(results && results.length > 0 && searchEntry.text.trim().length > 0) {
-                results.map((resultWidget: ResultWidget) => {
-                    resultsList.insert(resultWidget, -1);
+            // Insert placeholder if somehow no results are found
+            if((!entryText || !widgets || widgets.length === 0) && props?.resultsPlaceholder)
+                widgets.push(...props.resultsPlaceholder());
 
-                    const listBoxChild = resultsList.get_row_at_index(resultsList.get_children().length - 1)!;
-                    const resWidget = listBoxChild.get_child();
-                    if(listBoxChild && resWidget instanceof ResultWidget) {
-                        resultsList.connect("row-activated", (_, row: Gtk.ListBoxRow) => {
-                            const rWidget = row.get_child()!;
-                            if(rWidget instanceof ResultWidget) {
-                                if(!onClickTimeout) {
-                                    rWidget.onClick();
-                                    // Timeout, so it doesn't fire the executable a hundred times :skull:
-                                    onClickTimeout = timeout(500, () => onClickTimeout = undefined);
-                                }
-                            }
-                        });
+            // Insert results inside GtkListBox
+            widgets.map((resultWidget: ResultWidget) => {
+                resultsList.insert(resultWidget, -1);
+
+                resultsList.connect("row-activated", (_, row: Gtk.ListBoxRow) => {
+                    const rWidget = row.get_child()!;
+                    if(rWidget instanceof ResultWidget) {
+                        if(!onClickTimeout) {
+                            rWidget.onClick();
+                            // Timeout, so it doesn't fire the executable a hundred times :skull:
+                            onClickTimeout = timeout(500, () => onClickTimeout = undefined);
+                        }
                     }
                 });
-            } else {
-                if(props?.resultsPlaceholder) {
-                    const widgets = props.resultsPlaceholder();
-                    resultsList.get_children().map((res) => 
-                        resultsList.remove(res));
+            });
+        }
 
-                    widgets.map((widget) => resultsList.insert(widget, -1));
-                }
-            }
-
-            selectedResultIndex = 0;
-            resultsList.select_row(resultsList.get_row_at_index(selectedResultIndex));
+        subs.push(entryText().subscribe((text: string) => {
+            updateResultsList(text.trim());
+            resultsList.select_row(resultsList.get_row_at_index(0));
         }));
 
         if(!runnerInstance)
@@ -169,20 +178,5 @@ export namespace Runner {
             } as PopupWindowProps);
 
         return runnerInstance;
-    }
-
-    export function handlePrefix(text: string): (((a: string) => (Array<ResultWidget>|ResultWidget|null)) | null) {
-        const prefix = text.charAt(0);
-        let result: (((a: string) => ResultWidget|Array<ResultWidget>|null)|null) = null;
-
-        if(/([a-z]|[A-Z]|[0-9])/.test(prefix)) 
-            result = handleApplications;
-
-        [...prefixes.keys()].map((curPrefix: string) => {
-            if(curPrefix === prefix) 
-                result = prefixes.get(curPrefix)!;
-        });
-        
-        return result;
     }
 }
