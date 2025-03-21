@@ -21,6 +21,11 @@ export function Workspaces(): Gtk.Widget {
                         className: bind(hyprland, "focusedWorkspace").as(
                             (focusedWs: AstalHyprland.Workspace) => workspace.id === focusedWs.id ? "focus" : ""),
                         visible: true,
+                        tooltipText: bind(workspace, "lastClient").as((lastClient) => `Workspace ${workspace.id}${ lastClient ? ` - ${
+                            !lastClient.title.toLowerCase().includes(lastClient.class) ?
+                                `${lastClient.get_class()}: `
+                            : ""
+                        } ${lastClient.title}` : "" }`),
                         child: new Widget.Icon({
                             className: "last-app-icon",
                             visible: Variable.derive([
