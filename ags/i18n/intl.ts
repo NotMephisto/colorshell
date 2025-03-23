@@ -1,10 +1,8 @@
-import { Binding, GLib } from "astal";
+import { GLib } from "astal";
 
 import en_US from "./lang/en_US";
 import pt_BR from "./lang/pt_BR";
 
-
-export type i18nStruct = Record<string, string|object|Binding<string| undefined>>;
 
 const i18nKeys = {
     "en_US": en_US,

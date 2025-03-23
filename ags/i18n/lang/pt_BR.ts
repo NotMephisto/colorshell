@@ -1,4 +1,4 @@
-import { i18nStruct } from "../intl";
+import { i18nStruct } from "../struct";
 
 export default {
     language: "Português (Brasil)",
