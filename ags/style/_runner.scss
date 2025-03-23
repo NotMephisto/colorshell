@@ -4,18 +4,6 @@
   background: colors.$bg-translucent;
   padding: 12px;
   border-radius: 24px;
-  
-  & > * {
-    margin: 4px 0;
-
-    &:first-child {
-      margin-top: 0;
-    }
-
-    &:last-child {
-      margin-bottom: 0;
-    }
-  }
 
   & entry {
     background: colors.$bg-primary;
@@ -36,6 +24,14 @@
     & > *:active > .result,
     & > *:hover > .result {
       background: colors.$bg-secondary;
+    }
+
+    & > *:first-child {
+      margin-top: 12px;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
     }
   }
 
