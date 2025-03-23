@@ -66,6 +66,16 @@
       &.focus {
         background: colors.$fg-primary;
         min-width: 31px;
+
+        & label.id {
+          color: colors.$fg-light;
+          margin-right: 0;
+        }
+      }
+
+      & label.id {
+        font-weight: 600;
+        margin-right: 4px;
       }
 
       & icon {

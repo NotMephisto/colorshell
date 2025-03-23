@@ -4,6 +4,7 @@ import AstalHyprland from "gi://AstalHyprland";
 import { getAppIcon } from "../../scripts/apps";
 
 const hyprland = AstalHyprland.get_default();
+export const showWorkspaceNumbers = new Variable<boolean>(false);
 
 export function Workspaces(): Gtk.Widget {
 
@@ -26,18 +27,33 @@ export function Workspaces(): Gtk.Widget {
                                 `${lastClient.get_class()}: `
                             : ""
                         } ${lastClient.title}` : "" }`),
-                        child: new Widget.Icon({
-                            className: "last-app-icon",
-                            visible: Variable.derive([
-                                bind(workspace, "lastClient"),
-                                bind(hyprland, "focusedWorkspace")
-                            ], (lastClient, focusedWorkspace) => focusedWorkspace?.id === workspace.id ?
-                                 false : Boolean(lastClient))(),
-                            icon: bind(workspace, "lastClient").as((lastClient) =>
-                                lastClient ? 
-                                    getAppIcon(lastClient.initialClass) || "image-missing"
-                                : "image-missing")
-                        } as Widget.IconProps),
+                        child: new Widget.Box({
+                            children: [
+                                new Widget.Revealer({
+                                    transitionDuration: 120,
+                                    transitionType: Gtk.RevealerTransitionType.SLIDE_LEFT,
+                                    revealChild: showWorkspaceNumbers(),
+                                    child: new Widget.Label({
+                                        label: bind(workspace, "id").as(String),
+                                        className: "id",
+                                        xalign: 0.5,
+                                        hexpand: true,
+                                    } as Widget.LabelProps)
+                                } as Widget.RevealerProps),
+                                new Widget.Icon({
+                                    className: "last-app-icon",
+                                    visible: Variable.derive([
+                                        bind(workspace, "lastClient"),
+                                        bind(hyprland, "focusedWorkspace")
+                                    ], (lastClient, focusedWorkspace) => focusedWorkspace?.id === workspace.id ?
+                                         false : Boolean(lastClient))(),
+                                    icon: bind(workspace, "lastClient").as((lastClient) =>
+                                        lastClient ? 
+                                            getAppIcon(lastClient.initialClass) || "image-missing"
+                                        : "image-missing")
+                                } as Widget.IconProps),
+                            ]
+                        } as Widget.BoxProps),
                         onClicked: () => workspace.focus()
                     } as Widget.ButtonProps)
                 )
