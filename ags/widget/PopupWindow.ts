@@ -33,6 +33,11 @@ export type PopupWindowProps = Pick<Widget.WindowProps,
 };
 
 export function PopupWindow(props: PopupWindowProps): Widget.Window {
+    if(!props.closeAction)
+        props.closeAction = (window) => {
+            window.hide();
+        };
+
     return new Widget.Window({
         namespace: props?.namespace || "popup-window",
         className: `popup-window ${(props.namespace instanceof Binding ?
@@ -51,13 +56,13 @@ export function PopupWindow(props: PopupWindowProps): Widget.Window {
 
             if((posX < childAllocation.x || posX > (childAllocation.x + childAllocation.width)) || 
                (posY < childAllocation.y || posY > (childAllocation.y + childAllocation.height))) {
-                _.hide();
-                props?.onClose && props.onClose(_);
+                props.closeAction!(_);
+                props.onClose && props.onClose(_);
             }
         },
         onKeyPressEvent: (_, event: Gdk.Event) => {
             if(event.get_keyval()[1] === Gdk.KEY_Escape) {
-                !props.closeAction ? _.hide() : props.closeAction(_);
+                props.closeAction!(_);
                 props.onClose && props.onClose(_);
             }
 
