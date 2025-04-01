@@ -42,9 +42,10 @@ export function AskPopup(props: AskPopupProps): Gtk.Window {
         } as Widget.ButtonProps)
     ];
 
-    const window = Windows.createWindowForFocusedMonitor(PopupWindow({
+    const window = Windows.createWindowForFocusedMonitor((mon: number) => PopupWindow({
         namespace: "ask-popup",
         className: "ask-popup",
+        monitor: mon,
         exclusivity: Astal.Exclusivity.IGNORE,
         widthRequest: 350,
         heightRequest: 200,
