@@ -84,11 +84,14 @@ export const Windows = GObject.registerClass({
         if(Array.isArray(this.openWindows[name])) {
             this.#windowConnections[name] = this.openWindows[name].map(win => [
                 win.connect("map", (window) => {
+                    if(this.isVisible(name)) return;
                     this.#openWindows[name] = window;
+                    this.notify("open-windows");
                 }),
                 win.connect("destroy", () => {
                     this.disconnectWindow(name);
                     delete this.#openWindows[name];
+                    this.notify("open-windows");
                 })
             ]);
 
@@ -97,11 +100,14 @@ export const Windows = GObject.registerClass({
 
         this.#windowConnections[name] = [
             this.openWindows[name].connect("map", (window) => {
+                if(this.isVisible(name)) return;
                 this.#openWindows[name] = window;
+                this.notify("open-windows");
             }),
             this.openWindows[name].connect("destroy", () => {
                 this.disconnectWindow(name);
                 delete this.#openWindows[name];
+                this.notify("open-windows");
             })
         ];
     }
