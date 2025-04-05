@@ -8,7 +8,7 @@
 # From https://github.com/retrozinndev/Hyprland-Dots
 
 
-if [[ -f "$HOME/.cache/night-light.pid" ]]; then
-    rm "$HOME/.cache/night-light.pid"
-    sh $HOME/.config/eww/scripts/night-light.sh
+if [[ -f "$XDG_CACHE_HOME/night-light.pid" ]]; then
+    rm "$XDG_CACHE_HOME/night-light.pid"
+    sh $XDG_CONFIG_HOME/hypr/scripts/night-light.sh
 fi
