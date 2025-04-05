@@ -52,7 +52,7 @@ App.start({
 
         connections.set(Wireplumber.getDefault(), [
             Wireplumber.getDefault().getDefaultSink().connect("notify::volume", () => 
-                !Windows.isVisible("osd") && triggerOSD(OSDModes.SINK))
+                triggerOSD(OSDModes.SINK))
         ]);
 
         connections.set(Notifications.getDefault(), [
@@ -70,14 +70,15 @@ App.start({
 });
 
 function triggerOSD(osdModeParam: OSDModes) {
-    setOSDMode(osdModeParam);
+    Windows.open("osd");
 
     if(!osdTimer) {
-        Windows.open("osd");
+        setOSDMode(osdModeParam);
         osdTimer = timeout(3000, () => {
-            Windows.close("osd");
             osdTimer = undefined;
+            Windows.close("osd");
         });
+
         return;
     }
 
