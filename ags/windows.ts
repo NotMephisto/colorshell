@@ -1,4 +1,4 @@
-import { Widget } from "astal/gtk3";
+import { App, Widget } from "astal/gtk3";
 
 import { Bar } from "./window/Bar";
 import { OSD } from "./window/OSD";
@@ -42,17 +42,30 @@ export const Windows = GObject.registerClass({
     };
 
     #windowConnections: Record<string, (Array<number> | Array<Array<number>>)> = {};
+    #appConnections: Array<number> = [];
 
     get windows() { return this.#windows; }
     get openWindows(): Record<string, Widget.Window | Array<Widget.Window>> { return this.#openWindows; };
 
-    vfunc_dispose() {
-        for(const name of Object.keys(this.#windowConnections)) {
-            const window = this.openWindows[name];
-            if(!window) continue;
+    constructor() {
+        super();
 
-            this.disconnectWindow(name);
-        }
+        // Listen to monitor events
+        this.#appConnections.push(
+            App.connect("monitor-added", () => 
+                this.reopen()),
+            App.connect("monitor-removed", () => 
+                this.reopen())
+        );
+    }
+
+    vfunc_dispose() {
+        Object.keys(this.#windowConnections).map(name => 
+            this.disconnectWindow(name));
+
+        this.#appConnections.map(id => 
+            GObject.signal_handler_is_connected(App, id) && 
+                App.disconnect(id));
     }
 
     private disconnectWindow(name: keyof typeof this.windows) {
@@ -64,11 +77,18 @@ export const Windows = GObject.registerClass({
 
         this.#windowConnections[name].map((id: Array<number> | number) => {
             if(Array.isArray(window)) {
-                window.map((win, i) => win.disconnect((id as Array<number>)[i]));
+                window.map((win, i) => {
+                    const curId = (id as Array<number>)[i];
+
+                    GObject.signal_handler_is_connected(win, curId) && 
+                        win.disconnect(curId);
+                });
                 return;
             }
 
-            window.disconnect(id as number);
+            console.log(id as number);
+            GObject.signal_handler_is_connected(window, id as number) &&
+                window.disconnect(id as number);
         });
 
         delete this.#windowConnections[name];
@@ -76,6 +96,7 @@ export const Windows = GObject.registerClass({
 
     private connectWindow(name: keyof typeof this.windows) {
         if(Object.hasOwn(this.#windowConnections, name)) return;
+
         if(!this.openWindows?.[name]) {
             console.log(`${name} is not open, will not connect`);
             return;
@@ -85,6 +106,7 @@ export const Windows = GObject.registerClass({
             this.#windowConnections[name] = this.openWindows[name].map(win => [
                 win.connect("map", (window) => {
                     if(this.isVisible(name)) return;
+
                     this.#openWindows[name] = window;
                     this.notify("open-windows");
                 }),
@@ -101,6 +123,7 @@ export const Windows = GObject.registerClass({
         this.#windowConnections[name] = [
             this.openWindows[name].connect("map", (window) => {
                 if(this.isVisible(name)) return;
+
                 this.#openWindows[name] = window;
                 this.notify("open-windows");
             }),
@@ -149,7 +172,7 @@ export const Windows = GObject.registerClass({
     }
 
     public isVisible(name: keyof typeof this.windows): boolean {
-        return Object.hasOwn(this.#openWindows, name);
+        return Object.hasOwn(this.#openWindows, name) ?? Object.hasOwn(this.#windowConnections, name);
     }
 
     public open(name: keyof typeof this.windows): void {
@@ -194,5 +217,15 @@ export const Windows = GObject.registerClass({
 
     public toggle(name: keyof typeof this.windows): void {
         this.isVisible(name) ? this.close(name) : this.open(name);
+    }
+
+    public closeAll(): void {
+        Object.keys(this.openWindows).map(name => this.close(name));
+    }
+
+    public reopen(): void {
+        const openWins = Object.keys(this.openWindows);
+        this.closeAll();
+        openWins.map(name => this.open(name));
     }
 }).getDefault();
