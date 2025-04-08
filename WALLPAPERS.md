@@ -350,46 +350,150 @@ in their source link.
 - Source: [Alpha Coders](https://wall.alphacoders.com/big.php?i=1313438)
 </details>
 
+<!----------------- -->
+## Frieren: Beyond Journey's End
 <details>
   <summary>
     
-  ### Hatsune Miku and Megurine Luka
+  ### Frieren Underwater
   </summary>
   
-<img src="wallpapers/Hatsune Miku and Megurine Luka.jpg"></img>
+<img src="wallpapers/Frieren Underwater.jpg"></img>
 
-- Source: [Alpha Coders](https://wall.alphacoders.com/big.php?i=1313438)
+- Source: [Pixiv](https://www.pixiv.net/en/artworks/114234634)
 </details>
 
-- [Others (Alpha Coders)](https://alphacoders.com/vocaloid-wallpapers)
+<details>
+  <summary>
+    
+  ### Frieren Rain
+  </summary>
+  
+<img src="wallpapers/Frieren Rain.jpg"></img>
 
+- Source: [Pixiv](https://www.pixiv.net/en/artworks/114234634)
+</details>
 
-## Dan Da Dan Wallpapers
+<details>
+  <summary>
+    
+  ### Frieren Sunset
+  </summary>
+  
+<img src="wallpapers/Frieren Sunset.jpeg"></img>
 
-- [Alpha Coders](https://alphacoders.com/dandadan-wallpapers)
+- Source: [Alpha Coders](https://wall.alphacoders.com/big.php?i=1354394)
+</details>
 
-## Frieren: Beyond Journey's End Wallpapers
-<!-- TODO: Add Frieren wallpapers as in new WALLPAPERS.md format -->
-- [Alpha Coders](https://alphacoders.com/frieren-beyond-journeys-end-wallpapers)
+<details>
+  <summary>
+    
+  ### Frieren Sending Kiss
+  </summary>
+  
+<img src="wallpapers/Frieren Sending Kiss.jpeg"></img>
 
-## Hypr-chan Wallpaper
+- Source: [Alpha Coders](https://wall.alphacoders.com/big.php?i=1344010)
+</details>
 
-- [GitHub (hyprwm/Hyprland)](https://github.com/hyprwm/Hyprland)
+<details>
+  <summary>
+    
+  ### Frieren Ring
+  </summary>
+  
+<img src="wallpapers/Frieren Ring.jpeg"></img>
 
-## Gruvbox-styled Wallpapers
+- Source: [Alpha Coders](https://wall.alphacoders.com/big.php?i=1351964)
+</details>
+
+<details>
+  <summary>
+    
+  ### Frieren Night Film
+  </summary>
+  
+<img src="wallpapers/Frieren Night Film.jpeg"></img>
+
+- Source: [Wallpaper Flare](https://www.wallpaperflare.com/anime-anime-girls-sousou-no-frieren-wallpaper-yvcxe)
+</details>
+
+<details>
+  <summary>
+    
+  ### Frieren Blue
+  </summary>
+  
+<img src="wallpapers/Frieren Blue.jpeg"></img>
+
+- Source: [Alpha Coders](https://wall.alphacoders.com/big.php?i=1357998)
+</details>
+
+<!---------------- -->
+## Gruvbox-styled
+<details>
+  <summary>
+    
+  ### Balcony Girl
+  </summary>
+  
+<img src="wallpapers/Balcony Girl.png"></img>
+
+- Source: [Gruvbox Wallpapers](https://gruvbox-wallpapers.pages.dev)
+</details>
+
+<details>
+  <summary>
+    
+  ### Gruvbox Girl
+  </summary>
+  
+<img src="wallpapers/Gruvbox Girl.png"></img>
+
+- Source: [Gruvbox Wallpapers](https://gruvbox-wallpapers.pages.dev)
+</details>
 
 - [Gruvbox Wallpapers](https://gruvbox-wallpapers.pages.dev)
 
-## Linux Girl Wallpaper
-
-- [WallHere](https://wallhere.com/en/wallpaper/2284648)
-
+<!---------------- -->
 ## Genshin Impact Wallpaper(s)
+Those can be get on web events in Genshin Impact, and also on [HoYoLAB](https://hoyolab.com).
+<details>
+  <summary>
+    
+  ### Mualani!!
+  </summary>
+  
+<img src="wallpapers/Mualani!!.jpg"></img>
 
-Those can be get on web events from Genshin Impact, the game, and also on [HoYoLAB](https://hoyolab.com)
+- Source: Genshin Impact Web Event (not available anymore)
+</details>
+
 
 ## Others
+<details>
+  <summary>
+    
+  ### Hypr-chan
+  </summary>
+  
+<img src="wallpapers/Hypr-chan.png"></img>
 
+- Source: [GitHub (hyprwm/Hyprland)](https://github.com/hyprwm/Hyprland)
+</details>
+
+<details>
+  <summary>
+    
+  ### Linux Anime Girl
+  </summary>
+  
+<img src="wallpapers/Linux Anime Girl.png"></img>
+
+- Source: [WallHere](https://wallhere.com/en/wallpaper/2284648)
+</details>
+
+### More sources
 - [Pinterest](https://pinterest.com)
 - [AlphaCoders](https://alphacoders.com/bocchi-the-rock!-wallpapers)
 - [WallpaperCave](https://wallpapercave.com/bocchi-the-rock-wallpapers)
