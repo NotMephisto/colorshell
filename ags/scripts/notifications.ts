@@ -147,8 +147,9 @@ class Notifications extends GObject.Object {
     }
 
     public clearHistory(): void {
-        this.#history.reverse().map((notif) => {
-            this.#history.pop()
+        const hist = this.#history.reverse();
+        hist.map((notif) => {
+            this.#history = this.history.filter((n) => n.id !== notif.id);
             this.emit("history-removed", notif.id);
             this.notify("history");
         });
