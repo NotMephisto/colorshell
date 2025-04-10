@@ -343,6 +343,16 @@ in their source link.
 
 <details>
   <summary>
+    <b>Frieren At The Funeral</b>
+  </summary>
+  
+<img src="wallpapers/Frieren At The Funeral.jpg"></img>
+
+- Source: [Pixiv](https://www.pixiv.net/en/artworks/114234634)
+</details>
+
+<details>
+  <summary>
     <b>Frieren Sunset</b>
   </summary>
   
