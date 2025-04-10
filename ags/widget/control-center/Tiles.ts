@@ -2,10 +2,12 @@ import { Gtk, Widget } from "astal/gtk3";
 import { TileNetwork } from "./tiles/Network";
 import { TileBluetooth } from "./tiles/Bluetooth";
 import { TileDND } from "./tiles/DoNotDisturb";
+import { TileRecording } from "./tiles/Recording";
 
 export const tileList: Array<() => Gtk.Widget> = [
     TileNetwork,
     TileBluetooth,
+    TileRecording,
     TileDND
 ];
 
