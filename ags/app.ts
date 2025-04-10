@@ -18,6 +18,10 @@ import AstalNotifd from "gi://AstalNotifd";
 import { GObject } from "astal";
 
 
+const defaultWindows: Array<keyof typeof Windows.windows> = [
+    "bar"
+];
+
 let osdTimer: (Time|undefined);
 let connections = new Map<GObject.Object, (Array<number> | number)>();
 
@@ -36,7 +40,7 @@ App.start({
     },
     main() {
         console.log(`[LOG] Initialized astal instance as: ${ App.instanceName || "astal" }`);
-        App.vfunc_quit = () => {
+        App.vfunc_dispose = () => {
             console.log("[LOG] Disconnecting stuff");
             connections.forEach((v, k) => Array.isArray(v) ? 
                 v.map(id => k.disconnect(id))
@@ -66,6 +70,13 @@ App.start({
 
         console.log(`[LOG] Adding runner plugins`);
         runnerPlugins.map(plugin => Runner.addPlugin(plugin));
+
+        console.log("[LOG] Opening default windows");
+        // Open openOnStart windows
+        defaultWindows.map(name => {
+            if(Windows.isVisible(name)) return;
+            Windows.open(name);
+        });
     }
 });
 
