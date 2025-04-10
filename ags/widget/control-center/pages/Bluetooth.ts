@@ -1,21 +1,32 @@
-import { AstalIO, bind, timeout } from "astal";
+import { bind, Variable } from "astal";
 import { Gtk, Widget } from "astal/gtk3";
 import AstalBluetooth from "gi://AstalBluetooth";
 import { Page } from "./Page";
 import { Separator, SeparatorProps } from "../../Separator";
 
-let watchingDevices: boolean = false;
-let watchTimeout: (AstalIO.Time|undefined);
+
+const watchingDevices = new Variable<boolean>(false);
 
 export const BluetoothPage: Page = new Page({
     title: "Bluetooth Devices",
     description: "Manage your Bluetooth devices and add new ones.",
     className: "bluetooth",
-    setup: () => {
-        watchingDevices = true;
-        watchNewDevices();
-    },
-    onClose: stopBluetoothDevicesWatch,
+    headerButtons: () => [
+        new Widget.Button({
+            className: "discover nf",
+            label: watchingDevices(watching => !watching ? '󰑓' : '󰙦'),
+            tooltipText: watchingDevices(watching => !watching ? "Start discovering" : "Stop discovery"),
+            onClick: () => {
+                if(watchingDevices.get()) {
+                    stopBluetoothDevicesWatch();
+                    return;
+                }
+
+                watchNewDevices();
+            }
+        } as Widget.ButtonProps)
+    ],
+    onClose: () => stopBluetoothDevicesWatch(),
     pageChild: () => new Widget.Box({
         className: "connections",
         orientation: Gtk.Orientation.VERTICAL,
@@ -25,28 +36,49 @@ export const BluetoothPage: Page = new Page({
             new Widget.Box({
                 className: "paired",
                 orientation: Gtk.Orientation.VERTICAL,
-                children: bind(AstalBluetooth.get_default(), "devices").as((devices: Array<AstalBluetooth.Device>) => 
-                    devices.filter((device: AstalBluetooth.Device) => device.connected || device.paired)
-                    .map((dev: AstalBluetooth.Device) => 
-                        DeviceWidget(dev)
-                    )
-                )
+                visible: bind(AstalBluetooth.get_default(), "devices").as((devs) => 
+                    devs.filter(dev => dev.paired || dev.connected).length > 0),
+                children: bind(AstalBluetooth.get_default(), "devices").as((devs: Array<AstalBluetooth.Device>) => {
+                    const connectedDevices = devs.filter((dev: AstalBluetooth.Device) => dev.connected || dev.paired)
+
+                    return [
+                        new Widget.Label({
+                            className: "sub-header",
+                            label: "Paired Devices",
+                            xalign: 0,
+                        } as Widget.LabelProps),
+                        ...connectedDevices.map((dev: AstalBluetooth.Device) => DeviceWidget(dev))
+                    ]
+                })
             } as Widget.BoxProps),
-            Separator({
-                size: .5,
-                orientation: Gtk.Orientation.VERTICAL,
-                alpha: .7
-            } as SeparatorProps),
             new Widget.Box({
                 className: "discovered",
                 orientation: Gtk.Orientation.VERTICAL,
-                children: bind(AstalBluetooth.get_default(), "devices").as((devices: Array<AstalBluetooth.Device>) =>
-                    devices.filter((device: AstalBluetooth.Device) => !device.connected && !device.paired)
-                    .map((dev: AstalBluetooth.Device) => 
-                        DeviceWidget(dev)
-                    )
-                )
-            } as Widget.BoxProps)
+                visible: bind(AstalBluetooth.get_default(), "devices").as((devs) => 
+                    devs.filter((dev) => !dev.connected && !dev.paired).length > 0),
+                children: bind(AstalBluetooth.get_default(), "devices").as((devices: Array<AstalBluetooth.Device>) => {
+                    const discoveredDevices = devices.filter((dev: AstalBluetooth.Device) => !dev.connected && !dev.paired);
+
+                    return [
+                        new Widget.Label({
+                            className: "sub-header",
+                            label: "Others",
+                            xalign: 0
+                        } as Widget.LabelProps),
+                        ...discoveredDevices.map((dev: AstalBluetooth.Device) => DeviceWidget(dev))
+                    ]
+                })
+            } as Widget.BoxProps),
+            Separator({
+                size: .2,
+                orientation: Gtk.Orientation.VERTICAL,
+                alpha: .2
+            } as SeparatorProps),
+            new Widget.Button({
+                className: "more",
+                label: "More settings",
+                xalign: 0
+            } as Widget.ButtonProps)
         ]
     } as Widget.BoxProps)
 });
@@ -70,7 +102,8 @@ function DeviceWidget(dev: AstalBluetooth.Device): Gtk.Widget {
                     className: "alias",
                     halign: Gtk.Align.START,
                     hexpand: true,
-                    label: bind(dev, "alias")
+                    label: bind(dev, "alias").as((alias) => alias.split('-').length === 6 ? 
+                        `Unknown (${alias})` : alias)
                 } as Widget.LabelProps),
                 new Widget.Label({
                     className: "battery",
@@ -86,30 +119,13 @@ function DeviceWidget(dev: AstalBluetooth.Device): Gtk.Widget {
 }
 
 function watchNewDevices(): void {
-    if(!watchTimeout) {
-        watchTimeout = timeout(5000, () => {
-            reloadBluetoothDevicesList(2500);
-            watchNewDevices();
-            watchTimeout = undefined;
-        });
-
-        return;
-    }
-
-    stopBluetoothDevicesWatch();
+    watchingDevices.set(true);
+    !AstalBluetooth.get_default().adapter.discovering && 
+        AstalBluetooth.get_default().adapter.start_discovery();
 }
 
 export function stopBluetoothDevicesWatch(): void {
-    watchingDevices = false;
-    watchTimeout?.cancel();
-    watchTimeout = undefined;
-
+    watchingDevices.set(false);
     AstalBluetooth.get_default().adapter.discovering && 
         AstalBluetooth.get_default().adapter.stop_discovery();
-}
-
-export function reloadBluetoothDevicesList(discoveryTimeout?: number): void {
-    AstalBluetooth.get_default().adapter.start_discovery();
-    timeout(discoveryTimeout || 2500, () => 
-        AstalBluetooth.get_default().adapter.stop_discovery());
 }
