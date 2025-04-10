@@ -8,7 +8,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Kessoku Band Rooftop (cropped borders)
+  **Kessoku Band Rooftop (cropped borders)**
   </summary>
   
 <img src="wallpapers/Kessoku Band Rooftop.jpeg"></img>
@@ -20,7 +20,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Bocchi The Rock! (the wallpaper)
+  **Bocchi The Rock! (the wallpaper)**
   </summary>
   
 <img src="wallpapers/Bocchi The Rock!.png"></img>
@@ -31,7 +31,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Ryo Yamada Maid Dress
+  **Ryo Yamada Maid Dress**
   </summary>
   
 <img src="wallpapers/Ryo Yamada Maid Dress.png"></img>
@@ -42,7 +42,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Ryo Yamada
+  **Ryo Yamada**
   </summary>
   
 <img src="wallpapers/Ryo Yamada.png"></img>
@@ -53,7 +53,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Ryo Vending Machine
+  **Ryo Vending Machine**
   </summary>
   
 <img src="wallpapers/Ryo Vending Machine.png"></img>
@@ -64,7 +64,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Nijika Train
+  **Nijika Train**
   </summary>
   
 <img src="wallpapers/Nijika Train.jpeg"></img>
@@ -75,7 +75,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Nijika Ijichi
+  **Nijika Ijichi**
   </summary>
   
 <img src="wallpapers/Nijika Ijichi.jpg"></img>
@@ -86,7 +86,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Kita Street
+  **Kita Street**
   </summary>
   
 <img src="wallpapers/Kita Street.jpeg"></img>
@@ -97,7 +97,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Kita-chan!!
+  **Kita-chan!!**
   </summary>
   
 <img src="wallpapers/Kita-chan!!.jpg"></img>
@@ -108,7 +108,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Kikuri Hiroi
+  **Kikuri Hiroi**
   </summary>
   
 <img src="wallpapers/Kikuri Hiroi.jpg"></img>
@@ -119,7 +119,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Kessoku Band Reunited
+  **Kessoku Band Reunited**
   </summary>
   
 <img src="wallpapers/Kessoku Band Reunited.jpg"></img>
@@ -130,7 +130,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Kessoku Albums
+  **Kessoku Albums**
   </summary>
   
 <img src="wallpapers/Kessoku Albums.jpeg"></img>
@@ -141,7 +141,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Hitori Gotoh College Corridor
+  **Hitori Gotoh College Corridor**
   </summary>
   
 <img src="wallpapers/Hitori Gotoh College Corridor.png"></img>
@@ -152,7 +152,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Garden Kita
+  **Garden Kita**
   </summary>
   
 <img src="wallpapers/Garden Kita.png"></img>
@@ -166,7 +166,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Arch Linux Miku
+  **Arch Linux Miku**
   </summary>
   
 <img src="wallpapers/Arch Linux Miku.jpg"></img>
@@ -177,7 +177,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Gumi Bridge
+  **Gumi Bridge**
   </summary>
   
 <img src="wallpapers/Gumi Bridge.jpg"></img>
@@ -188,7 +188,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Gumi VOCALOID
+  **Gumi VOCALOID**
   </summary>
   
 <img src="wallpapers/Gumi VOCALOID.png"></img>
@@ -199,7 +199,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Miku Stylish with Glasses
+  **Miku Stylish with Glasses**
   </summary>
   
 <img src="wallpapers/Miku Stylish with Glasses.jpg"></img>
@@ -210,7 +210,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Miku Winter
+  **Miku Winter**
   </summary>
   
 <img src="wallpapers/Miku Winter.jpg"></img>
@@ -221,7 +221,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Vocaloid Karaoke
+  **Vocaloid Karaoke**
   </summary>
   
 <img src="wallpapers/Vocaloid Karaoke.jpg"></img>
@@ -232,7 +232,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Miku, Rin and Luka Chibi
+  **Miku, Rin and Luka Chibi**
   </summary>
   
 <img src="wallpapers/Miku, Rin and Luka Chibi.jpg"></img>
@@ -243,7 +243,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Miku Guitar
+  **Miku Guitar**
   </summary>
   
 <img src="wallpapers/Miku Guitar.jpg"></img>
@@ -254,7 +254,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Miku Garden
+  **Miku Garden**
   </summary>
   
 <img src="wallpapers/Miku Garden.jpg"></img>
@@ -265,7 +265,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Miku Setup
+  **Miku Setup**
   </summary>
   
 <img src="wallpapers/Miku Setup.png"></img>
@@ -276,7 +276,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Miku Flower Field
+  **Miku Flower Field**
   </summary>
   
 <img src="wallpapers/Miku Flower Field.jpg"></img>
@@ -287,7 +287,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Miku Door
+  **Miku Door**
   </summary>
   
 <img src="wallpapers/Miku Door.png"></img>
@@ -298,7 +298,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Miku Crying with Mask
+  **Miku Crying with Mask**
   </summary>
   
 <img src="wallpapers/Miku Crying with Mask.jpg"></img>
@@ -309,7 +309,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Miku City Sky
+  **Miku City Sky**
   </summary>
   
 <img src="wallpapers/Miku City Sky.png"></img>
@@ -320,7 +320,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Miku Bush
+  **Miku Bush**
   </summary>
   
 <img src="wallpapers/Miku Bush.jpg"></img>
@@ -331,7 +331,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Hatsune Miku Birthday!
+  **Hatsune Miku Birthday!**
   </summary>
   
 <img src="wallpapers/Hatsune Miku Birthday!.png"></img>
@@ -342,7 +342,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Hatsune Miku and Megurine Luka
+  **Hatsune Miku and Megurine Luka**
   </summary>
   
 <img src="wallpapers/Hatsune Miku and Megurine Luka.jpg"></img>
@@ -355,7 +355,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Frieren Underwater
+  **Frieren Underwater**
   </summary>
   
 <img src="wallpapers/Frieren Underwater.jpg"></img>
@@ -366,7 +366,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Frieren Rain
+  **Frieren Rain**
   </summary>
   
 <img src="wallpapers/Frieren Rain.jpg"></img>
@@ -377,7 +377,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Frieren Sunset
+  **Frieren Sunset**
   </summary>
   
 <img src="wallpapers/Frieren Sunset.jpeg"></img>
@@ -388,7 +388,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Frieren Sending Kiss
+  **Frieren Sending Kiss**
   </summary>
   
 <img src="wallpapers/Frieren Sending Kiss.jpeg"></img>
@@ -399,7 +399,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Frieren Ring
+  **Frieren Ring**
   </summary>
   
 <img src="wallpapers/Frieren Ring.jpeg"></img>
@@ -410,7 +410,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Frieren Night Film
+  **Frieren Night Film**
   </summary>
   
 <img src="wallpapers/Frieren Night Film.jpeg"></img>
@@ -421,7 +421,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Frieren Blue
+  **Frieren Blue**
   </summary>
   
 <img src="wallpapers/Frieren Blue.jpeg"></img>
@@ -434,7 +434,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Balcony Girl
+  **Balcony Girl**
   </summary>
   
 <img src="wallpapers/Balcony Girl.png"></img>
@@ -445,7 +445,7 @@ in their source link.
 <details>
   <summary>
     
-  #### Gruvbox Girl
+  **Gruvbox Girl**
   </summary>
   
 <img src="wallpapers/Gruvbox Girl.png"></img>
@@ -461,7 +461,7 @@ Those can be get on web events in Genshin Impact, and also on [HoYoLAB](https://
 <details>
   <summary>
     
-  #### Mualani!!
+  **Mualani!!**
   </summary>
   
 <img src="wallpapers/Mualani!!.jpg"></img>
@@ -474,7 +474,7 @@ Those can be get on web events in Genshin Impact, and also on [HoYoLAB](https://
 <details>
   <summary>
     
-  #### Hypr-chan
+  **Hypr-chan**
   </summary>
   
 <img src="wallpapers/Hypr-chan.png"></img>
@@ -485,7 +485,7 @@ Those can be get on web events in Genshin Impact, and also on [HoYoLAB](https://
 <details>
   <summary>
     
-  #### Linux Anime Girl
+  **Linux Anime Girl**
   </summary>
   
 <img src="wallpapers/Linux Anime Girl.png"></img>
