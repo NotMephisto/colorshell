@@ -14,7 +14,7 @@ export function Workspaces(): Gtk.Widget {
         child: new Widget.Box({
             className: "workspaces",
             children: bind(hyprland, "workspaces").as((workspaces) => {
-                const sortedWorkspaces = workspaces.sort(
+                const sortedWorkspaces = workspaces.filter(ws => ws.id > 0).sort(
                     (a: AstalHyprland.Workspace, b: AstalHyprland.Workspace) => a.get_id() - b.get_id());
 
                 return sortedWorkspaces.map((workspace: AstalHyprland.Workspace) => 
