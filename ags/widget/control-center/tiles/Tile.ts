@@ -10,6 +10,7 @@ export type TileProps = {
     title: string | Binding<string | undefined>;
     description?: string | Binding<string | undefined>;
     toggleState?: boolean | Binding<boolean | undefined>;
+    enableOnClickMore: boolean | Binding<boolean | undefined>;
     onToggledOn: () => void;
     onToggledOff: () => void;
     onClickMore?: () => void;
@@ -97,7 +98,13 @@ export function Tile(props: TileProps): (() => Widget.EventBox) {
                         icon: "go-next-symbolic",
                         css: "icon { font-size: 16px; }"
                     }),
-                    onClick: () => props.onClickMore && props?.onClickMore(),
+                    onClick: () => {
+                        ((props.enableOnClickMore instanceof Binding) ? 
+                            props.enableOnClickMore.get()
+                        : props.enableOnClickMore) && props?.onToggledOn();
+
+                        props.onClickMore && props?.onClickMore()
+                    },
                     widthRequest: 32
                 })
             ]
