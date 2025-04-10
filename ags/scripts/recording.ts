@@ -1,37 +1,41 @@
-import { execAsync, GLib, GObject, property, register, signal } from "astal";
-import { Connectable } from "astal/binding";
+import { execAsync, Gio, GLib, GObject } from "astal";
+import { property, register, signal } from "astal/gobject";
 import { Gdk } from "astal/gtk3";
 import { getDateTime } from "./time";
-import { getUserDirs } from "./utils";
+import { makeDirectory } from "./utils";
 
-@register({ GTypeName: "ScreenRecording" })
-class Recording extends GObject.Object implements Connectable {
+export { Recording };
 
+@register({ GTypeName: "Recording" })
+class Recording extends GObject.Object {
     private static instance: Recording;
 
     @signal()
     declare started: () => void;
-    @signal(String)
-    declare stopped: (outputFile: string) => void;
-    @signal(String)
-    declare outputChanged: (newPath: string) => void;
+    @signal()
+    declare stopped: () => void;
 
     #recording: boolean = false;
-    #path: string = GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_VIDEOS) || `${GLib.get_home_dir()}/Recordings`;
+    #path: string = "~/Recordings";
 
     /** Default extension: mp4(h264) */
     #extension: string = "mp4";
     #recordAudio: boolean = false;
-    #monitor: (number|null) = null;
     #area: (Gdk.Rectangle|null) = null;
-    #pid: (number|null) = null;
+    #startedAt: (GLib.DateTime|null) = null;
+    #process: (Gio.Subprocess|null) = null;
+    #output: (string|null) = null;
+
+    @property()
+    /** GLib.DateTime of when recording started */
+    public get startedAt() { return this.#startedAt; }
 
     @property(Boolean)
     public get recording() { return this.#recording; }
     private set recording(newValue: boolean) {
-        (!newValue && this.recording) ? 
+        (!newValue && this.#recording) ? 
             this.stopRecording() 
-        : this.startRecording(this.#monitor || 0, this.#area || undefined);
+        : this.startRecording(this.#area || undefined);
 
         this.#recording = newValue;
         this.notify("recording");
@@ -40,6 +44,8 @@ class Recording extends GObject.Object implements Connectable {
     @property(String)
     public get path() { return this.#path; }
     public set path(newPath: string) {
+        if(this.recording) return;
+
         this.#path = newPath;
         this.notify("path");
     }
@@ -47,19 +53,28 @@ class Recording extends GObject.Object implements Connectable {
     @property(String)
     public get extension() { return this.#extension; }
     public set extension(newExt: string) {
+        if(this.recording) return;
+
         this.#extension = newExt;
         this.notify("extension");
     }
 
-    @property(Boolean)
+    /** Recording output file name. %NULL if screen is not being recorded */
+    public get output() { return this.#output; }
+
+    /** Currently unsupported property */
     public get recordAudio() { return this.#recordAudio; }
     public set recordAudio(newValue: boolean) {
+        if(this.recording) return;
+
         this.#recordAudio = newValue;
         this.notify("record-audio");
     }
 
     constructor() {
         super();
+        const videosDir = GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_VIDEOS);
+        if(videosDir) this.#path = `${videosDir}/Recordings`;
     }
 
     public static getDefault() {
@@ -69,28 +84,67 @@ class Recording extends GObject.Object implements Connectable {
         return this.instance;
     }
 
-    public startRecording(monitor?: number, area?: Gdk.Rectangle) {
-        if(this.#recording) 
+    public startRecording(area?: Gdk.Rectangle) {
+        if(this.recording) 
             throw new Error("Screen Recording is already running!");
 
-        const output = `${getDateTime().get().format("%Y-%m-%d-%H%M%S")}_rec.${this.extension || "mp4"}`;
+        this.#output = `${getDateTime().get().format("%Y-%m-%d-%H%M%S")}_rec.${this.extension || "mp4"}`;
         this.#recording = true;
+        this.notify("recording");
         this.emit("started");
-        execAsync([
-            `sh ${ GLib.get_user_config_dir()}/ags/scripts/sh/recording.sh`, 
-            `${ area ? `-g ${area?.x || 0},${area?.y || 0} ${area?.width || 1}x${area?.height || 1}` : "" }`, 
-            `-f ${output}`
-        ]).then(async (stdout: string) => {
-            const pid: number = Number.parseInt(
-                (await execAsync(`echo ${stdout} | head -n 1`)).split(':')[1]);
+        makeDirectory(this.path);
 
-            this.#pid = pid;
+        const cancellable = Gio.Cancellable.new();
+        cancellable.cancel = () => {};
+
+        const areaString = `${area?.x ?? 0},${area?.y ?? 0} ${area?.width ?? 1}x${area?.height ?? 1}`;
+
+        this.#process = Gio.Subprocess.new([
+            "wf-recorder", 
+            ...(area ? [ `-g`, areaString ] : []),
+            "-f",
+            `${this.path}/${this.output!}`
+        ], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
+
+        this.#process.wait_async(cancellable, () => {
+            this.stopRecording();
         });
+
+        this.#startedAt = getDateTime().get();
     }
 
     public stopRecording() {
+        if(!this.#process) return;
 
+        !this.#process.get_if_exited() && execAsync([
+            "kill", "-s", "SIGTERM", this.#process.get_identifier()!
+        ]);
+
+        const path = this.#path;
+        const output = this.#output;
+
+        this.#process = null;
+        this.#recording = false;
+        this.#startedAt = null;
+        this.#output = null;
+        this.notify("recording");
+        this.emit("stopped");
+
+        execAsync([
+            "notify-send", "-A", "View", 
+            "-A", "Open", "-a", "Screen Recording", 
+            "Screen recording saved",
+            `Saved as ${path}/${output}`
+        ]).then((stdout: string) => {
+            stdout = stdout.replaceAll('\n', "").trim();
+            if(stdout.length > 1 || stdout === "") return;
+
+            const selected = Number.parseInt(stdout);
+            if(selected === 0) 
+                execAsync(["nautilus", "-s", output!, path]);
+
+            if(selected === 1)
+                execAsync(["xdg-open", `${path}/${output}`]);
+        });
     }
-}
-
-export { Recording };
+};
