@@ -20,10 +20,10 @@ It really took me a lot of time to make this, so please star the repo if you lik
 - Super cool media controller
 - Gnome-like application runner(the fullscreen one)
 - Support for multiple monitors
+- Screen Recording support(wf-recorder needed)
 
 ## 🔘 TODO
 - More Control Center Tiles:
-  - Screen Recording
   - Night Light
 - Per-app Volume(low priority)
 - Maybe a settings app in the future? ✨
