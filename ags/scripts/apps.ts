@@ -36,7 +36,7 @@ export function getAppsByName(appName: string): (Array<AstalApps.Application>|un
     return (found.length > 0 ? found : undefined);
 }
 
-export function getAppIcon(appName: string): (string|undefined) {
+export function getIconByAppName(appName: string): (string|undefined) {
     if(Astal.Icon.lookup_icon(appName))
        return appName;
 
@@ -51,5 +51,18 @@ export function getAppIcon(appName: string): (string|undefined) {
     if(Boolean(found))
         return found?.iconName;
 
-    return "application-x-executable-symbolic";
+    return undefined;
+}
+
+export function getAppIcon(app: (string|AstalApps.Application)): (string|undefined) {
+    if(typeof app === "string")
+        return getIconByAppName(app);
+
+    if(app.iconName)
+        return app.iconName;
+
+    if(app.wmClass)
+        return getIconByAppName(app.wmClass);
+
+    return getIconByAppName(app.name);
 }
