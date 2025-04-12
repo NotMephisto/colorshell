@@ -23,6 +23,10 @@ export function NotificationWidget(notification: AstalNotifd.Notification|number
         AstalNotifd.get_default().get_notification(notification)
     : notification;
 
+    const body: string = notification.body.split(' ').map(strPart =>
+        strPart.length >= 25 ? `${strPart.substring(0, 22)}...`
+        : strPart).join(' ');
+
     return new Widget.EventBox({
         onClick: () => {
             if(notification instanceof AstalNotifd.Notification) {
@@ -118,7 +122,7 @@ export function NotificationWidget(notification: AstalNotifd.Notification|number
                                     xalign: 0,
                                     truncate: false,
                                     wrap: true,
-                                    label: notification.body.replace(/\&/g, "&amp;")
+                                    label: body.replace(/\&/g, "&amp;")
                                 } as Widget.LabelProps)
                             ]
                         } as Widget.BoxProps)
