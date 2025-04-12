@@ -58,7 +58,7 @@ export function getAppIcon(app: (string|AstalApps.Application)): (string|undefin
     if(typeof app === "string")
         return getIconByAppName(app);
 
-    if(app.iconName)
+    if(app.iconName && Astal.Icon.lookup_icon(app.iconName))
         return app.iconName;
 
     if(app.wmClass)
