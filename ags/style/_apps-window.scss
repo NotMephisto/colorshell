@@ -5,6 +5,7 @@
 
 .apps-window-container {
   padding: 24px;
+  background: rgba(0, 0, 0, .2);
 
   & > entry {
     background: rgba(colors.$bg-primary, .4);
@@ -37,6 +38,7 @@
 
         & label {
           margin-top: 6px;
+          text-shadow: 1px 1px 1px rgba(colors.$bg-primary, .2);
         }
       }
 
