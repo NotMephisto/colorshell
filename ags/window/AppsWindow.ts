@@ -2,6 +2,7 @@ import { GObject, Variable } from "astal";
 import { Astal, Gdk, Gtk, Widget } from "astal/gtk3";
 import { cleanExec, getAppIcon, getApps, getAstalApps } from "../scripts/apps";
 import AstalApps from "gi://AstalApps";
+import { BackgroundWindow } from "../widget/BackgroundWindow";
 
 const { TOP, LEFT, RIGHT, BOTTOM } = Astal.WindowAnchor;
 
@@ -105,6 +106,8 @@ export const AppsWindow = (mon: number): (Widget.Window) => {
         return button;
     }
 
+    const bgWindow = BackgroundWindow(null, () => window.close(), () => window.close());
+
     const window = new Widget.Window({
         namespace: "apps-window",
         layer: Astal.Layer.OVERLAY,
@@ -112,9 +115,9 @@ export const AppsWindow = (mon: number): (Widget.Window) => {
         anchor: TOP | LEFT | RIGHT | BOTTOM,
         keymode: Astal.Keymode.EXCLUSIVE,
         monitor: mon,
+        marginTop: 64,
         onDestroy: () => {
-            searchString.set("");
-            entry.text = "";
+            bgWindow.close();
             searchSubscription?.();
             flowboxConnections.map(id => flowbox.disconnect(id));
         },
@@ -153,12 +156,16 @@ export const AppsWindow = (mon: number): (Widget.Window) => {
                 orientation: Gtk.Orientation.VERTICAL,
                 children: [
                     entry,
-                    new Widget.Scrollable({
-                        vscroll: Gtk.PolicyType.AUTOMATIC,
-                        hscroll: Gtk.PolicyType.NEVER,
-                        expand: true,
-                        child: flowbox
-                    } as Widget.ScrollableProps)
+                    new Widget.Box({
+                        className: "apps-area",
+                        child: new Widget.Scrollable({
+                            vscroll: Gtk.PolicyType.AUTOMATIC,
+                            hscroll: Gtk.PolicyType.NEVER,
+                            overlayScrolling: true,
+                            expand: true,
+                            child: flowbox
+                        } as Widget.ScrollableProps)
+                    } as Widget.BoxProps)
                 ]
             } as Widget.BoxProps)
         } as Widget.EventBoxProps),
