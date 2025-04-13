@@ -1,12 +1,21 @@
-import { execAsync, GLib } from "astal";
+import { exec, execAsync, GLib } from "astal";
+
+
+export function getHyprlandInstanceSig(): (string|null) {
+    return GLib.getenv("HYPRLAND_INSTANCE_SIGNATURE");
+}
+
+export function getHyprlandVersion(): string {
+    return exec(`${GLib.getenv("HYPRLAND_CMD") || "Hyprland"} --version | head -n1`).split(" ")[1];
+}
 
 export function getUserDirs() {
     return {
-        home: GLib.getenv("HOME"),
-        state: GLib.getenv("XDG_STATE_HOME"),
-        cache: GLib.getenv("XDG_CACHE_HOME"),
-        config: GLib.getenv("XDG_CONFIG_HOME"),
-        data: GLib.getenv("XDG_DATA_HOME")
+        home: GLib.get_home_dir(),
+        state: GLib.get_user_state_dir(),
+        cache: GLib.get_user_cache_dir(),
+        config: GLib.get_user_config_dir(),
+        data: GLib.get_user_data_dir()
     };
 }
 
