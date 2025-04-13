@@ -76,7 +76,7 @@ export function NotificationWidget(notification: AstalNotifd.Notification|number
                                     xalign: 1,
                                     visible: !showTime ? false : true,
                                     className: "time",
-                                    label: GLib.DateTime.new_from_unix_utc(notification.time).format("%H:%M"),
+                                    label: GLib.DateTime.new_from_unix_local(notification.time).format("%H:%M"),
                                 } as Widget.LabelProps),
                                 new Widget.Button({
                                     className: "close nf",
