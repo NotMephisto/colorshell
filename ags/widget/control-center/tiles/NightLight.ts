@@ -1,10 +1,21 @@
+import { bind } from "astal";
 import { Tile, TileProps } from "./Tile";
+import { NightLight } from "../../../scripts/nightlight";
+import { togglePage } from "../Pages";
+import { PageNightLight } from "../pages/NightLight";
+import { tr } from "../../../i18n/intl";
 
 export const TileNightLight = Tile({
-    title: "Luz Noturna",
+    title: tr("control_center.tiles.night_light.title"),
     icon: "󰖔",
+    description: bind(NightLight.getDefault(), "temperature").as((temp) => 
+        temp === 10000 ? tr("control_center.tiles.night_light.default_desc") 
+            : `${temp}K`),
     iconSize: 16,
-    onToggledOff: () => false,
-    onToggledOn: () => true,
-    toggleState: false
+    onToggledOff: () => NightLight.getDefault().identity = true,
+    onToggledOn: () => NightLight.getDefault().identity = false,
+    enableOnClickMore: true,
+    onClickMore: () => togglePage(PageNightLight),
+    toggleState: bind(NightLight.getDefault(), "identity").as(identity =>
+        identity ? false : true)
 } as TileProps);
