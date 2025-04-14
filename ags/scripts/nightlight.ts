@@ -1,5 +1,4 @@
-import { GObject, property, register } from "astal";
-import AstalHyprland from "gi://AstalHyprland?version=0.1";
+import { AstalIO, execAsync, GObject, interval, property, register } from "astal";
 
 export { NightLight };
 
@@ -7,34 +6,122 @@ export { NightLight };
 class NightLight extends GObject.Object {
     private static instance: NightLight;
 
+    #watchInterval: (AstalIO.Time|null) = null;
     #temperature: number = 4500;
     #gamma: number = 100;
+    #identity: boolean = false;
+
+    #prevTemperature: (number|null) = null;
+    #prevGamma: (number|null) = null;
 
     @property(Number)
     public get temperature() { return this.#temperature; }
-    public set temperature(newValue: number) {
-        if(newValue < 0) return;
-
-        AstalHyprland.get_default().dispatch("hyprsunset", `temperature ${newValue}`);
-        this.#temperature = newValue;
-        this.notify("temperature");
-    }
+    public set temperature(newValue: number) { this.setTemperature(newValue); }
 
     @property(Number)
     public get gamma() { return this.#gamma; }
-    public set gamma(newValue: number) {
-        if(newValue < 0) return;
+    public set gamma(newValue: number) { this.setGamma(newValue); }
 
-        AstalHyprland.get_default().dispatch("hyprsunset", `gamma ${newValue}`);
-        this.#gamma = newValue;
-        this.notify("gamma");
+    @property(Number)
+    public get maxTemperature() { return 20000; }
+
+    @property(Number)
+    public get maxGamma() { return 100; }
+
+    @property(Boolean)
+    public get identity() { return this.#identity; }
+    public set identity(newValue: boolean) {
+        newValue ? this.applyIdentity() : this.filter();
     }
 
+    constructor() {
+        super();
 
-    public static getDefault() {
+        this.#watchInterval = interval(500, () => {
+            execAsync("hyprctl hyprsunset temperature").then(t => {
+                if(t.trim() !== "" && t.trim().length <= 5) {
+                    const val = Number.parseInt(t.trim());
+
+                    if(this.#temperature !== val)
+                        this.temperature = val;
+                }
+            }).catch((r) => console.error(r));
+
+            execAsync("hyprctl hyprsunset gamma").then(g => {
+                if(g.trim() !== "" && g.trim().length <= 5) {
+                    const val = Number.parseInt(g.trim());
+
+                    if(this.#gamma !== val) 
+                        this.gamma = val;
+                }
+            }).catch((r) => console.error(r));
+        });
+
+        this.vfunc_dispose = () => this.#watchInterval && 
+            this.#watchInterval.cancel();
+    }
+
+    public static getDefault(): NightLight {
         if(!this.instance)
             this.instance = new NightLight();
 
         return this.instance;
+    }
+
+    private async setTemperature(value: number): Promise<void> {
+        if(value === this.temperature) return;
+
+        if(value > this.maxTemperature || value < 1000) {
+            console.error(`Night Light(hyprsunset): provided temperatue ${value
+                } is out of bounds (min: 1000; max: ${this.maxTemperature})`);
+            return;
+        }
+
+        execAsync(`hyprctl hyprsunset temperature ${value}`).then(() => {
+            this.#temperature = value;
+            this.notify("temperature");
+        }).catch((r) => console.error(
+            `Night Light(hyprsunset): Couldn't set temperature. Stderr: ${r}`
+        ));
+    }
+
+    private async setGamma(value: number) {
+        if(value === this.gamma) return;
+
+        if(value > this.maxGamma || value < 0) {
+            console.error(`Night Light(hyprsunset): provided gamma ${value
+                } is out of bounds (min: 0; max: ${this.maxTemperature})`);
+            return;
+        }
+
+        execAsync(`hyprctl hyprsunset gamma ${value}`).then(() => {
+            this.#gamma = value;
+            this.notify("gamma");
+        }).catch((r) => console.error(
+            `Night Light(hyprsunset): Couldn't set gamma. Stderr: ${r}`
+        ));
+    }
+
+    private applyIdentity(): void {
+        if(this.#identity) return;
+
+        this.#prevGamma = this.#gamma;
+        this.#prevTemperature = this.#temperature;
+
+        execAsync("hyprctl hyprsunset identity").then(() => {
+            this.#identity = true;
+            this.temperature = 10000;
+            this.gamma = this.maxGamma;
+        }).catch((r) => console.error(
+            `Night Light(hyprsunset): Couldn't set filters to identity(no filters). Stderr: ${r}`
+        ));
+    }
+
+    public filter(): void {
+        if(!this.#identity) return;
+
+        this.#identity = false;
+        this.setTemperature(this.#prevTemperature ?? 1000);
+        this.setGamma(this.#prevGamma ?? 100);
     }
 }
