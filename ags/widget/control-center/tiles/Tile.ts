@@ -10,7 +10,7 @@ export type TileProps = {
     title: string | Binding<string | undefined>;
     description?: string | Binding<string | undefined>;
     toggleState?: boolean | Binding<boolean | undefined>;
-    enableOnClickMore: boolean | Binding<boolean | undefined>;
+    enableOnClickMore?: boolean | Binding<boolean | undefined>;
     onToggledOn: () => void;
     onToggledOff: () => void;
     onClickMore?: () => void;
