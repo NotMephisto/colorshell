@@ -8,28 +8,24 @@ import { LogoutMenu } from "./window/LogoutMenu";
 import { FloatingNotifications } from "./window/FloatingNotifications";
 import { AppsWindow } from "./window/AppsWindow";
 import AstalHyprland from "gi://AstalHyprland";
-import { GObject } from "astal";
+import { GObject, property, register, signal } from "astal";
 
 /**
- * get open windows / interact with windows(e.g.: close, open or toggle)
+ * Windowing System
+ * Possible actions: getting window states(visible or not), close, open or toggle windows,
+ * registering windows(they are monitored through signals, and their state is changed when needed)
+ * Also contains util functions to create dynamic windows, opening the window only on focused 
+ * monitor, or all available monitors!
  */
-export const Windows = GObject.registerClass({
-    GTypeName: "Windows",
-    Signals: {
-        "open": { param_types: [ GObject.TYPE_STRING ] },
-        "close": { param_types: [ GObject.TYPE_STRING ] }
-    },
-    Properties: {
-        "open-windows": GObject.ParamSpec.jsobject(
-            "open-windows",
-            "Open Windows",
-            "A Readonly object that stores open GTK+ Windows",
-            GObject.ParamFlags.READABLE
-        )
-    }
-}, class Windows extends GObject.Object {
+@register({ GTypeName: "Windows" })
+class WindowsClass extends GObject.Object {
     #openWindows: Record<string, Widget.Window | Array<Widget.Window>> = {};
-    static #instance: (Windows | null);
+    private static instance: (WindowsClass | null);
+
+    @signal(String)
+    declare opened: () => string;
+    @signal(String)
+    declare closed: () => string;
 
     #windows: Record<string, (() => (Widget.Window | Array<Widget.Window>))> = {
         "bar": this.createWindowForMonitors(Bar),
@@ -45,6 +41,8 @@ export const Windows = GObject.registerClass({
     #appConnections: Array<number> = [];
 
     get windows() { return this.#windows; }
+
+    @property(Object)
     get openWindows(): Record<string, Widget.Window | Array<Widget.Window>> { return this.#openWindows; };
 
     constructor() {
@@ -154,11 +152,11 @@ export const Windows = GObject.registerClass({
         ];
     }
 
-    public static getDefault(): Windows {
-        if(!this.#instance)
-            this.#instance = new Windows();
+    public static getDefault(): WindowsClass {
+        if(!this.instance)
+            this.instance = new WindowsClass();
 
-        return this.#instance;
+        return this.instance;
     }
 
     /**
@@ -214,6 +212,10 @@ export const Windows = GObject.registerClass({
     public getWindows(): Array<(() => (Widget.Window | Array<Widget.Window>))> {
         return Object.values(this.windows);
     }
+    
+    public getFocusedMonitorId(): (number|null) {
+        return AstalHyprland.get_default().get_monitors().filter(mon => mon.focused)?.[0]?.id ?? null;
+    }
 
     public isVisible(name: keyof typeof this.windows): boolean {
         return Object.hasOwn(this.#openWindows, name) || Object.hasOwn(this.#windowConnections, name);
@@ -228,7 +230,7 @@ export const Windows = GObject.registerClass({
 
         this.connectWindow(name);
 
-        this.emit("open", name);
+        this.emit("opened", name);
         this.notify("open-windows");
 
         if(Array.isArray(openWindows)) {
@@ -248,13 +250,13 @@ export const Windows = GObject.registerClass({
 
         if(Array.isArray(window)) {
             window.map(win => win.close());
-            this.emit("close", name);
+            this.emit("closed", name);
             this.notify("open-windows");
             return;
         }
 
         window.close();
-        this.emit("close", name);
+        this.emit("closed", name);
         this.notify("open-windows");
     }
 
@@ -271,4 +273,14 @@ export const Windows = GObject.registerClass({
         this.closeAll();
         openWins.map(name => this.open(name));
     }
-}).getDefault();
+}
+
+
+/**
+ * Windowing System
+ * Possible actions: getting window states(visible or not), close, open or toggle windows,
+ * registering windows(they are monitored through signals, and their state is changed when needed)
+ * Also contains util functions to create dynamic windows, opening the window only on focused 
+ * monitor, or all available monitors!
+ */
+export const Windows = WindowsClass.getDefault();
