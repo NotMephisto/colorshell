@@ -1,5 +1,5 @@
 import { AstalIO, timeout, Variable } from "astal";
-import { Gdk, Gtk, Widget } from "astal/gtk3";
+import { Astal, Gdk, Gtk, Widget } from "astal/gtk3";
 import { PopupWindow, PopupWindowProps } from "../widget/PopupWindow";
 import { updateApps } from "../scripts/apps";
 import { ResultWidget, ResultWidgetProps } from "../widget/runner/ResultWidget";
@@ -165,16 +165,16 @@ export namespace Runner {
             runnerInstance = Windows.createWindowForFocusedMonitor((mon: number): (Widget.Window) => PopupWindow({
                 namespace: "runner",
                 monitor: mon,
-                widthRequest: props?.width || 750,
-                heightRequest: props?.height || 0,
-                marginTop: 230,
-                valign: Gtk.Align.START,
+                widthRequest: props?.width ?? 750,
+                heightRequest: props?.height ?? 450,
+                marginTop: 240,
+                anchor: Astal.WindowAnchor.TOP | Astal.WindowAnchor.BOTTOM,
                 onKeyPressEvent: (_, event: Gdk.Event) => {
                     const keyVal = event.get_keyval()[1];
+
                     if(!searchEntry.has_focus && keyVal !== Gdk.KEY_F5 
                        && keyVal !== Gdk.KEY_Down && keyVal !== Gdk.KEY_Up
-                       && keyVal !== Gdk.KEY_KP_Enter && keyVal !== Gdk.KEY_ISO_Enter
-                       && keyVal !== Gdk.KEY_Escape) {
+                       && keyVal !== Gdk.KEY_Return) {
                         searchEntry.grab_focus_without_selecting();
                     }
 
@@ -188,6 +188,8 @@ export namespace Runner {
                 child: new Widget.Box({
                     className: "runner main",
                     orientation: Gtk.Orientation.VERTICAL,
+                    expand: false,
+                    valign: Gtk.Align.START,
                     children: [
                         searchEntry,
                         new Widget.Scrollable({
@@ -196,7 +198,7 @@ export namespace Runner {
                             hscroll: Gtk.PolicyType.NEVER,
                             expand: true,
                             propagateNaturalHeight: true,
-                            maxContentHeight: (props?.height ?? 450),
+                            maxContentHeight: props?.height ?? 450,
                             child: resultsList
                         })
                     ]
