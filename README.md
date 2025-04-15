@@ -22,9 +22,7 @@ It really took me a lot of time to make this, so please star the repo if you lik
 - Screen Recording support(wf-recorder needed)
 
 ## 🔘 TODO
-- More Control Center Tiles:
-  - Night Light
-- Per-app Volume(low priority)
+- Per-app Volume
 - Maybe a settings app in the future? ✨
 
 ## 🌄 Screenshots
