@@ -12,6 +12,7 @@ export interface HistoryNotification {
     body: string;
     summary: string;
     urgency: AstalNotifd.Urgency;
+    appIcon?: string;
     time: number;
     image?: string;
 }
@@ -137,6 +138,7 @@ class Notifications extends GObject.Object {
             body: notif.body,
             summary: notif.summary,
             urgency: notif.urgency,
+            appIcon: notif.appIcon,
             time: notif.time,
             image: notif.image ? notif.image : undefined
         } as HistoryNotification);
