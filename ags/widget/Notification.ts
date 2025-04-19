@@ -15,6 +15,21 @@ export function getUrgencyString(notif: AstalNotifd.Notification) {
     return "normal";
 }
 
+function getNotificationImage(notif: AstalNotifd.Notification|HistoryNotification): (string|undefined) {
+    const img = notif.image ?? notif.appIcon;
+    if(!img) return undefined;
+
+    if(!img.includes('/')) return undefined;
+
+    if(img.startsWith('/')) 
+        return `file://${img}`;
+
+    if(img.startsWith('~') || img.startsWith("file://~"))
+        return `file://${GLib.get_home_dir()}/${img.replace(/^(file\:\/\/|\~|file\:\/\/~)/g, "")}`;
+
+    return img;
+}
+
 export function NotificationWidget(notification: AstalNotifd.Notification|number|HistoryNotification, 
         onClose?: (notif: AstalNotifd.Notification|HistoryNotification) => void,
         showTime?: boolean /* It's showTime :speaking_head: :boom: :bangbang: */): Gtk.Widget {
@@ -23,9 +38,12 @@ export function NotificationWidget(notification: AstalNotifd.Notification|number
         AstalNotifd.get_default().get_notification(notification)
     : notification;
 
-    const body: string = notification.body.split(' ').map(strPart =>
-        strPart.length >= 25 ? `${strPart.substring(0, 22)}...`
-        : strPart).join(' ');
+    const body: string = notification.body.split(' ').map(strPart => {
+        if(/^\<.*\>.*\<.*\>$/.test(strPart)) return strPart;
+
+        return strPart.length >= 25 ? `${strPart.substring(0, 22)}...`
+        : strPart
+    }).join(' ');
 
     return new Widget.EventBox({
         onClick: () => {
@@ -100,8 +118,12 @@ export function NotificationWidget(notification: AstalNotifd.Notification|number
                     children: [
                         new Widget.Box({
                             className: "image",
-                            visible: Boolean(notification.image),
-                            css: `box.image { background-image: url('${notification.image}'); }`
+                            setup: (box) => {
+                                const img = getNotificationImage(notification);
+
+                                box.set_visible(Boolean(img));
+                                img && box.set_css(`background-image: image(url("${img}"))`);
+                            }
                         } as Widget.BoxProps),
                         new Widget.Box({
                             className: "text",
