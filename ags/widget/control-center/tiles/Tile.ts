@@ -16,7 +16,7 @@ export type TileProps = {
     onClickMore?: () => void;
 }
 
-export function Tile(props: TileProps): (() => Widget.EventBox) {
+export function Tile(props: TileProps): (() => Gtk.Widget) {
     const toggled = new Variable<boolean>(props.toggleState instanceof Binding ?
         (props.toggleState.get() || false) : (props.toggleState || false));
 
@@ -25,34 +25,42 @@ export function Tile(props: TileProps): (() => Widget.EventBox) {
     if(props?.toggleState instanceof Binding) 
         subscription = props.toggleState.subscribe(val => toggled.set(val || false));
 
-    return () => new Widget.EventBox({
-        className: toggled().as((state: boolean) => 
-            state ? "tile-eventbox toggled" : "tile-eventbox"),
+    return () => new Widget.Box({
+        className: (props.className instanceof Binding) ? 
+            Variable.derive([
+                props.className,
+                toggled()
+            ], (className, isToggled) => 
+                `tile ${className} ${isToggled ? "toggled" : ""} ${
+                    props.onClickMore ? "has-more" : ""
+                }`
+            )()
+        : toggled().as((state: boolean) => 
+            `tile ${state ? "toggled" : ""} ${
+                props.onClickMore ? "has-more" : ""
+            }`
+        ),
         expand: true,
-        onClick: () => {
-            if(toggled.get()) {
-                toggled.set(false);
-                console.log(toggled.get());
-                props.onToggledOff && props.onToggledOff();
-                return;
-            }
-
-            toggled.set(true);
-            props.onToggledOn && props.onToggledOn(); 
-        },
+        visible: props.visible,
         onDestroy: () => subscription?.(),
-        child: new Widget.Box({
-            className: (props.className instanceof Binding) ? 
-                props.className.as((clsName: (string|undefined)) => 
-                    `tile ${clsName || ""}`)
-                : `tile ${props.className || ""}`,
-            visible: props.visible,
-            expand: true,
-            hexpand: true,
-            children: [
-                new Widget.Box({
+        children: [
+            new Widget.Button({
+                className: "toggle-button",
+                onClick: () => {
+                    if(toggled.get()) {
+                        toggled.set(false);
+                        console.log(toggled.get());
+                        props.onToggledOff && props.onToggledOff();
+                        return;
+                    }
+
+                    toggled.set(true);
+                    props.onToggledOn && props.onToggledOn(); 
+                },
+                child: new Widget.Box({
                     className: "content",
                     expand: true,
+                    hexpand: true,
                     children: [
                         new Widget.Label({
                             className: "icon nf",
@@ -88,26 +96,26 @@ export function Tile(props: TileProps): (() => Widget.EventBox) {
                             ]
                         } as Widget.BoxProps)
                     ]
-                } as Widget.BoxProps),
-                new Widget.Button({
-                    className: "more icon",
-                    visible: props.onClickMore !== undefined,
-                    halign: Gtk.Align.END,
-                    tooltipText: tr("control_center.tiles.more") || "More",
-                    image: new Widget.Icon({
-                        icon: "go-next-symbolic",
-                        css: "icon { font-size: 16px; }"
-                    }),
-                    onClick: () => {
-                        ((props.enableOnClickMore instanceof Binding) ? 
-                            props.enableOnClickMore.get()
-                        : props.enableOnClickMore) && props?.onToggledOn();
+                } as Widget.BoxProps)
+            } as Widget.ButtonProps),
+            new Widget.Button({
+                className: "more icon",
+                visible: props.onClickMore !== undefined,
+                halign: Gtk.Align.END,
+                tooltipText: tr("control_center.tiles.more") || "More",
+                image: new Widget.Icon({
+                    icon: "go-next-symbolic",
+                    css: "icon { font-size: 16px; }"
+                }),
+                onClick: () => {
+                    ((props.enableOnClickMore instanceof Binding) ? 
+                        props.enableOnClickMore.get()
+                    : props.enableOnClickMore) && props?.onToggledOn();
 
-                        props.onClickMore && props?.onClickMore()
-                    },
-                    widthRequest: 32
-                })
-            ]
-        })
-    } as Widget.EventBoxProps)
+                    props.onClickMore && props?.onClickMore()
+                },
+                widthRequest: 32
+            })
+        ]
+    });
 }

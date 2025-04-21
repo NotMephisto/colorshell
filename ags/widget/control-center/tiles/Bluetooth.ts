@@ -1,8 +1,8 @@
 import { bind, Variable } from "astal";
 import { Tile, TileProps } from "./Tile";
 import AstalBluetooth from "gi://AstalBluetooth";
-import { togglePage } from "../Pages";
 import { BluetoothPage } from "../pages/Bluetooth";
+import { TilesPages } from "../Tiles";
 
 export const TileBluetooth = Tile({
     title: "Bluetooth",
@@ -12,7 +12,7 @@ export const TileBluetooth = Tile({
     }),
     onToggledOn: () => AstalBluetooth.get_default().adapter.set_powered(true),
     onToggledOff: () => AstalBluetooth.get_default().adapter.set_powered(false),
-    onClickMore: () => togglePage(BluetoothPage),
+    onClickMore: () => TilesPages?.toggle(BluetoothPage()),
     enableOnClickMore: true,
     icon: Variable.derive([
             bind(AstalBluetooth.get_default().adapter, "powered"),

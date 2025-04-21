@@ -1,9 +1,9 @@
 import { bind, Variable } from "astal";
 import { Tile, TileProps } from "./Tile";
 import { NightLight } from "../../../scripts/nightlight";
-import { togglePage } from "../Pages";
 import { PageNightLight } from "../pages/NightLight";
 import { tr } from "../../../i18n/intl";
+import { TilesPages } from "../Tiles";
 
 export const TileNightLight = Tile({
     title: tr("control_center.tiles.night_light.title"),
@@ -20,6 +20,6 @@ export const TileNightLight = Tile({
     onToggledOff: () => NightLight.getDefault().identity = true,
     onToggledOn: () => NightLight.getDefault().identity = false,
     enableOnClickMore: true,
-    onClickMore: () => togglePage(PageNightLight),
+    onClickMore: () => TilesPages?.toggle(PageNightLight()),
     toggleState: bind(NightLight.getDefault(), "identity").as(identity => !identity)
 } as TileProps);

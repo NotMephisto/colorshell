@@ -4,6 +4,7 @@ import { TileBluetooth } from "./tiles/Bluetooth";
 import { TileDND } from "./tiles/DoNotDisturb";
 import { TileRecording } from "./tiles/Recording";
 import { TileNightLight } from "./tiles/NightLight";
+import { Pages } from "./Pages";
 
 export const tileList: Array<() => Gtk.Widget> = [
     TileNetwork,
@@ -12,6 +13,8 @@ export const tileList: Array<() => Gtk.Widget> = [
     TileDND,
     TileNightLight
 ];
+
+export let TilesPages: (Pages|null) = null;
 
 export function Tiles(): Gtk.Widget {
     const tilesFlowBox: Gtk.FlowBox = new Gtk.FlowBox({
@@ -25,11 +28,29 @@ export function Tiles(): Gtk.Widget {
         homogeneous: true,
     } as Gtk.FlowBox.ConstructorProps);
 
-    tileList.map((item: (() => Gtk.Widget)) => 
-        tilesFlowBox.insert(item(), -1));
+    tileList.map((item: (() => Gtk.Widget)) => {
+        tilesFlowBox.insert(item(), -1);
+
+        const children = tilesFlowBox.get_children();
+        children[children.length-1]!.set_can_focus(false);
+    });
 
     return new Widget.Box({
         className: "tiles-container",
-        child: tilesFlowBox
+        orientation: Gtk.Orientation.VERTICAL,
+        onDestroy: () => {
+            TilesPages?.close();
+            TilesPages = null;
+        },
+        setup: (box) => {
+            if(!TilesPages) TilesPages = new Pages({
+                className: "tile-pages"
+            });
+
+            box.set_children([
+                tilesFlowBox,
+                TilesPages!
+            ]);
+        }
     } as Widget.BoxProps);
 }

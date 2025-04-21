@@ -2,9 +2,9 @@ import { bind, execAsync, Variable } from "astal";
 import { Tile, TileProps } from "./Tile";
 import AstalNetwork from "gi://AstalNetwork";
 import { Widget } from "astal/gtk3";
-import { togglePage } from "../Pages";
 import { PageNetwork } from "../pages/Network";
 import { tr } from "../../../i18n/intl";
+import { TilesPages } from "../Tiles";
 
 export const TileNetwork = () => new Widget.Box({
     child: Variable.derive([
@@ -32,7 +32,7 @@ export const TileNetwork = () => new Widget.Box({
                     )(),
                     onToggledOn: () => wifi.set_enabled(true),
                     onToggledOff: () => wifi.set_enabled(false),
-                    onClickMore: () => togglePage(PageNetwork),
+                    onClickMore: () => TilesPages?.toggle(PageNetwork()),
                     icon: "󰤨",
                     iconSize: 16,
                     toggleState: bind(wifi, "enabled")
@@ -53,7 +53,7 @@ export const TileNetwork = () => new Widget.Box({
                     }),
                     onToggledOn: () => execAsync("nmcli n on"),
                     onToggledOff: () => execAsync("nmcli n off"),
-                    onClickMore: () => togglePage(PageNetwork),
+                    onClickMore: () => TilesPages?.toggle(PageNetwork()),
                     icon: bind(wired, "internet").as((internet: AstalNetwork.Internet) => {
                         switch(internet) {
                             case AstalNetwork.Internet.CONNECTED: 
@@ -77,7 +77,7 @@ export const TileNetwork = () => new Widget.Box({
                 description: tr("control_center.tiles.network.disconnected") || "Disconnected",
                 onToggledOn: () => execAsync("nmcli n on"),
                 onToggledOff: () => execAsync("nmcli n off"),
-                onClickMore: () => togglePage(PageNetwork),
+                onClickMore: () => TilesPages?.toggle(PageNetwork()),
                 icon: "󰲛",
                 iconSize: 16,
                 toggleState: bind(wired, "internet").as((internet: AstalNetwork.Internet) => 
