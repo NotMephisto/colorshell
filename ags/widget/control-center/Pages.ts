@@ -1,64 +1,79 @@
-import { timeout, Variable } from "astal";
+import { property, register, timeout } from "astal";
 import { Gtk, Widget } from "astal/gtk3";
 import { Page } from "./pages/Page";
 
-const currentPage = new Variable<Page | undefined>(undefined);
-let pagesInstance: (Widget.Revealer | undefined);
 
-export const PagesWidget = () => {
-    const revealer = new Widget.Revealer({
-        revealChild: false,
-        className: "pages",
-        transitionType: Gtk.RevealerTransitionType.SLIDE_DOWN,
-        transitionDuration: 360,
-        child: currentPage((page: (Page|undefined)) => 
-            !page ? new Widget.Box() : page.getPage())
-    } as Widget.RevealerProps);
+export { Pages };
+export type PagesProps = {
+    initialPage?: Page;
+    className?: string;
+    transitionType?: Gtk.RevealerTransitionType;
+    transitionDuration?: number;
+};
 
-    pagesInstance = revealer;
+@register({ GTypeName: "Pages" })
+class Pages extends Widget.Revealer {
+    #page: (Page|undefined);
 
-    return revealer;
-}
-
-export function showPages(page: Page): void {
-    if(!pagesInstance) return;
-
-    currentPage.set(page);
-    pagesInstance.set_reveal_child(true);
-    page.props.onOpen && page.props.onOpen();
-}
-
-export function getPage(): (Page|undefined) {
-    return currentPage.get();
-}
-
-export function togglePage(page: Page): void {
-    if(!pagesInstance) return;
-
-    if(!pagesInstance.revealChild) {
-        showPages(page);
-        return;
-    } 
-
-    if((currentPage.get() ?? true) && currentPage.get() !== page) {
-        hidePages(() => showPages(page));
-        return;
+    @property(Page)
+    get page(): Page | undefined { return this.#page; }
+    private set page(newPage: Page | undefined) {
+        this.#page = newPage;
+        this.notify("page");
     }
 
-    hidePages();
-}
+    get isOpen() { return this.revealChild; }
 
-export function hidePages(onHidden?: () => void) {
-    if(!pagesInstance) return;
+    constructor(props?: PagesProps) {
+        super({
+            className: props?.className
+        });
 
-    pagesInstance.set_reveal_child(false);
-    if(!currentPage.get()) return;
+        this.name = "pages";
 
-    timeout(pagesInstance.transitionDuration || 500, () => {
-        if(currentPage.get() && currentPage.get()?.props.onClose) 
-            currentPage.get()!.props.onClose!();
+        if(props?.className !== null && props?.className !== undefined)
+            this.className = props?.className;
 
-        currentPage.set(undefined);
-        onHidden?.();
-    });
+        this.transitionType = props?.transitionType ?? 
+            Gtk.RevealerTransitionType.SLIDE_DOWN;
+        
+        this.transitionDuration = props?.transitionDuration ?? 350;
+
+        if(props?.initialPage) 
+            this.open(props.initialPage);
+    }
+
+    toggle(newPage?: Page): void {
+        if(this.isOpen) {
+            if(newPage && this.#page!.id !== newPage.id) {
+                this.close(() => this.open(newPage));
+                return;
+            }
+
+            this.close();
+            return;
+        }
+
+        if(newPage) this.open(newPage);
+    }
+
+    open(newPage: Page, onOpened?: () => void) {
+        if(this.isOpen) return;
+
+        this.page = newPage;
+        this.add(newPage);
+        this.revealChild = true;
+        onOpened && timeout(this.transitionDuration, onOpened);
+    }
+
+    close(onClosed?: () => void): void {
+        if(!this.isOpen) return;
+
+        this.set_reveal_child(false);
+        timeout(this.transitionDuration, () => {
+            this.remove(this.#page!);
+            this.page = undefined;
+            onClosed?.();
+        });
+    }
 }
