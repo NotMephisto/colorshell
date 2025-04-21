@@ -2,7 +2,6 @@ import { Astal, Gtk, Widget } from "astal/gtk3";
 import { QuickActions } from "../widget/control-center/QuickActions";
 import { Tiles } from "../widget/control-center/Tiles";
 import { Sliders } from "../widget/control-center/Sliders";
-import { hidePages, PagesWidget } from "../widget/control-center/Pages";
 import { NotifHistory } from "../widget/control-center/NotifHistory";
 import { PopupWindow } from "../widget/PopupWindow";
 
@@ -17,12 +16,8 @@ export const ControlCenter = (mon: number) => PopupWindow({
     marginTop: 10,
     marginRight: 10,
     monitor: mon,
-    onDestroy: () => hidePages(),
-    widthRequest: 420,
+    widthRequest: 395,
     child: new Widget.Box({
-        className: "popup",
-        halign: Gtk.Align.END,
-        onButtonPressEvent: () => true,
         orientation: Gtk.Orientation.VERTICAL,
         children: [
             new Widget.Box({
@@ -32,8 +27,7 @@ export const ControlCenter = (mon: number) => PopupWindow({
                 children: [
                     QuickActions(), 
                     Sliders(),
-                    Tiles(),
-                    PagesWidget()
+                    Tiles()
                 ]
             } as Widget.BoxProps),
             NotifHistory()
