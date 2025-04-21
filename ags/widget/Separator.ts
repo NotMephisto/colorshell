@@ -7,31 +7,41 @@ export interface SeparatorProps {
     cssColor?: string;
     orientation?: Gtk.Orientation;
     size?: number;
-    visible?: boolean | Binding<boolean | undefined>;
+    visible?: boolean | Binding<boolean>;
 }
 
 export function Separator(props: SeparatorProps) {
-    const alpha: number = props.alpha ? 
-            (props.alpha > 1) ? 
-                props.alpha / 100
-            : props.alpha
-        : 1;
+    props.alpha = props.alpha ? 
+        (props.alpha > 1 ? 
+            props.alpha / 100
+        : props.alpha)
+    : 1;
 
     return new Widget.Box({
-        className: `separator separator-${ props.orientation == Gtk.Orientation.VERTICAL ? 
-            "vertical" : "horizontal" } ${ props.class && props.class }`,
+        name: "separator",
+        className: `separator ${ props.orientation === Gtk.Orientation.VERTICAL ? 
+                "vertical" : "horizontal" }`,
         visible: props.visible,
-        css: `.separator {
-            background: ${ props.cssColor || "lightgray" };
-            opacity: ${alpha};
+        css: `.vertical {
+            padding: 7px 7px;
         }
-        .separator-horizontal {
-            min-width: ${ props.size || 1 }px;
-            margin: 4px 4px;
-        }
-        .separator-vertical {
-            min-height: ${ props.size || 1 }px;
-            margin: 7px 7px;
+        .horizontal {
+            padding: 4px 4px;
         }`,
+        child: new Widget.Box({
+            className: `${ props.orientation === Gtk.Orientation.VERTICAL ? 
+                "vertical" : "horizontal" } ${ props.class ? props.class : "" }`,
+            css: `* {
+                background: ${ props.cssColor || "lightgray" };
+                opacity: ${props.alpha};
+            }
+            .horizontal {
+                min-width: ${ props.size || 1 }px;
+            }
+
+            .vertical {
+                min-height: ${ props.size || 1 }px;
+            }`
+        } as Widget.BoxProps)
     } as Widget.BoxProps);
 }
