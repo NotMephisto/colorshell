@@ -3,12 +3,13 @@ import { Gtk, Widget } from "astal/gtk3";
 import AstalBluetooth from "gi://AstalBluetooth";
 import { Page, PageButton } from "./Page";
 import { Separator, SeparatorProps } from "../../Separator";
+import { tr } from "../../../i18n/intl";
 
 
 export const BluetoothPage: (() => Page) = () => new Page({
     id: "bluetooth",
-    title: "Bluetooth",
-    description: "Manage your Bluetooth devices and add new ones.",
+    title: tr("control_center.pages.bluetooth.title"),
+    description: tr("control_center.pages.bluetooth.description"),
     className: "bluetooth",
     headerButtons: [
         new Widget.Button({
@@ -16,7 +17,9 @@ export const BluetoothPage: (() => Page) = () => new Page({
             label: bind(AstalBluetooth.get_default().adapter, "discovering").as((discovering) => 
                 !discovering ? '󰑓' : '󰙦'),
             tooltipText: bind(AstalBluetooth.get_default().adapter, "discovering").as((discovering) => 
-                !discovering ? "Start discovering" : "Stop discovery"),
+                !discovering ? 
+                    tr("control_center.pages.bluetooth.start_discovering")
+                : tr("control_center.pages.bluetooth.stop_discovering")),
             onClick: () => {
                 if(AstalBluetooth.get_default().adapter.discovering) {
                     stopBluetoothDevicesWatch();
@@ -36,7 +39,7 @@ export const BluetoothPage: (() => Page) = () => new Page({
             children: bind(AstalBluetooth.get_default(), "adapters").as((adapters) => [
                     new Widget.Label({
                         className: "sub-header",
-                        label: "Adapters"
+                        label: tr("control_center.pages.bluetooth.adapters")
                     } as Widget.LabelProps),
                     ...adapters.map(adapter =>
                         PageButton({
@@ -64,7 +67,7 @@ export const BluetoothPage: (() => Page) = () => new Page({
                         return [
                             new Widget.Label({
                                 className: "sub-header",
-                                label: "Paired Devices",
+                                label: tr("control_center.pages.bluetooth.paired_devices"),
                                 xalign: 0,
                             } as Widget.LabelProps),
                             ...connectedDevices.map((dev: AstalBluetooth.Device) => DeviceWidget(dev))
@@ -82,7 +85,7 @@ export const BluetoothPage: (() => Page) = () => new Page({
                         return [
                             new Widget.Label({
                                 className: "sub-header",
-                                label: "Others",
+                                label: tr("control_center.pages.bluetooth.new_devices"),
                                 xalign: 0
                             } as Widget.LabelProps),
                             ...discoveredDevices.map((dev: AstalBluetooth.Device) => DeviceWidget(dev))
@@ -96,7 +99,7 @@ export const BluetoothPage: (() => Page) = () => new Page({
                 } as SeparatorProps),
                 new Widget.Button({
                     className: "more",
-                    label: "More settings",
+                    label: tr("control_center.pages.more_settings"),
                     setup: (self) => self.set_alignment(0, 0.5)
                 } as Widget.ButtonProps)
             ]

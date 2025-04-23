@@ -3,16 +3,17 @@ import { Page, PageProps } from "./Page";
 import { bind } from "astal";
 import { NightLight } from "../../../scripts/nightlight";
 import { addSliderMarksFromMinMax } from "../../../scripts/widget-utils";
+import { tr } from "../../../i18n/intl";
 
 export const PageNightLight: (() => Page) = () => new Page({
     id: "night-light",
-    title: "Night Light",
-    description: "Control night light and gamma filters",
+    title: tr("control_center.pages.night_light.title"),
+    description: tr("control_center.pages.night_light.description"),
     className: "night-light",
     children: [
         new Widget.Label({
             className: "sub-header",
-            label: "Temperature (blue-light filter)",
+            label: tr("control_center.pages.night_light.temperature"),
             xalign: 0
         } as Widget.LabelProps),
         new Widget.Slider({
@@ -30,7 +31,7 @@ export const PageNightLight: (() => Page) = () => new Page({
         } as Widget.SliderProps),
         new Widget.Label({
             className: "sub-header",
-            label: "Gamma (light filter)",
+            label: tr("control_center.pages.night_light.gamma"),
             css: "margin-top: 6px;",
             xalign: 0
         } as Widget.LabelProps),

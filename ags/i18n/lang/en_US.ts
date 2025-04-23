@@ -5,6 +5,13 @@ export default {
 
     cancel: "Cancel",
     accept: "Ok",
+    devices: "Devices",
+    others: "Others",
+
+    connected: "Connected",
+    disconnected: "Disconnected",
+    unknown: "Unknown",
+    connecting: "Connecting",
 
     bar: {
         apps: {
@@ -19,10 +26,6 @@ export default {
 
             network: {
                 network: "Network",
-                connected: "Connected",
-                disconnected: "Disconnected",
-                unknown: "Unknown",
-                connecting: "Connecting",
                 wireless: "Wireless",
                 wired: "Wired"
             },
@@ -37,6 +40,32 @@ export default {
             night_light: {
                 title: "Night Light",
                 default_desc: "Fidelity"
+            }
+        },
+        pages: {
+            more_settings: "More settings",
+            mixer: {
+                title: "Mixer",
+                description: "Control per-application volume"
+            },
+            night_light: {
+                title: "Night Light",
+                description: "Control Night Light and Gamma filters",
+                gamma: "Gamma",
+                temperature: "Temperature"
+            },
+            bluetooth: {
+                title: "Bluetooth",
+                description: "Manage Bluetooth devices",
+                new_devices: "New devices",
+                adapters: "Adapters",
+                paired_devices: "Paired Devices",
+                start_discovering: "Start discovering",
+                stop_discovering: "Stop discovering"
+            },
+            network: {
+                title: "Network",
+                interface: "Interface"
             }
         }
     },

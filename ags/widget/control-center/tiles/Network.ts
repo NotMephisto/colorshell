@@ -15,18 +15,18 @@ export const TileNetwork = () => new Widget.Box({
         (primary: AstalNetwork.Primary, wired: AstalNetwork.Wired, wifi: AstalNetwork.Wifi) => {
             if(primary === AstalNetwork.Primary.WIFI) {
                 return Tile({
-                    title: tr("control_center.tiles.network.wireless") || "Wireless",
+                    title: tr("control_center.tiles.network.wireless"),
                     description: Variable.derive(
                         [ bind(wifi, "ssid"), bind(wifi, "internet") ],
                         (ssid: string, internet: AstalNetwork.Internet) =>
                         ssid ? ssid : (() => {
                             switch(internet) {
                                 case AstalNetwork.Internet.CONNECTED: 
-                                    return tr("control_center.tiles.network.connected") || "Connected";
+                                    return tr("connected");
                                 case AstalNetwork.Internet.DISCONNECTED:
-                                    return tr("control_center.tiles.network.disconnected") || "Disconnected";
+                                    return tr("disconnected");
                                 case AstalNetwork.Internet.CONNECTING:
-                                    return tr("control_center.tiles.network.connecting") + "..." || "Connecting...";
+                                    return tr("connecting") + "...";
                             }
                         })()
                     )(),
@@ -44,11 +44,11 @@ export const TileNetwork = () => new Widget.Box({
                     description: bind(wired, "internet").as((internet: AstalNetwork.Internet) => {
                         switch(internet) {
                             case AstalNetwork.Internet.CONNECTED: 
-                                return tr("control_center.tiles.network.connected") || "Connected";
+                                return tr("connected");
                             case AstalNetwork.Internet.DISCONNECTED:
-                                return tr("control_center.tiles.network.disconnected") || "Disconnected";
+                                return tr("disconnected");
                             case AstalNetwork.Internet.CONNECTING:
-                                return tr("control_center.tiles.network.connecting") + "..." || "Connecting...";
+                                return tr("connecting") + "...";
                         }
                     }),
                     onToggledOn: () => execAsync("nmcli n on"),
@@ -73,8 +73,8 @@ export const TileNetwork = () => new Widget.Box({
             }
             
             return Tile({
-                title: tr("control_center.tiles.network.network") || "Network",
-                description: tr("control_center.tiles.network.disconnected") || "Disconnected",
+                title: tr("control_center.tiles.network.network"),
+                description: tr("disconnected"),
                 onToggledOn: () => execAsync("nmcli n on"),
                 onToggledOff: () => execAsync("nmcli n off"),
                 onClickMore: () => TilesPages?.toggle(PageNetwork()),

@@ -6,10 +6,11 @@ import NM from "gi://NM";
 import { Separator, SeparatorProps } from "../../Separator";
 import { Windows } from "../../../windows";
 import AstalHyprland from "gi://AstalHyprland?version=0.1";
+import { tr } from "../../../i18n/intl";
 
 export const PageNetwork: (() => Page) = () => new Page({
     id: "network",
-    title: "Network",
+    title: tr("control_center.pages.network.title"),
     className: "network",
     headerButtons: [
         new Widget.Button({
@@ -33,7 +34,7 @@ export const PageNetwork: (() => Page) = () => new Page({
 
                 return [
                     new Widget.Label({
-                        label: "Devices",
+                        label: tr("devices"),
                         xalign: 0,
                         className: "sub-header",
                     } as Widget.LabelProps),
@@ -43,7 +44,8 @@ export const PageNetwork: (() => Page) = () => new Page({
                                 deviceType === NM.DeviceType.WIFI ? 
                                     "network-wireless-symbolic"
                                 : "network-wired-symbolic"),
-                            title: bind(dev, "interface").as(iface => iface ?? "Interface"),
+                            title: bind(dev, "interface").as(iface => iface ?? 
+                                tr("control_center.pages.network.interface")),
                             extraButtons: [
                                 new Widget.Button({
                                     image: new Widget.Icon({
@@ -83,7 +85,7 @@ export const PageNetwork: (() => Page) = () => new Page({
                             new Widget.Label({
                                 className: "ssid",
                                 halign: Gtk.Align.START,
-                                label: ap.ssid.toArray().toString()
+                                label: ap.ssid.get_data()?.toString() ?? "Wi-Fi"
                             } as Widget.LabelProps),
                             new Widget.Label({
                                 className: "status",
@@ -98,7 +100,7 @@ export const PageNetwork: (() => Page) = () => new Page({
             size: .2
         } as SeparatorProps),
         new Widget.Button({
-            label: "More settings",
+            label: tr("control_center.pages.more_settings"),
             setup: (self) => self.set_alignment(0, 0.5),
             onClick: () => {
                 Windows.close("control-center");

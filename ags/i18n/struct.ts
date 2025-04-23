@@ -2,7 +2,15 @@ export type i18nStruct = {
     language: string,
 
     cancel: string,
-    accept: string
+    accept: string,
+
+    connected: string,
+    disconnected: string,
+    connecting: string,
+    unknown: string,
+
+    devices: string,
+    others: string,
 
     bar: {
         apps: {
@@ -17,17 +25,13 @@ export type i18nStruct = {
 
             network: {
                 network: string,
-                connected: string,
-                disconnected: string,
-                unknown: string,
-                connecting: string,
                 wireless: string,
                 wired: string
             },
             recording: {
                 title: string,
                 disabled_desc: string,
-                enabled_desc: string,
+                enabled_desc: string
             },
             dnd: {
                 title: string
@@ -35,6 +39,33 @@ export type i18nStruct = {
             night_light: {
                 title: string,
                 default_desc: string
+            }
+        },
+        pages: {
+            more_settings: string,
+
+            mixer: {
+                title: string,
+                description: string
+            },
+            network: {
+                title: string,
+                interface: string
+            },
+            bluetooth: {
+                title: string,
+                description: string,
+                adapters: string,
+                new_devices: string,
+                paired_devices: string,
+                start_discovering: string,
+                stop_discovering: string
+            },
+            night_light: {
+                title: string,
+                description: string,
+                temperature: string,
+                gamma: string
             }
         }
     },

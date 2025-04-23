@@ -4,12 +4,13 @@ import { Gtk, Widget } from "astal/gtk3";
 import AstalWp from "gi://AstalWp";
 import { getAppIcon } from "../../../scripts/apps";
 import { Wireplumber } from "../../../scripts/volume";
+import { tr } from "../../../i18n/intl";
 
 export function PageMixer(): Page {
     return new Page({
         id: "mixer",
-        title: "Mixer",
-        description: "Control per-application volume!",
+        title: tr("control_center.pages.mixer.title"),
+        description: tr("control_center.pages.mixer.description"),
         children: bind(Wireplumber.getWireplumber(), "endpoints").as((endpoints) => [
             ...endpoints.filter((ep) => ep.mediaClass === AstalWp.MediaClass.AUDIO_STREAM ||
                 ep.mediaClass === AstalWp.MediaClass.VIDEO_STREAM).map((ep) => 
