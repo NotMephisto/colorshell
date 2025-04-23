@@ -38,10 +38,7 @@ export function Tiles(): Gtk.Widget {
     return new Widget.Box({
         className: "tiles-container",
         orientation: Gtk.Orientation.VERTICAL,
-        onDestroy: () => {
-            TilesPages?.close();
-            TilesPages = null;
-        },
+        onDestroy: () => TilesPages = null,
         setup: (box) => {
             if(!TilesPages) TilesPages = new Pages({
                 className: "tile-pages"
