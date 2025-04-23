@@ -4,7 +4,7 @@
 > this shell is working flawlessly, you can try it out if you want to! <br> <br>
 > Want the stable dotfiles? Go to the [`ryo`](https://github.com/retrozinndev/Hyprland-Dots/tree/ryo) branch! <br>
 
-My Hyprland Shell + Dotfiles that I keep improving almost everyday! 🤩 (i love doing this) <br>
+My Hyprland Desktop Shell + Dotfiles that I keep improving almost everyday! 🤩 (i love doing this) <br>
 
 This repository includes a desktop shell made with [GTK], using [Astal] and [AGS] + [TypeScript]. 
 It really took me a lot of time to make this, so please star the repo if you like it! :star:
@@ -42,14 +42,13 @@ It really took me a lot of time to make this, so please star the repo if you lik
 - Support for your multiple monitors
 
 ## 🔘 TODO
-- Everything is done!! I'm just doing some polishing.
-- Maybe a settings app in the future? ✨
+Everything is done!! I'm just doing some polishing.
 
 ## 🌄 Screenshots
-![Kitty](repo/shots/kitty.png)
+![Kitty](repo/shots/desktop.png)
 ![Widgets](repo/shots/widgets.png)
-![Control Center](repo/shots/runner-plugin.png)
-![Neovim](repo/shots/neovim.png)
+![Runner](repo/shots/runner.png)
+![Browser + Neovim](repo/shots/browser-neovim.png)
 
 ## 🎨 Colors
 All the colors of the interface are dynamically generated from your wallpaper! 
