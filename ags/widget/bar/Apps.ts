@@ -10,7 +10,7 @@ export function Apps(): Gtk.Widget {
             Object.hasOwn(openWindows, "apps-window") ? "apps open" : "apps"),
         child: new Widget.Box({
             child: new Widget.Icon({
-                tooltipText: tr("bar.apps.tooltip"),
+                tooltipText: tr("apps"),
                 icon: "applications-other-symbolic",
                 halign: Gtk.Align.CENTER,
                 hexpand: true
