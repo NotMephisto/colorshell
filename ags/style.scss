@@ -287,16 +287,16 @@ scrollbar trough {
     border-radius: 12px;
 
     &:hover, &:active, &:focus {
-      margin: 0 2px;
+      margin: 2px;
     }
   }
 
   &:hover, &:active, &:focus {
-    padding: 0 2px;
+    padding: 2px;
   }
 }
 
-slider, scale {
+scale {
   & marks mark {
     & indicator {
       color: colors.$fg-disabled;

@@ -8,11 +8,11 @@
   @include mixins.reset-props;
 
   background: colors.$bg-translucent;
-  border-radius: 24px;
-  padding: 20px 14px;
+  border-radius: 28px;
+  padding: 20px;
 
-  & > box {
-    margin: 9px;
+  & > * {
+    margin: 9px 0;
 
     &:first-child {
       margin-top: 0;
@@ -44,8 +44,7 @@
   }
 
   & .sliders {
-    padding: 2px 6px;
-
+    padding: 0;
     & > box {
       margin: 8px 0;
 
@@ -58,9 +57,60 @@
       }
     }
 
-    .icon.nf {
+    label.nf,
+    button.nf label {
       margin-right: 8px;
       font-size: 15px;
+    }
+
+    button.more {
+      @include mixins.hover-shadow;
+
+      padding: 4px;
+      border-radius: 16px;
+      margin-left: 6px;
+    }
+
+    & .page .content {
+      & label.name {
+        font-size: 14px;
+        font-weight: 500;
+      }
+      & trough {
+        margin-right: 10px;
+      }
+    }
+  }
+
+  & .page {
+    transition: 120ms linear;
+    background: colors.$bg-secondary;
+    padding: 14px;
+    border-radius: 24px;
+
+    & .header {
+      margin-bottom: 12px;
+
+      & .top > .title {
+        font-size: 20px;
+        font-weight: 600;
+      }
+
+      & > .description {
+        font-size: 12px;
+        font-weight: 500;
+        color: colors.$fg-disabled;
+      }
+
+      & button label {
+        font-size: 14px;
+      }
+    }
+
+    & .sub-header {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 6px;
     }
   }
 }
@@ -69,7 +119,7 @@ box.history {
   margin-top: 10px;
   background: colors.$bg-translucent;
   border-radius: 24px;
-  padding: 20px 14px;
+  padding: 20px;
   transition: 120ms linear;
 
   &.hide {
@@ -106,8 +156,10 @@ box.history {
     & > flowboxchild .tile {
       $radius: 16px;
 
-      &:not(.toggled) > .toggle-button {
+      &:not(.toggled) > .toggle-button,
+      &:not(.toggled) > button.more {
         @include mixins.hover-shadow;
+        background: colors.$bg-primary;
       }
 
       &.toggled .toggle-button:hover,
@@ -126,7 +178,6 @@ box.history {
       }
 
       & > .toggle-button {
-        background: colors.$bg-primary;
         border-radius: $radius;
 
         & .content {
@@ -164,37 +215,8 @@ box.history {
 }
 
 .tile-pages {
-  transition: 120ms linear;
-
   & > .page {
-    background: colors.$bg-secondary;
-    padding: 14px;
-    border-radius: 24px;
-
-    & .header {
-      margin-bottom: 12px;
-
-      & .top > .title {
-        font-size: 20px;
-        font-weight: 600;
-      }
-
-      & > .description {
-        font-size: 12px;
-        font-weight: 500;
-        color: colors.$fg-disabled;
-      }
-
-      & button label {
-        font-size: 14px;
-      }
-    }
-
-    & .sub-header {
-      font-size: 14px;
-      font-weight: 500;
-      margin-bottom: 6px;
-    }
+    margin-top: 10px;
 
     & button {
       @include mixins.hover-shadow;
