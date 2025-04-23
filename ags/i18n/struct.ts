@@ -12,11 +12,8 @@ export type i18nStruct = {
     devices: string,
     others: string,
 
-    bar: {
-        apps: {
-            tooltip: string
-        }
-    },
+    apps: string;
+
     control_center: {
         tiles: {
             enabled: string,
@@ -44,7 +41,11 @@ export type i18nStruct = {
         pages: {
             more_settings: string,
 
-            mixer: {
+            sound: {
+                title: string,
+                description: string
+            },
+            microphone: {
                 title: string,
                 description: string
             },

@@ -13,11 +13,8 @@ export default {
     unknown: "Desconhecido",
     connecting: "Conectando",
 
-    bar: {
-        apps: {
-            tooltip: "Aplicativos"
-        }
-    },
+    apps: "Aplicativos",
+
     control_center: {
         tiles: {
             enabled: "Ligado",
@@ -44,9 +41,13 @@ export default {
         },
         pages: {
             more_settings: "Mais configurações",
-            mixer: {
-                title: "Mixer de Volume",
-                description: "Controle o volume dos aplicativos"
+            sound: {
+                title: "Som",
+                description: "Controle a saída de áudio"
+            },
+            microphone: {
+                title: "Microfone",
+                description: "Configure a entrada de áudio"
             },
             night_light: {
                 title: "Luz Noturna",

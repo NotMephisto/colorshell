@@ -12,12 +12,8 @@ export default {
     disconnected: "Disconnected",
     unknown: "Unknown",
     connecting: "Connecting",
+    apps: "Applications",
 
-    bar: {
-        apps: {
-            tooltip: "Applications"
-        }
-    },
     control_center: {
         tiles: {
             enabled: "Enabled",
@@ -44,9 +40,13 @@ export default {
         },
         pages: {
             more_settings: "More settings",
-            mixer: {
-                title: "Mixer",
-                description: "Control per-application volume"
+            sound: {
+                title: "Sound",
+                description: "Configure the audio output"
+            },
+            microphone: {
+                title: "Microphone",
+                description: "Configure the audio input"
             },
             night_light: {
                 title: "Night Light",
