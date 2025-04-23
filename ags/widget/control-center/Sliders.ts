@@ -2,7 +2,8 @@ import { bind } from "astal";
 import { Gtk, Widget } from "astal/gtk3";
 import { Wireplumber } from "../../scripts/volume";
 import { Pages } from "./Pages";
-import { PageMixer } from "./pages/Mixer";
+import { PageSound } from "./pages/Sound";
+import { PageMicrophone } from "./pages/Microphone";
 
 export function Sliders() {
     const slidersPages = new Pages();
@@ -33,7 +34,7 @@ export function Sliders() {
                         image: new Widget.Icon({
                             icon: "go-next-symbolic",
                         } as Widget.IconProps),
-                        onClick: (_) => slidersPages.toggle(PageMixer())
+                        onClick: (_) => slidersPages.toggle(PageSound())
                     } as Widget.ButtonProps)
                 ])
             } as Widget.BoxProps),
@@ -52,7 +53,14 @@ export function Sliders() {
                         value: bind(source, "volume").as((vol) => Math.floor(vol * 100)),
                         max: Wireplumber.getDefault().getMaxSourceVolume(),
                         onDragged: (slider) => source.volume = slider.value / 100
-                    } as Widget.SliderProps)
+                    } as Widget.SliderProps),
+                    new Widget.Button({
+                        className: "more",
+                        image: new Widget.Icon({
+                            icon: "go-next-symbolic",
+                        } as Widget.IconProps),
+                        onClick: (_) => slidersPages.toggle(PageMicrophone())
+                    } as Widget.ButtonProps)
                 ])
             } as Widget.BoxProps),
             slidersPages

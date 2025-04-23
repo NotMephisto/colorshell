@@ -1,17 +1,40 @@
-import { Page, PageProps } from "./Page";
+import { Page, PageButton, PageProps } from "./Page";
 import { bind } from "astal";
-import { Gtk, Widget } from "astal/gtk3";
+import { Astal, Gtk, Widget } from "astal/gtk3";
 import AstalWp from "gi://AstalWp";
 import { getAppIcon } from "../../../scripts/apps";
 import { Wireplumber } from "../../../scripts/volume";
 import { tr } from "../../../i18n/intl";
 
-export function PageMixer(): Page {
+export function PageSound(): Page {
     return new Page({
-        id: "mixer",
-        title: tr("control_center.pages.mixer.title"),
-        description: tr("control_center.pages.mixer.description"),
+        id: "sound",
+        title: tr("control_center.pages.sound.title"),
+        description: tr("control_center.pages.sound.description"),
         children: bind(Wireplumber.getWireplumber(), "endpoints").as((endpoints) => [
+            new Widget.Label({
+                className: "sub-header",
+                label: tr("devices"),
+                setup: (self) => self.set_alignment(0, .5)
+            } as Widget.LabelProps),
+            ...endpoints.filter(ep => ep.mediaClass === AstalWp.MediaClass.AUDIO_SPEAKER).map((ep) =>
+                PageButton({
+                    className: bind(ep, "isDefault").as(isDefault => isDefault ? "default" : ""),
+                    icon: Astal.Icon.lookup_icon(ep.icon) ? ep.icon : "audio-card-symbolic",
+                    title: ep.name ?? "Speaker",
+                    onClick: () => ep.set_is_default(true),
+                    endWidget: new Widget.Icon({
+                        icon: "object-select-symbolic",
+                        visible: bind(ep, "isDefault"),
+                        css: "font-size: 18px;"
+                    } as Widget.IconProps)
+                })
+            ),
+            new Widget.Label({
+                className: "sub-header",
+                label: tr("apps"),
+                setup: (self) => self.set_alignment(0, .5)
+            } as Widget.LabelProps),
             ...endpoints.filter((ep) => ep.mediaClass === AstalWp.MediaClass.AUDIO_STREAM ||
                 ep.mediaClass === AstalWp.MediaClass.VIDEO_STREAM).map((ep) => 
                     new Widget.EventBox({
