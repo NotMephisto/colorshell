@@ -19,7 +19,8 @@ It really took me a lot of time to make this, so please star the repo if you lik
   - Tray(Applications running in the background)
   - Status (volume information, bluetooth, network and notification status)
 - Control Center
-  - Volume Sliders(Microphone and Speaker)
+  - Volume Controls (Microphone and Speaker)
+    - Volume Mixer(per-app volume)
   - Pages(the thing that shows up when you click the arrow on a tile)
     - Bluetooth devices
     - Network devices
@@ -41,7 +42,7 @@ It really took me a lot of time to make this, so please star the repo if you lik
 - Support for your multiple monitors
 
 ## 🔘 TODO
-- Per-app Volume
+- Everything is done!! I'm just doing some polishing.
 - Maybe a settings app in the future? ✨
 
 ## 🌄 Screenshots
