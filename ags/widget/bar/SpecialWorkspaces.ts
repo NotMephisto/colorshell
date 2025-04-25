@@ -9,6 +9,7 @@ export const SpecialWorkspaces: (() => Gtk.Widget) = () => new Widget.EventBox({
         workspaces.filter(ws => ws.id < 0).sort((a, b) => a.id - b.id).length > 0),
     child: new Widget.Box({
         className: "special-workspaces",
+        spacing: 4,
         children: bind(AstalHyprland.get_default(), "workspaces").as((workspaces) => 
             workspaces.filter(ws => ws.id < 0).sort((a, b) => a.id - b.id).map((workspace) => 
                 new Widget.Button({
