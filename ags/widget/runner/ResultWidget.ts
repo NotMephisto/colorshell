@@ -31,10 +31,12 @@ class ResultWidget extends Widget.Box {
         this.closeOnClick = props.closeOnClick ?? true;
         this.onClick = () => props.onClick?.();
 
-        this.add(new Widget.Icon({
-            visible: Boolean(props.icon),
-            icon: props.icon || "image-missing"
-        } as Widget.IconProps));
+        if(this.icon != null) {
+            this.add(new Widget.Icon({
+                visible: props.icon,
+                icon: props.icon || "image-missing"
+            } as Widget.IconProps));
+        }
 
         this.add(new Widget.Box({
             orientation: Gtk.Orientation.VERTICAL,
