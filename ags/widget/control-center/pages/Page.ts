@@ -95,13 +95,13 @@ export function PageButton(props: {
     className?: string | Binding<string>;
     icon?: string | Binding<string>;
     title: string | Binding<string>;
-    endWidget?: Gtk.Widget;
-    extraButtons?: Array<Widget.Button>;
+    endWidget?: Gtk.Widget | Binding<Gtk.Widget>;
+    extraButtons?: Array<Widget.Button> | Binding<Array<Gtk.Widget>>;
     onClick?: (self: Widget.Button) => void;
 }): Gtk.Widget {
     return new Widget.Box({
-        setup: (self) => {
-            self.add(new Widget.Button({
+        children: [
+            new Widget.Button({
                 onClick: props.onClick,
                 className: props.className,
                 hexpand: true,
@@ -109,32 +109,36 @@ export function PageButton(props: {
                     className: "page-button",
                     orientation: Gtk.Orientation.HORIZONTAL,
                     expand: true,
-                    setup: (box) => {
-                        box.set_children([
-                            new Widget.Icon({
-                                className: "icon",
-                                icon: props.icon,
-                                visible: props.icon,
-                                css: "font-size: 20px; margin-right: 6px;"
-                            } as Widget.IconProps),
-                            new Widget.Label({
-                                className: "title",
-                                halign: Gtk.Align.START,
-                                hexpand: true,
-                                truncate: true,
-                                label: props.title
-                            } as Widget.LabelProps)
-                        ]);
-
-                        props.endWidget && box.add(props.endWidget);
-                    }
+                    children: [
+                        new Widget.Icon({
+                            className: "icon",
+                            icon: props.icon,
+                            visible: props.icon,
+                            css: "font-size: 20px; margin-right: 6px;"
+                        } as Widget.IconProps),
+                        new Widget.Label({
+                            className: "title",
+                            halign: Gtk.Align.START,
+                            hexpand: true,
+                            truncate: true,
+                            label: props.title
+                        } as Widget.LabelProps),
+                        new Widget.Box({
+                            visible: (props.endWidget instanceof Binding) ? 
+                                props.endWidget.as(Boolean)
+                            : props.endWidget,
+                            child: props.endWidget
+                        } as Widget.BoxProps)
+                    ]
                 } as Widget.BoxProps)
-            } as Widget.ButtonProps));
-
-            props.extraButtons && self.add(new Widget.Box({
+            } as Widget.ButtonProps),
+            new Widget.Box({
                 className: "button-row extra-buttons",
+                visible: (props.extraButtons instanceof Binding) ? 
+                    props.extraButtons.as(extra => extra.length > 0)
+                : (props.extraButtons ? props.extraButtons.length > 0 : false),
                 children: props.extraButtons
-            } as Widget.BoxProps));
-        }
+            } as Widget.BoxProps)
+        ]
     } as Widget.BoxProps);
 }

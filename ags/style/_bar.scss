@@ -2,6 +2,7 @@
 @use "./mixins";
 @use "./colors";
 @use "./wal";
+@use "./functions";
 
 .bar-container {
   @include mixins.reset-props;
@@ -62,6 +63,10 @@
       background: colors.$bg-tertiary;
       margin: 3px 0;
 
+      &:not(.focus) {
+        @include mixins.hover-shadow2;
+      }
+
       &.focus {
         background: colors.$fg-primary;
         min-width: 31px;
@@ -93,6 +98,10 @@
     &.special-workspaces {
       & button {
         background: wal.$color4;
+
+        &:hover {
+          background: functions.toRGB(color.adjust(wal.$color4, $lightness: -6%));
+        }
       }
     }
   }
