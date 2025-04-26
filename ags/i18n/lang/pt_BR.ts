@@ -12,6 +12,8 @@ export default {
     disconnected: "Desconectado",
     unknown: "Desconhecido",
     connecting: "Conectando",
+    disconnect: "Desconectar",
+    connect: "Conectar",
 
     apps: "Aplicativos",
 
@@ -62,7 +64,11 @@ export default {
                 adapters: "Adaptadores",
                 paired_devices: "Dispositivos Pareados",
                 start_discovering: "Começar a procurar dispositivos",
-                stop_discovering: "Parar de procurar dispositivos"
+                stop_discovering: "Parar de procurar dispositivos",
+                pair_device: "Parear dispositivo",
+                trust_device: "Confiar no dispositivo",
+                unpair_device: "Desparear dispositivo",
+                untrust_device: "Deixar de confiar no dispositivo"
             },
             network: {
                 title: "Rede",

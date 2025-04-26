@@ -14,6 +14,9 @@ export default {
     connecting: "Connecting",
     apps: "Applications",
 
+    connect: "Connect",
+    disconnect: "Disconnect",
+
     control_center: {
         tiles: {
             enabled: "Enabled",
@@ -61,7 +64,11 @@ export default {
                 adapters: "Adapters",
                 paired_devices: "Paired Devices",
                 start_discovering: "Start discovering",
-                stop_discovering: "Stop discovering"
+                stop_discovering: "Stop discovering",
+                untrust_device: "Untrust device",
+                unpair_device: "Unpair device",
+                trust_device: "Trust device",
+                pair_device: "Pair device"
             },
             network: {
                 title: "Network",

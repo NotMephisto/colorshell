@@ -12,6 +12,9 @@ export type i18nStruct = {
     devices: string,
     others: string,
 
+    disconnect: string,
+    connect: string,
+
     apps: string;
 
     control_center: {
@@ -60,7 +63,11 @@ export type i18nStruct = {
                 new_devices: string,
                 paired_devices: string,
                 start_discovering: string,
-                stop_discovering: string
+                stop_discovering: string,
+                trust_device: string,
+                untrust_device: string,
+                pair_device: string,
+                unpair_device: string
             },
             night_light: {
                 title: string,
