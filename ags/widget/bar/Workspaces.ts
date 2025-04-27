@@ -41,7 +41,6 @@ export function Workspaces(): Gtk.Widget {
                                     : ""
                                 } ${lastClient.title}` : "" }`)(),
                         child: new Widget.Box({
-                            visible: bind(workspace, "lastClient").as(Boolean),
                             children: bind(workspace, "lastClient").as((lastClient) => [
                                 new Widget.Revealer({
                                     transitionDuration: 200,
