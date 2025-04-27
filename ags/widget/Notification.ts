@@ -67,6 +67,7 @@ export function NotificationWidget(notification: AstalNotifd.Notification|number
             homogeneous: false,
             expand: true,
             orientation: Gtk.Orientation.VERTICAL,
+            spacing: 5,
             children: [
                 new Widget.Box({
                     className: "top",
