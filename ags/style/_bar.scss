@@ -36,7 +36,10 @@
       & > box {
         border-radius: calc($radius - $padding);
         margin: $padding 0;
-        padding: 0 6px;
+      }
+
+      & > box:not(.workspaces):not(.special-workspaces) {
+        padding: 0 8px;
       }
     }
 
@@ -54,6 +57,7 @@
 
   .workspaces, .special-workspaces {
     @include mixins.reset-props;
+    padding: 0 4px;
 
     & button {
       border-radius: 16px;
@@ -69,7 +73,7 @@
 
       &.focus {
         background: colors.$fg-primary;
-        min-width: 31px;
+        min-width: 32px;
 
         & label.id {
           color: colors.$fg-light;
@@ -248,7 +252,6 @@
   .apps {
     & > box {
       min-width: 24px;
-      padding: 0 6px;
 
       & > icon {
         transition: 120ms linear;
