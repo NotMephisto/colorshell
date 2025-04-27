@@ -42,7 +42,9 @@ It really took me a lot of time to make this, so please star the repo if you lik
 - Support for your multiple monitors
 
 ## 🔘 TODO
-Everything is done!! I'm just doing some polishing.
+Almost everything is done!! I'm just doing some polishing:
+- Stop using anyrun(make plugins for the **shell's runner**)
+  - Make a Clipboard plugin (ongoing)
 
 ## 🌄 Screenshots
 ![Kitty](repo/shots/desktop.png)
