@@ -9,44 +9,42 @@ export function FocusedClient(): Gtk.Widget {
     return new Widget.Box({
         className: "focused-client",
         visible: bind(hyprland, "focusedClient").as(Boolean),
-        children: [
+        children: bind(hyprland, "focusedClient").as(focusedClient => focusedClient ? [
             new Widget.Icon({
                 className: "icon",
                 vexpand: true,
                 css: ".icon { font-size: 18px; }",
-                icon: bind(hyprland, "focusedClient").as((client: AstalHyprland.Client) => 
-                    client ? getAppIcon(client.initialClass) : "image-missing")
+                icon: bind(focusedClient, "class").as(clss => 
+                    getAppIcon(clss) ?? "application-x-executable-symbolic")
             }),
             new Widget.Box({
                 className: "text-content",
                 orientation: Gtk.Orientation.VERTICAL,
                 homogeneous: false,
                 valign: Gtk.Align.CENTER,
-                children: bind(hyprland, "focusedClient").as((focusedClient: AstalHyprland.Client) =>
-                    focusedClient ? [
-                        new Widget.Label({
-                            className: "class",
-                            xalign: 0,
-                            visible: bind(focusedClient, "class").as(Boolean),
-                            maxWidthChars: 55,
-                            truncate: true,
-                            tooltipText: bind(focusedClient, "class").as((clientClass: string) => 
-                                clientClass.length > 55 ? clientClass : ""),
-                            label: bind(focusedClient, "class")
-                        } as Widget.LabelProps),
-                        new Widget.Label({
-                            className: "title",
-                            xalign: 0,
-                            maxWidthChars: 50,
-                            visible: bind(focusedClient, "title").as(Boolean),
-                            truncate: true,
-                            tooltipText: bind(focusedClient, "title").as((clientTitle: string) => 
-                                clientTitle.length > 55 ? clientTitle : ""),
-                            label: bind(focusedClient, "title")
-                        } as Widget.LabelProps)
-                    ] : []
-                )
+                children: [
+                    new Widget.Label({
+                        className: "class",
+                        xalign: 0,
+                        visible: bind(focusedClient, "class").as(Boolean),
+                        maxWidthChars: 55,
+                        truncate: true,
+                        tooltipText: bind(focusedClient, "class").as((clientClass: string) => 
+                            clientClass.length > 55 ? clientClass : ""),
+                        label: bind(focusedClient, "class")
+                    } as Widget.LabelProps),
+                    new Widget.Label({
+                        className: "title",
+                        xalign: 0,
+                        maxWidthChars: 50,
+                        visible: bind(focusedClient, "title").as(Boolean),
+                        truncate: true,
+                        tooltipText: bind(focusedClient, "title").as((clientTitle: string) => 
+                            clientTitle.length > 55 ? clientTitle : ""),
+                        label: bind(focusedClient, "title")
+                    } as Widget.LabelProps)
+                ]
             })
-        ]
+        ]: [])
     } as Widget.BoxProps);
 }

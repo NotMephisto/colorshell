@@ -14,13 +14,14 @@ export const CenterWindow = (mon: number) => PopupWindow({
     monitor: mon,
     child: new Widget.Box({
         className: "center-window-container",
+        spacing: 6,
         children: [
             new Widget.Box({
-                className: "vertical left",
+                className: "left",
                 orientation: Gtk.Orientation.VERTICAL,
                 children: [
                     new Widget.Box({
-                        className: "top",
+                        className: "datetime",
                         orientation: Gtk.Orientation.VERTICAL,
                         valign: Gtk.Align.START,
                         children: [
@@ -52,16 +53,12 @@ export const CenterWindow = (mon: number) => PopupWindow({
             } as Widget.BoxProps),
             Separator({
                 orientation: Gtk.Orientation.HORIZONTAL,
-                alpha: .5,
                 cssColor: "gray",
+                margin: 5,
+                alpha: .3,
                 visible: bind(AstalMpris.get_default(), "players").as(players => players.length > 0),
-                size: 1
             } as SeparatorProps),
-            new Widget.Box({
-                className: "vertical right",
-                orientation: Gtk.Orientation.VERTICAL,
-                child: BigMedia()
-            } as Widget.BoxProps)
+            BigMedia()
         ]
     } as Widget.BoxProps)
 } as PopupWindowProps);

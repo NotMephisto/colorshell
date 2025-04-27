@@ -35,11 +35,13 @@ export const BluetoothPage: (() => Page) = () => new Page({
         } as Widget.ButtonProps)
     ],
     onClose: () => stopBluetoothDevicesWatch(),
+    spacing: 2,
     children: [
         new Widget.Box({
             className: "adapters",
             visible: bind(AstalBluetooth.get_default(), "adapters").as((adapters) => 
                 adapters.length > 1),
+            spacing: 2,
             children: bind(AstalBluetooth.get_default(), "adapters").as((adapters) => [
                     new Widget.Label({
                         className: "sub-header",
@@ -59,6 +61,7 @@ export const BluetoothPage: (() => Page) = () => new Page({
             className: "connections",
             orientation: Gtk.Orientation.VERTICAL,
             hexpand: true,
+            spacing: 2,
             children: [
                 new Widget.Box({
                     className: "paired",

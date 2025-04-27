@@ -11,6 +11,7 @@ export type PageProps = {
     description?: string | Binding<string>;
     headerButtons?: Array<Gtk.Button> | Binding<Array<Gtk.Button>>;
     orientation?: Gtk.Orientation | Binding<Gtk.Orientation>;
+    spacing?: number;
     child?: Gtk.Widget | Binding<Gtk.Widget>;
     children?: Array<Gtk.Widget> | Binding<Array<Gtk.Widget>>;
 };
@@ -76,6 +77,7 @@ class Page extends Widget.Box {
                 } as Widget.BoxProps),
                 new Widget.Box({
                     className: "content",
+                    spacing: props.spacing ?? 4,
                     orientation: props.orientation ?? Gtk.Orientation.VERTICAL,
                     expand: true,
                     setup: props.setup,

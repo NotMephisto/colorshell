@@ -41,7 +41,8 @@ export function Workspaces(): Gtk.Widget {
                                     : ""
                                 } ${lastClient.title}` : "" }`)(),
                         child: new Widget.Box({
-                            children: [
+                            visible: bind(workspace, "lastClient").as(Boolean),
+                            children: bind(workspace, "lastClient").as((lastClient) => [
                                 new Widget.Revealer({
                                     transitionDuration: 200,
                                     transitionType: Gtk.RevealerTransitionType.SLIDE_LEFT,
@@ -55,17 +56,16 @@ export function Workspaces(): Gtk.Widget {
                                 } as Widget.RevealerProps),
                                 new Widget.Icon({
                                     className: "last-app-icon",
-                                    visible: Variable.derive([
-                                        bind(workspace, "lastClient"),
-                                        bind(hyprland, "focusedWorkspace")
-                                    ], (lastClient, focusedWorkspace) => focusedWorkspace?.id === workspace.id ?
-                                         false : Boolean(lastClient))(),
-                                    icon: bind(workspace, "lastClient").as((lastClient) =>
-                                        lastClient ? 
-                                            getAppIcon(lastClient.initialClass) || "image-missing"
-                                        : "image-missing")
-                                } as Widget.IconProps),
-                            ]
+                                    visible: bind(hyprland, "focusedWorkspace").as(focusedWorkspace =>
+                                        workspace.id === focusedWorkspace.id ?
+                                            false
+                                        : Boolean(lastClient)),
+                                    icon: lastClient ?
+                                        bind(lastClient, "class").as((clss) =>
+                                            getAppIcon(clss) ?? "application-x-executable-symbolic")
+                                    : undefined
+                                } as Widget.IconProps)
+                            ])
                         } as Widget.BoxProps),
                         onClicked: () => workspace.focus()
                     } as Widget.ButtonProps)

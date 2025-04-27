@@ -2,10 +2,8 @@ import { bind, execAsync, GLib } from "astal";
 import { Gtk, Widget } from "astal/gtk3";
 import AstalMpris from "gi://AstalMpris";
 import { Separator, SeparatorProps } from "../Separator";
-import { CenterWindow } from "../../window/CenterWindow";
 import { Windows } from "../../windows";
 
-const mpris: AstalMpris.Mpris = AstalMpris.get_default();
 
 const playerIcons = {
     spotify: '󰓇',
@@ -16,8 +14,8 @@ const playerIcons = {
 }
 
 export function Media(): Gtk.Widget {
-    let hoverConnectionId: number;
-    let hoverLostConnectionId: number;
+    
+    const connections: Array<number> = [];
 
     const mediaControlsRevealer: Widget.Revealer = new Widget.Revealer({
         transitionType: Gtk.RevealerTransitionType.SLIDE_RIGHT,
@@ -27,7 +25,7 @@ export function Media(): Gtk.Widget {
             className: "media-controls button-row",
             expand: false,
             homogeneous: false,
-            children: bind(mpris, "players").as((players: Array<AstalMpris.Player>) =>
+            children: bind(AstalMpris.get_default(), "players").as((players: Array<AstalMpris.Player>) =>
                 players[0] ? [ 
                     new Widget.Button({
                         className: "link nf",
@@ -71,21 +69,16 @@ export function Media(): Gtk.Widget {
 
     const mediaWidget = new Widget.EventBox({
         className: "media-eventbox",
-        visible: bind(mpris, "players").as((players: Array<AstalMpris.Player>) => 
+        visible: bind(AstalMpris.get_default(), "players").as((players: Array<AstalMpris.Player>) => 
             players[0] && players[0].get_available()),
-        onDestroy: (_) => {
-            hoverConnectionId !== undefined && 
-                _.disconnect(hoverConnectionId);
-
-            hoverLostConnectionId !== undefined && 
-                _.disconnect(hoverLostConnectionId);
-        },
+        onDestroy: (_) => connections.map(id => _.disconnect(id)),
         onClick: () => Windows.toggle("center-window"),
         child: new Widget.Box({
             className: "media",
             children: [
                 new Widget.Box({
-                    children: bind(mpris, "players").as((players: Array<AstalMpris.Player>) =>
+                    spacing: 4,
+                    children: bind(AstalMpris.get_default(), "players").as((players: Array<AstalMpris.Player>) =>
                         players[0] ? [
                             new Widget.Label({
                                 className: "icon nf",
@@ -102,9 +95,10 @@ export function Media(): Gtk.Widget {
                             } as Widget.LabelProps),
                             Separator({
                                 orientation: Gtk.Orientation.HORIZONTAL,
-                                size: 2,
-                                cssColor: `rgb(180, 180, 180)`,
-                                alpha: 0.3
+                                size: 1,
+                                margin: 5,
+                                //cssColor: `rgb(180, 180, 180)`,
+                                alpha: .3
                             } as SeparatorProps),
                             new Widget.Label({
                                 className: "artist",
@@ -122,15 +116,16 @@ export function Media(): Gtk.Widget {
         } as Widget.BoxProps)
     } as Widget.EventBoxProps);
 
-    hoverConnectionId = mediaWidget.connect("hover", () => {
-        mediaControlsRevealer.set_reveal_child(true);
-        mediaWidget.className = mediaWidget.className + " reveal";
-    });
-
-    hoverLostConnectionId = mediaWidget.connect("hover-lost", (_) => {
-        mediaControlsRevealer.set_reveal_child(false);
-        _.className = mediaWidget.className.replaceAll(" reveal", "");
-    });
+    connections.push(
+        mediaWidget.connect("hover", () => {
+            mediaControlsRevealer.set_reveal_child(true);
+            mediaWidget.className = mediaWidget.className + " reveal";
+        }),
+        mediaWidget.connect("hover-lost", (_) => {
+            mediaControlsRevealer.set_reveal_child(false);
+            _.className = mediaWidget.className.replaceAll(" reveal", "");
+        })
+    );
 
     return mediaWidget;
 }
