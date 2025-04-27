@@ -65,6 +65,7 @@ export function CustomDialog(props: CustomDialogProps = {
                 Separator({
                     alpha: .2,
                     visible: props.options && props.options.length > 0,
+                    spacing: 8,
                     orientation: Gtk.Orientation.VERTICAL
                 }),
                 new Widget.Box({
