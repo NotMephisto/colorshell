@@ -42,8 +42,10 @@ class NightLight extends GObject.Object {
                 if(t.trim() !== "" && t.trim().length <= 5) {
                     const val = Number.parseInt(t.trim());
 
-                    if(this.#temperature !== val)
-                        this.temperature = val;
+                    if(this.#temperature !== val) {
+                        this.#temperature = val;
+                        this.notify("temperature");
+                    }
                 }
             }).catch((r) => console.error(r));
 
@@ -51,8 +53,10 @@ class NightLight extends GObject.Object {
                 if(g.trim() !== "" && g.trim().length <= 5) {
                     const val = Number.parseInt(g.trim());
 
-                    if(this.#gamma !== val) 
-                        this.gamma = val;
+                    if(this.#gamma !== val) {
+                        this.#gamma = val;
+                        this.notify("gamma");
+                    }
                 }
             }).catch((r) => console.error(r));
         });
