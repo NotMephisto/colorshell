@@ -441,6 +441,18 @@ in their source link.
 - Source: [Alpha Coders](https://wall.alphacoders.com/big.php?i=1357998)
 </details>
 
+<!----------------- -->
+## Oshi no Ko
+<details>
+  <summary>
+    <b>Oshi no Ko Kana Arima</b>
+  </summary>
+  
+<img src="wallpapers/Oshi no Ko Kana Arima.png"></img>
+
+- Source: [WallHaven](https://wallhaven.cc/w/x6pp5z)
+</details>
+
 <!---------------- -->
 ## Gruvbox-styled
 <details>
