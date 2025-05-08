@@ -1,10 +1,12 @@
-# Retrozinn's Hyprland Dots
+# colorshell
+<p>(previously retrozinndev/Hyprland-Dots)</p>
+
 > [!note]
-> This is a WIP Aylur's GTK Shell version of my dots! Everything at the moment in<br>
+> This is a WIP Aylur's GTK Shell version of my dotfiles! Everything at the moment in<br>
 > this shell is working flawlessly, you can try it out if you want to! <br> <br>
 > Want the stable dotfiles? Go to the [`ryo`](https://github.com/retrozinndev/Hyprland-Dots/tree/ryo) branch! <br>
 
-My Hyprland Desktop Shell + Dotfiles that I keep improving almost everyday! 🤩 (i love doing this) <br>
+My Hyprland desktop shell that I keep improving almost everyday! 🤩 (i love doing this) <br>
 
 This repository includes a desktop shell made with [GTK], using [Astal] and [AGS] + [TypeScript]. 
 It really took me a lot of time to make this, so please star the repo if you like it! :star:
