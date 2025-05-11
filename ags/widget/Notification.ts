@@ -5,16 +5,6 @@ import { HistoryNotification, Notifications } from "../scripts/notifications";
 import { GLib } from "astal";
 import { getAppIcon } from "../scripts/apps";
 
-export function getUrgencyString(notif: AstalNotifd.Notification) {
-    switch(notif.urgency) {
-        case AstalNotifd.Urgency.LOW: 
-            return "low";
-        case AstalNotifd.Urgency.CRITICAL: 
-            return "critical";
-    }
-
-    return "normal";
-}
 
 function getNotificationImage(notif: AstalNotifd.Notification|HistoryNotification): (string|undefined) {
     const img = notif.image ?? notif.appIcon;
@@ -64,7 +54,8 @@ export function NotificationWidget(notification: AstalNotifd.Notification|number
         hexpand: true,
         vexpand: false,
         child: new Widget.Box({
-            className: `notification ${ (notification instanceof AstalNotifd.Notification) ? getUrgencyString(notification) : "" }`,
+            className: `notification ${ (notification instanceof AstalNotifd.Notification) ? 
+                Notifications.getDefault().getUrgencyString(notification.urgency) : "" }`,
             homogeneous: false,
             expand: true,
             orientation: Gtk.Orientation.VERTICAL,

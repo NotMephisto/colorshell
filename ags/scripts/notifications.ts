@@ -1,4 +1,4 @@
-import { AstalIO, GObject, property, register, signal, timeout } from "astal";
+import { AstalIO, execAsync, Gio, GObject, property, register, signal, timeout } from "astal";
 import AstalNotifd from "gi://AstalNotifd";
 
 export let 
@@ -124,6 +124,71 @@ class Notifications extends GObject.Object {
             this.instance = new Notifications();
 
         return this.instance;
+    }
+
+    public async sendNotification(props: {
+                urgency?: AstalNotifd.Urgency;
+                appName?: string;
+                image?: string;
+                summary: string;
+                body?: string;
+                replaceId?: number;
+                actions?: Array<{
+                    id?: (string|number);
+                    text: string;
+                    onAction?: () => void
+                }>
+            }): Promise<{
+                    id?: (string|number);
+                    text: string;
+                    onAction?: () => void
+                }|null|void> {
+
+        return await execAsync([
+            "notify-send", 
+                     ...(props.urgency ? [
+                "-u", this.getUrgencyString(props.urgency)
+            ] : []), ...(props.appName ? [
+                "-a", props.appName
+            ] : []), ...(props.image ? [
+                "-i", props.image
+            ] : []), ...(props.actions ? props.actions.map((action) =>
+                [ "-A", action.text ]
+            ).join("\s") : []), ...(props.replaceId ? [
+                "-r", props.replaceId.toString()
+            ] : []), props.summary, props.body ? props.body : ""
+        ]).then((stdout) => {
+            stdout = stdout.trim();
+            if(!stdout) {
+                if(props.actions && props.actions.length > 0)
+                    return null;
+
+                return;
+            }
+
+            if(props.actions && props.actions.length > 0) {
+                const action = props.actions[Number.parseInt(stdout)];
+                action?.onAction?.();
+
+                return action ?? undefined;
+            }
+        }).catch((err: Gio.IOErrorEnum) => {
+            console.error(`Notifications: Couldn't send notification! Is the daemon running? Stderr:\n${
+                err.message ? `${err.message}\n` : ""}Stack: ${err.stack}`);
+        });
+    }
+
+    public getUrgencyString(urgency: AstalNotifd.Notification|AstalNotifd.Urgency) {
+        switch((urgency instanceof AstalNotifd.Notification) ? 
+               urgency.urgency : urgency) {
+
+            case AstalNotifd.Urgency.LOW: 
+                return "low";
+            case AstalNotifd.Urgency.CRITICAL: 
+                return "critical";
+        }
+
+        return "normal";
     }
 
     private addHistory(notif: AstalNotifd.Notification, onAdded?: (notif: AstalNotifd.Notification) => void): void {
