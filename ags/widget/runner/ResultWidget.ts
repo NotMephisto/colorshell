@@ -4,7 +4,7 @@ import { Gtk, Widget } from "astal/gtk3";
 export { ResultWidget, ResultWidgetProps };
 
 type ResultWidgetProps = {
-    icon?: string | Binding<string | undefined>;
+    icon?: string | Binding<string> | Gtk.Widget | Binding<Gtk.Widget>;
     title: string | Binding<string | undefined>;
     description?: string | Binding<string | undefined>;
     closeOnClick?: boolean;
@@ -14,10 +14,11 @@ type ResultWidgetProps = {
 
 @register({ GTypeName: "ResultWidget" })
 class ResultWidget extends Widget.Box {
+
     public readonly onClick: (() => void);
-    public readonly icon: (string | Binding<string|undefined> | undefined);
     public readonly setup: ((() => void)|undefined);
-    public readonly closeOnClick: boolean = true;
+    public icon: (string | Binding<string> | Gtk.Widget | Binding<Gtk.Widget> | undefined);
+    public closeOnClick: boolean = true;
 
 
     constructor(props: ResultWidgetProps) {
@@ -31,11 +32,25 @@ class ResultWidget extends Widget.Box {
         this.closeOnClick = props.closeOnClick ?? true;
         this.onClick = () => props.onClick?.();
 
-        if(this.icon != null) {
-            this.add(new Widget.Icon({
-                visible: props.icon,
-                icon: props.icon || "image-missing"
-            } as Widget.IconProps));
+        if(this.icon !== undefined) {
+            if(this.icon instanceof Binding) {
+                if(typeof this.icon.get() === "string") {
+                    this.add(new Widget.Icon({
+                        icon: this.icon as Binding<string>
+                    } as Widget.IconProps));
+                } else {
+                    this.add(new Widget.Box({
+                        child: this.icon as Binding<Gtk.Widget>
+                    } as Widget.BoxProps));
+                }
+            } else {
+                if(typeof this.icon === "string") {
+                    this.add(new Widget.Icon({
+                        icon: this.icon as string
+                    } as Widget.IconProps));
+                } else 
+                    this.add(this.icon as Gtk.Widget);
+            }
         }
 
         this.add(new Widget.Box({
