@@ -3,6 +3,7 @@ import { property, register, signal } from "astal/gobject";
 import { Gdk } from "astal/gtk3";
 import { getDateTime } from "./time";
 import { makeDirectory } from "./utils";
+import { Notifications } from "./notifications";
 
 export { Recording };
 
@@ -130,21 +131,24 @@ class Recording extends GObject.Object {
         this.notify("recording");
         this.emit("stopped");
 
-        execAsync([
-            "notify-send", "-A", "View", 
-            "-A", "Open", "-a", "Screen Recording", 
-            "Screen recording saved",
-            `Saved as ${path}/${output}`
-        ]).then((stdout: string) => {
-            stdout = stdout.replaceAll('\n', "").trim();
-            if(stdout.length > 1 || stdout === "") return;
-
-            const selected = Number.parseInt(stdout);
-            if(selected === 0) 
-                execAsync(["nautilus", "-s", output!, path]);
-
-            if(selected === 1)
-                execAsync(["xdg-open", `${path}/${output}`]);
+        Notifications.getDefault().sendNotification({
+            actions: [
+                {
+                    text: "View",
+                    onAction: () => {
+                        execAsync(["nautilus", "-s", output!, path]);
+                    }
+                },
+                {
+                    text: "Open",
+                    onAction: () => {
+                        execAsync(["xdg-open", `${path}/${output}`]);
+                    }
+                }
+            ],
+            appName: "Screen Recording",
+            summary: "Screen Recording saved",
+            body: `Saved as ${path}/${output}`
         });
     }
 };

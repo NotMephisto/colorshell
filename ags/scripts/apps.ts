@@ -3,7 +3,6 @@ import { Astal } from "astal/gtk3";
 import AstalApps from "gi://AstalApps";
 import AstalHyprland from "gi://AstalHyprland";
 
-
 const astalApps: AstalApps.Apps = new AstalApps.Apps();
 let appsList: Array<AstalApps.Application> = astalApps.get_list();
 
