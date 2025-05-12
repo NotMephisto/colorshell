@@ -154,7 +154,7 @@ class Notifications extends GObject.Object {
                 "-i", props.image
             ] : []), ...(props.actions ? props.actions.map((action) =>
                 [ "-A", action.text ]
-            ).join("\s") : []), ...(props.replaceId ? [
+            ).flat(2) : []), ...(props.replaceId ? [
                 "-r", props.replaceId.toString()
             ] : []), props.summary, props.body ? props.body : ""
         ]).then((stdout) => {
