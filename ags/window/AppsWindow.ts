@@ -117,6 +117,7 @@ export const AppsWindow = (mon: number): (Widget.Window) => {
         marginTop: 64,
         onDestroy: () => {
             searchSubscription?.();
+            searchString.drop();
             flowboxConnections.map(id => flowbox.disconnect(id));
         },
         onKeyPressEvent: (_, event: Gdk.Event) => {
