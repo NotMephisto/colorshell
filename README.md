@@ -1,6 +1,9 @@
 # colorshell
 <p>(previously retrozinndev/Hyprland-Dots)</p>
 
+> [!note]
+> personal dotfiles moved to another repo! see [retrozinndev/Hyprland-Dots](https://github.com/retrozinndev/Hyprland-Dots)
+
 My Hyprland desktop shell that I keep improving almost everyday! 🤩 (i love doing this) <br>
 
 This repository includes a desktop shell made with [GTK], using [Astal] and [AGS] + [TypeScript]. 
