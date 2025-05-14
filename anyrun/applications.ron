@@ -1,8 +1,0 @@
-Config (
-    max_entries: 8,
-    desktop_actions: false,
-    terminal: Some(Terminal(
-        command: "kitty",
-        args: "-c {}"
-    ))
-)

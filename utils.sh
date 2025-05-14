@@ -17,9 +17,7 @@ config_dirs=(
     "hypr" 
     "ags" 
     "kitty" 
-    "anyrun" 
     "wal" 
-    "fastfetch" 
 )
 
 # -------------
@@ -61,8 +59,8 @@ function Send_log() {
 # -------------
 function Print_header() {
     printf "\n"
-    echo "######################################"
-    echo "## Retrozinndev's Hyprland Dotfiles ##"
-    echo "######################################"
+    echo "#############################"
+    echo "## Colorshell Installation ##"
+    echo "#############################"
     printf "\n"
 }
