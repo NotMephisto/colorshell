@@ -20,7 +20,7 @@ All the shell colors are dynamically generated from your wallpaper!
 This is possible by using [pywal16](fork of the archived [pywal](https://github.com/dylanaraps/pywal) project), a cli tool to generate color schemes on the fly.
 
 ## 🖼️ Wallpapers
-When you're at the [Installation](#Installation) process, you can choose whether to install the wallpapers. 
+When you're at the [Installation](#-installation) process, you can choose whether to install the wallpapers. 
 Or if you haven't, you can just create a directory `~/wallpapers` in your home `~` and put images you want to use as wallpapers!
 
 You can select any of the images inside `~/wallpapers` by pressing <kbd>SUPER</kbd> + <kbd>W</kbd> or by accessing the 
@@ -77,7 +77,7 @@ You can do so by forking this repository, translating the shell in your fork and
 (I'll create a more detailed guide for that soon)
 
 ## ⚙️ Installation
-See the Installation Guide on [Wiki/Installation]. (needs updates, shell was just launched)
+See the Installation Guide on [Wiki/Installation].
 
 ## 🎉 Tools
 - Browser: [Zen Browser]
