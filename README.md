@@ -27,7 +27,7 @@ You can select any of the images inside `~/wallpapers` by pressing <kbd>SUPER</k
 Control Center and clicking in the image icon on top.
 
 ### ℹ️ Source
-None of the wallpapers available in this repo are made by me! You can find sources inside the [`WALLPAPERS.md`](https://github.com/retrozinndev/Hyprland-Dots/blob/ryo/WALLPAPERS.md) file. (it took me a lot of time to make this sources list 😭)
+None of the wallpapers available in this repo are made by me! You can find sources inside the [`WALLPAPERS.md`](https://github.com/retrozinndev/colorshell/blob/ryo/WALLPAPERS.md) file. (it took me a lot of time to make this sources list 😭)
 
 ### ✔️ What's included in this shell
 - Pretty Top-Bar
@@ -94,8 +94,8 @@ This repo is licensed under the [MIT License], project is made and maintained by
 ## 🌠 Stargazers
 Thanks to everyone who starred my project! 💖
 [![Stargazers over time](
-  https://starchart.cc/retrozinndev/Hyprland-Dots.svg?background=%2324292e&axis=%23fafbfc&line=%232dba4e
-)](https://starchart.cc/retrozinndev/Hyprland-Dots)
+  https://starchart.cc/retrozinndev/colorshell.svg?background=%2324292e&axis=%23fafbfc&line=%232dba4e
+)](https://starchart.cc/retrozinndev/colorshell)
 
 <!-- References of other projects -->
 [pywal16]: https://github.com/eylles/pywal16
@@ -112,14 +112,14 @@ Thanks to everyone who starred my project! 💖
 [mit license]: https://en.wikipedia.org/wiki/MIT_License
 
 <!-- Tabs -->
-[wiki]: https://github.com/retrozinndev/Hyprland-Dots/wiki
-[issues]: https://github.com/retrozinndev/Hyprland-Dots/issues
+[wiki]: https://github.com/retrozinndev/colorshell/wiki
+[issues]: https://github.com/retrozinndev/colorshell/issues
 
 <!-- Wiki Pages -->
-[wiki/dependencies]: https://github.com/retrozinndev/Hyprland-Dots/wiki/Dependencies
-[wiki/usage]: https://github.com/retrozinndev/Hyprland-Dots/wiki/Usage
-[wiki/installation]: https://github.com/retrozinndev/Hyprland-Dots/wiki/Installation
-[wiki/bindings]: https://github.com/retrozinndev/Hyprland-Dots/wiki/Bindings
+[wiki/dependencies]: https://github.com/retrozinndev/colorshell/wiki/Dependencies
+[wiki/usage]: https://github.com/retrozinndev/colorshell/wiki/Usage
+[wiki/installation]: https://github.com/retrozinndev/colorshell/wiki/Installation
+[wiki/bindings]: https://github.com/retrozinndev/colorshell/wiki/Bindings
 
 <!-- Actions -->
-[new issue]: https://github.com/retrozinndev/Hyprland-Dots/issues/new
+[new issue]: https://github.com/retrozinndev/colorshell/issues/new
