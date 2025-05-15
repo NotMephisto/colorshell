@@ -15,14 +15,15 @@ function Apply_wallpapers() {
 
     if [[ $answer =~ "y" ]]; then
         echo "Thanks for choosing! Please remember that I am not the author of the wallpapers!"
-        echo "You can see sources in the repo: https://github.com/retrozinndev/Hyprland-Dots/WALLPAPERS.md"
+        echo "You can see sources in the repo: https://github.com/retrozinndev/colorshell/WALLPAPERS.md"
  
         echo "-> Copying wallpapers to ~/wallpapers"
         mkdir -p $HOME/wallpapers
         cp -f ./wallpapers/* $HOME/wallpapers
     else
         echo "Ok! The wallpaper is yours to choose!"
-        echo "Tip: create a directory named \"wallpapers/\" on your home dir, put your wallpapers there and press ´SUPER + W´ to select any of them :3"
+        echo "Expect some Hyprland source and color errors, it happens because there aren't colors to source when you don't install wallpapers right away, so you have to do it yourself."
+        echo "Tip: create the ~/wallpapers directory, put your wallpapers there and press ´SUPER + W´ to select :3"
     fi
 }
 
@@ -59,13 +60,16 @@ if [[ $1 == "dots" ]] || [[ $input =~ "y" ]]; then
         fi
     done
 
+    echo "-> Copying default hyprpaper.conf"
+    cp -f ./hypr/hyprpaper.conf $XDG_CONFIG_HOME/hypr
+
     # Ask if user also wants to install default wallpapers
     Apply_wallpapers
 
     if ! [[ $1 == "dots" ]]; then
         echo "Ah yes! Looks like it's installed, yay :3"; sleep .8
         echo "If you find any issue, please report it in: https://github.com/retrozinndev/colorshell/issues"; sleep .5
-        echo "Thanks for using colorshell! I'm really appreciate that :D"
+        echo "Thanks for using colorshell! I really appreciate that :D"
         printf "\n"
 
         exit 0
