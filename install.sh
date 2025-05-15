@@ -53,10 +53,10 @@ if [[ $1 == "dots" ]] || [[ $input =~ "y" ]]; then
         mkdir -p "$dest" # create parents
 
         if [[ -f "./$dir" ]]; then
-            rm -f "$dest" # delete unused directory
-            cp -f "./$dir" "$dest" # copy actual file
+            rm -r "$dest" # delete unused directory
+            cp -f ./$dir "$dest" # copy actual file
         else
-            cp -rf "./$dir/*" "$dest" # force-copy content
+            cp -rf ./$dir/* "$dest" # force-copy content
         fi
     done
 
