@@ -45,7 +45,7 @@ echo "Welcome to the colorshell installation script!"
 echo "!!!WARNING!!! By running this script, you assume total responsability for any issues that may occur with your filesystem"
 
 echo -n "Do you want to start the shell installation? [y/n] "
-[[ ! $1 == "dots" ]] && read input
+[[ ! $1 == "dots" ]] && read input || printf "\n"
 
 if [[ $1 == "dots" ]] || [[ $input =~ "y" ]]; then
 	Send_log "Starting installation...\n"
@@ -54,8 +54,13 @@ if [[ $1 == "dots" ]] || [[ $input =~ "y" ]]; then
         dest=$XDG_CONFIG_HOME/$dir
 
         echo "-> Installing $dir in $dest"
-        mkdir -p $dest
-        cp -rf ./$dir/* $dest
+        if [[ -f "./$dir" ]]; then
+            mkdir -p $dest # create parents
+            rm -f $dest # delete unused directory
+            cp -f ./$dir # copy actual file
+        else
+            cp -rf ./$dir/* $dest # force-copy content
+        fi
     done
 
     # Ask if user also wants to install default wallpapers
