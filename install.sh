@@ -60,6 +60,9 @@ if [[ $1 == "dots" ]] || [[ $input =~ "y" ]]; then
         fi
     done
 
+    echo "-> Copying default user config"
+    cp -rf ./hypr/user $XDG_CONFIG_HOME/hypr
+
     echo "-> Copying default hyprpaper.conf"
     cp -f ./hypr/hyprpaper.conf $XDG_CONFIG_HOME/hypr
 
