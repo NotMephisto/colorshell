@@ -26,13 +26,6 @@ function Apply_wallpapers() {
     fi
 }
 
-for dir in ${config_dirs[@]}; do
-    if [[ ! -d "./$dir" ]] || [[ ! -f "./$dir" ]]; then
-        Send_log error "$dir is in fault, or you didn't run this script in its directory!"
-        exit 1
-    fi
-done
-
 #########
 # Start #
 #########
@@ -57,11 +50,11 @@ if [[ $1 == "dots" ]] || [[ $input =~ "y" ]]; then
 
         echo "-> Installing $dir in $dest"
         if [[ -f "./$dir" ]]; then
-            mkdir -p $dest # create parents
-            rm -f $dest # delete unused directory
-            cp -f ./$dir # copy actual file
+            mkdir -p "$dest" # create parents
+            rm -f "$dest" # delete unused directory
+            cp -f "./$dir" "$dest" # copy actual file
         else
-            cp -rf ./$dir/* $dest # force-copy content
+            cp -rf "./$dir/*" "$dest" # force-copy content
         fi
     done
 
