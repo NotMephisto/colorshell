@@ -1,14 +1,11 @@
 import { bind, Variable } from "astal";
-import { astalify, Gtk, Widget } from "astal/gtk3";
+import { Gtk, Widget } from "astal/gtk3";
 import AstalBluetooth from "gi://AstalBluetooth";
 import { Page, PageButton } from "./Page";
 import { Separator, SeparatorProps } from "../../Separator";
 import { tr } from "../../../i18n/intl";
-import AstalHyprland from "gi://AstalHyprland?version=0.1";
+import AstalHyprland from "gi://AstalHyprland";
 import { Windows } from "../../../windows";
-
-
-const AstalSpinner = astalify(Gtk.Spinner);
 
 export const BluetoothPage: (() => Page) = () => new Page({
     id: "bluetooth",
@@ -120,27 +117,49 @@ export const BluetoothPage: (() => Page) = () => new Page({
 });
 
 function DeviceWidget(dev: AstalBluetooth.Device): Gtk.Widget {
+    const devActions: Variable<Array<Widget.Button>> = Variable.derive([
+        bind(dev, "connected"),
+        bind(dev, "paired"),
+        bind(dev, "trusted")
+    ], (connected, paired, trusted) => paired ? [
+        new Widget.Button({
+            className: "nf",
+            label: connected ? '󰅖' : "󰢃",
+            tooltipText: tr(connected ? "disconnect" : "control_center.pages.bluetooth.unpair_device"),
+            onClick: () => {
+                if(!connected) {
+                    AstalBluetooth.get_default().adapter?.remove_device(dev);
+                    return;
+                }
+
+                dev.disconnect_device(null);
+            },
+        } as Widget.ButtonProps),
+        new Widget.Button({
+            className: "nf",
+            label: trusted ? "󰫜" : "󰫚",
+            tooltipText: tr(`control_center.pages.bluetooth.${trusted ? "un": ""}trust_device`),
+            onClick: () => dev.set_trusted(!trusted)
+        } as Widget.ButtonProps)
+    ] : []);
+
     return PageButton({
         className: bind(dev, "connected").as((connected) => connected ? "connected" : ""),
         title: bind(dev, "alias").as(alias => alias ?? "Unknown Device"),
         icon: dev.icon ?? "bluetooth-active-symbolic",
+        tooltipText: bind(dev, "connected").as(connected => !connected ? 
+            tr("connect")
+        : ""),
+        onDestroy: () => devActions.drop(),
         onClick: () => {
-            if(dev.paired) {
-                dev.connected ? 
-                    dev.disconnect_device(null)
-                : dev.connect_device(null);
+            if(dev.connected) return;
+            if(!dev.paired) dev.pair();
 
-                return;
-            }
-
-            dev.pair();
-            dev.connected ? 
-                dev.disconnect_device(null)
-            : dev.connect_device(null);
+            dev.connect_device(null);
         },
         endWidget: new Widget.Box({
-            visible: bind(dev, "batteryPercentage").as((bat: number) => 
-                bat <= -1 ? false : true),
+            visible: bind(dev, "batteryPercentage").as((batt: number) => 
+                batt <= -1 ? false : true),
             children: [
                 new Widget.Box({
                     visible: bind(dev, "connected"),
@@ -155,47 +174,10 @@ function DeviceWidget(dev: AstalBluetooth.Device): Gtk.Widget {
                             css: "font-size: 18px; margin-left: 6px;"
                         } as Widget.IconProps)
                     ]
-                } as Widget.BoxProps),
-                new Widget.Box({
-                    visible: bind(dev, "connecting"),
-                    setup: (self) => {
-                        const spinner = new AstalSpinner();
-
-                        self.add(spinner);
-                    }
                 } as Widget.BoxProps)
-                // Spinner here
             ]
         } as Widget.BoxProps),
-        extraButtons: Variable.derive([
-            bind(dev, "connected"),
-            bind(dev, "paired"),
-            bind(dev, "trusted")
-        ], (connected, paired, trusted) => [
-            new Widget.Button({
-                className: "nf",
-                visible: paired && connected,
-                label: connected ? "󰅖" : "",
-                tooltipText: tr("disconnect"),
-                onClick: () => dev.disconnect_device()
-            } as Widget.ButtonProps),
-            new Widget.Button({
-                visible: !connected && paired,
-                className: "nf",
-                label: "󰢃",
-                tooltipText: tr("control_center.pages.bluetooth.unpair_device"),
-                onClick: () => AstalBluetooth.get_default().adapter?.remove_device(dev)
-            } as Widget.ButtonProps),
-            new Widget.Button({
-                className: "nf",
-                visible: paired,
-                label: trusted ? "󰫜" : "󰫚",
-                tooltipText: trusted ? 
-                    tr("control_center.pages.bluetooth.untrust_device")
-                : tr("control_center.pages.bluetooth.trust_device"),
-                onClick: () => trusted ? dev.set_trusted(false) : dev.set_trusted(true)
-            } as Widget.ButtonProps)
-        ])()
+        extraButtons: devActions()
     });
 }
 
