@@ -1,10 +1,6 @@
 import { AstalIO, execAsync, Gio, GObject, property, register, signal, timeout } from "astal";
 import AstalNotifd from "gi://AstalNotifd";
 
-export let 
-    NOTIFICATION_TIMEOUT_URGENT: number = 0,
-    NOTIFICATION_TIMEOUT_NORMAL: number = 4000,
-    NOTIFICATION_TIMEOUT_LOW: number = 2000;
 
 export interface HistoryNotification {
     id: number;
@@ -26,6 +22,10 @@ class Notifications extends GObject.Object {
     #notificationsOnHold: Set<number> = new Set<number>();
     #connections: Array<number> = [];
     #historyLimit: number = 10;
+
+    public static NOTIFICATION_TIMEOUT_CRITICAL: number = 0;
+    public static NOTIFICATION_TIMEOUT_NORMAL: number = 6000;
+    public static NOTIFICATION_TIMEOUT_LOW: number = 4000;
 
 
     @property()
@@ -65,11 +65,9 @@ class Notifications extends GObject.Object {
         this.#connections.push(
             AstalNotifd.get_default().connect("notified", (notifd, id) => {
                 const notification = notifd.get_notification(id);
-                const notifTimeout = notification.urgency === AstalNotifd.Urgency.LOW ? 
-                    NOTIFICATION_TIMEOUT_LOW 
-                : (notification.urgency === AstalNotifd.Urgency.CRITICAL ? 
-                   NOTIFICATION_TIMEOUT_URGENT
-                : NOTIFICATION_TIMEOUT_NORMAL);
+                const notifTimeout = Notifications[`NOTIFICATION_TIMEOUT_${
+                    this.getUrgencyString(notification.urgency).toUpperCase()
+                }` as keyof typeof Notifications] as number;
 
                 if(this.getNotifd().dontDisturb) {
                     this.addHistory(notification, () => notification.dismiss());
@@ -79,7 +77,7 @@ class Notifications extends GObject.Object {
                 this.addNotification(notification, () => {
                     if(notification.urgency !== AstalNotifd.Urgency.CRITICAL ||
                       (notification.urgency === AstalNotifd.Urgency.CRITICAL && 
-                        NOTIFICATION_TIMEOUT_URGENT > 0)) {
+                        notifTimeout > 0)) {
 
                         let notifTimer: (AstalIO.Time|undefined) = undefined;
                         let replacedConnectionId: number;
@@ -97,10 +95,10 @@ class Notifications extends GObject.Object {
                         notifTimer = timeout(notifTimeout, removeFun);
 
                         replacedConnectionId = this.connect("notification-replaced", (_, id: number) => {
-                            if(notification.id === id) {
-                                notifTimer?.cancel();
-                                notifTimer = timeout(notifTimeout, removeFun);
-                            }
+                            if(notification.id !== id) return;
+
+                            notifTimer?.cancel();
+                            notifTimer = timeout(notifTimeout, removeFun);
                         });
                     }
                 });
@@ -216,13 +214,13 @@ class Notifications extends GObject.Object {
         onAdded && onAdded(notif);
     }
 
-    public clearHistory(): void {
-        const hist = this.#history.reverse();
-        hist.map((notif) => {
+    public async clearHistory(): Promise<void> {
+        this.#history.reverse().map((notif) => {
             this.#history = this.history.filter((n) => n.id !== notif.id);
             this.emit("history-removed", notif.id);
-            this.notify("history");
         });
+
+        this.notify("history");
     }
 
     public removeHistory(notif: (HistoryNotification|number)): void {
@@ -235,16 +233,20 @@ class Notifications extends GObject.Object {
     }
 
     private addNotification(notif: AstalNotifd.Notification, onAdded?: (notif: AstalNotifd.Notification) => void): void {
-        const newArray = this.#notifications.reverse().filter((item) => item.id !== notif.id);
-        if(newArray !== this.notifications) {
-            this.emit("notification-replaced", notif.id);
+        for(let i = 0; i < this.#notifications.length; i++) {
+            const item = this.#notifications[i];
+
+            if(item.id !== notif.id) continue;
+
+            this.#notifications.splice(i, 1);
+            this.emit("notification-replaced", item.id);
+            break;
         }
 
-        newArray.push(notif);
-        this.#notifications = newArray.reverse();
+        this.#notifications.unshift(notif);
         this.notify("notifications");
         this.emit("notification-added", notif);
-        onAdded && onAdded(notif);
+        onAdded?.(notif);
     }
 
     public removeNotification(notif: (AstalNotifd.Notification|number)): void {
@@ -274,25 +276,14 @@ class Notifications extends GObject.Object {
         this.#notificationsOnHold.add(notif.id);
     }
 
-    public toggleDoNotDisturb(): boolean {
-        if(AstalNotifd.get_default().dontDisturb) {
-            AstalNotifd.get_default().dontDisturb = false;
-            return false;
-        }
+    public toggleDoNotDisturb(value?: boolean): boolean {
+        value = value ?? !AstalNotifd.get_default().dontDisturb;
+        AstalNotifd.get_default().dontDisturb = value;
 
-        AstalNotifd.get_default().dontDisturb = true;
-        return true;
+        return value;
     }
 
     public getNotifd(): AstalNotifd.Notifd { return AstalNotifd.get_default(); }
-
-    connect(signal: string, callback: (...args: any[]) => void): number {
-        return super.connect(signal, callback);
-    }
-
-    disconnect(id: number) {
-        super.disconnect(id);
-    }
 }
 
 export { Notifications };
