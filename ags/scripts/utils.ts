@@ -1,4 +1,4 @@
-import { exec, execAsync, GLib } from "astal";
+import { exec, execAsync, Gio, GLib } from "astal";
 
 
 export function getHyprlandInstanceSig(): (string|null) {
@@ -18,8 +18,11 @@ export function deleteFile(path: string): void {
 }
 
 export function isInstalled(commandName: string): boolean {
-    const output = exec(["bash", "-c", `command -v ${commandName}`]);
-    if(output) 
+    const proc = Gio.Subprocess.new(["bash", "-c", `command -v ${commandName}`],
+        Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
+
+    const [ , stdout, stderr ] = proc.communicate_utf8(null, null);
+    if(stdout && !stderr) 
         return true;
 
     return false;
