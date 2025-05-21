@@ -8,6 +8,7 @@ type PopupWindowSpecificProps = {
     onButtonPressEvent?: (self: Gtk.Widget, event: Gdk.Event) => void;
     /** Stylesheet for the background of the popup-window */
     cssBackgroundWindow?: string;
+    onClickedOutside?: (self: Widget.Window) => void;
 };
 
 export type PopupWindowProps = Pick<Widget.WindowProps, 
@@ -75,7 +76,12 @@ export function PopupWindow(props: PopupWindowProps): Widget.Window {
                 if((x < allocation.x || x > (allocation.x + allocation.width)) ||
                    (y < allocation.y || y > (allocation.y + allocation.height))) {
 
-                    self.close();
+                    if(!props.onClickedOutside) {
+                        self.close();
+                        return;
+                    }
+
+                    props.onClickedOutside?.(self);
                 }
             }
         },
