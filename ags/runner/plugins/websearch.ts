@@ -13,6 +13,7 @@ let engine: string = searchEngines.google;
 export const PluginWebSearch = {
     prefix: '?',
     name: "Web Search",
+    prioritize: true,
 
     handle: (search: string): ResultWidget => {
         return new ResultWidget({
