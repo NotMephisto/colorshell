@@ -3,16 +3,15 @@ import { QuickActions } from "../widget/control-center/QuickActions";
 import { Tiles } from "../widget/control-center/Tiles";
 import { Sliders } from "../widget/control-center/Sliders";
 import { NotifHistory } from "../widget/control-center/NotifHistory";
-import { PopupWindow } from "../widget/PopupWindow";
+import { PopupWindow, PopupWindowProps } from "../widget/PopupWindow";
 
 
 export const ControlCenter = (mon: number) => PopupWindow({
     namespace: "control-center",
     className: "control-center",
-    exclusivity: Astal.Exclusivity.NORMAL,
-    anchor: Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT | Astal.WindowAnchor.BOTTOM,
+    halign: Gtk.Align.END,
+    valign: Gtk.Align.START,
     layer: Astal.Layer.OVERLAY,
-    focusOnMap: true,
     marginTop: 10,
     marginRight: 10,
     marginBottom: 10,
@@ -34,4 +33,4 @@ export const ControlCenter = (mon: number) => PopupWindow({
             NotifHistory()
         ]
     } as Widget.BoxProps)
-} as Widget.WindowProps);
+} as PopupWindowProps);

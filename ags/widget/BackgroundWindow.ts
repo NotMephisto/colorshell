@@ -18,6 +18,7 @@ export type BackgroundWindowProps = {
     /** Function that is called when the user clicks on the window with secodary mouse button */
     onClickSecondary?: (window: Widget.Window) => void;
     keymode?: Astal.Keymode;
+    exclusivity?: Astal.Exclusivity;
 };
 
 /** Creates a fullscreen GtkWindow that is used for making
@@ -35,8 +36,8 @@ export function BackgroundWindow(props: BackgroundWindowProps) {
         monitor: props.monitor,
         layer: props.layer ?? Astal.Layer.OVERLAY,
         anchor: TOP | LEFT | BOTTOM | RIGHT,
-        keymode: props.keymode ?? Astal.Keymode.NONE,
-        exclusivity: Astal.Exclusivity.IGNORE,
+        keymode: props.keymode,
+        exclusivity: props.exclusivity ?? Astal.Exclusivity.IGNORE,
         onKeyPressEvent: (self, event: Gdk.Event) => {
             event.get_keyval()[1] === Gdk.KEY_Escape &&
                 props.onAction?.(self);

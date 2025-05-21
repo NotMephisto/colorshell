@@ -1,4 +1,4 @@
-import { Astal, Gtk, Widget } from "astal/gtk3";
+import { Gtk, Widget } from "astal/gtk3";
 import { bind, GLib } from "astal";
 
 import { getDateTime } from "../scripts/time";
@@ -10,7 +10,8 @@ import AstalMpris from "gi://AstalMpris";
 export const CenterWindow = (mon: number) => PopupWindow({
     namespace: "center-window",
     marginTop: 10,
-    anchor: Astal.WindowAnchor.TOP,
+    halign: Gtk.Align.CENTER,
+    valign: Gtk.Align.START,
     monitor: mon,
     child: new Widget.Box({
         className: "center-window-container",

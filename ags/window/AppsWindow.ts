@@ -4,8 +4,6 @@ import { cleanExec, getAppIcon, getApps, getAstalApps } from "../scripts/apps";
 import AstalApps from "gi://AstalApps";
 import { PopupWindow } from "../widget/PopupWindow";
 
-const { TOP, LEFT, RIGHT, BOTTOM } = Astal.WindowAnchor;
-
 export const AppsWindow = (mon: number): (Widget.Window) => {
     const searchString = new Variable<string>("");
     const searchSubscription = searchString.subscribe((str: string) => {
@@ -111,10 +109,9 @@ export const AppsWindow = (mon: number): (Widget.Window) => {
         namespace: "apps-window",
         layer: Astal.Layer.OVERLAY,
         exclusivity: Astal.Exclusivity.IGNORE,
-        anchor: TOP | LEFT | RIGHT | BOTTOM,
         monitor: mon,
-        cssBackgroundWindow: "background: rgba(0, 0, 0, .2)",
         marginTop: 64,
+        cssBackgroundWindow: "background: rgba(0, 0, 0, .2)",
         onDestroy: () => {
             searchSubscription?.();
             searchString.drop();

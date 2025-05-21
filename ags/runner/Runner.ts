@@ -4,6 +4,7 @@ import { PopupWindow, PopupWindowProps } from "../widget/PopupWindow";
 import { updateApps } from "../scripts/apps";
 import { ResultWidget, ResultWidgetProps } from "../widget/runner/ResultWidget";
 import { Windows } from "../windows";
+import AstalHyprland from "gi://AstalHyprland";
 
 export namespace Runner {
 export type RunnerProps = {
@@ -13,6 +14,7 @@ export type RunnerProps = {
     height?: number;
     entryPlaceHolder?: string;
     initialText?: string;
+    resultsLimit?: number;
     showResultsPlaceHolderOnStartup?: boolean;
 };
 
@@ -57,7 +59,7 @@ export function getPlugins(): Array<Runner.Plugin> {
     return [...plugins.values()];
 }
 
-/** Removes a plugin from the runner plugin list
+/** Removes a plugin from the runner plugins list
  * @returns true if plugin was removed or false if plugin wasn't found
   */
 export function removePlugin(plugin: Plugin): boolean {
@@ -75,7 +77,8 @@ export function openDefault(initialText?: string) {
     return Runner.openRunner({
         entryPlaceHolder: "Start typing...",
         showResultsPlaceHolderOnStartup: false,
-        initialText
+        initialText,
+        resultsLimit: 24
     } as Runner.RunnerProps,
     () => [
         new ResultWidget({
@@ -145,6 +148,8 @@ export function openRunner(props?: RunnerProps, placeholder?: () => Array<Result
         primary_icon_name: "system-search"
     } as Widget.EntryProps);
 
+    const defaultHeight = 300;
+
     const resultsList: Gtk.ListBox = new Gtk.ListBox({
         visible: true,
         expand: true
@@ -174,9 +179,14 @@ export function openRunner(props?: RunnerProps, placeholder?: () => Array<Result
             }
         }
 
-        return calledPlugins.map(plugin => plugin.handle(
+        const results = calledPlugins.map(plugin => plugin.handle(
             plugin.prefix ? input.replace(plugin.prefix, "") : input)
         ).filter(value => value !== undefined && value !== null).flat(1);
+
+        return props?.resultsLimit != null && 
+            props.resultsLimit !== Infinity ? 
+                results.splice(0, props.resultsLimit)
+            : results;
     }
 
     function updateResultsList(entryText: string) {
@@ -213,10 +223,12 @@ export function openRunner(props?: RunnerProps, placeholder?: () => Array<Result
         instance = Windows.createWindowForFocusedMonitor((mon: number): (Widget.Window) => PopupWindow({
             namespace: "runner",
             monitor: mon,
-            widthRequest: props?.width ?? 750,
-            heightRequest: props?.height ?? 450,
-            marginTop: 240,
-            anchor: Astal.WindowAnchor.TOP | Astal.WindowAnchor.BOTTOM,
+            widthRequest: props?.width ?? 780,
+            heightRequest: props?.height ?? defaultHeight,
+            marginTop: (AstalHyprland.get_default().get_monitor(mon)?.height / 2) - 220,
+            exclusivity: Astal.Exclusivity.IGNORE,
+            halign: Gtk.Align.CENTER,
+            valign: Gtk.Align.START,
             setup: () => {
                 // Init plugins
                 plugins.forEach(plugin => plugin.init && plugin.init());
@@ -246,7 +258,7 @@ export function openRunner(props?: RunnerProps, placeholder?: () => Array<Result
             child: new Widget.Box({
                 className: "runner main",
                 orientation: Gtk.Orientation.VERTICAL,
-                expand: false,
+                hexpand: true,
                 valign: Gtk.Align.START,
                 children: [
                     gtkEntry,
@@ -256,7 +268,7 @@ export function openRunner(props?: RunnerProps, placeholder?: () => Array<Result
                         hscroll: Gtk.PolicyType.NEVER,
                         expand: true,
                         propagateNaturalHeight: true,
-                        maxContentHeight: props?.height ?? 450,
+                        maxContentHeight: props?.height ?? defaultHeight,
                         child: resultsList
                     })
                 ]

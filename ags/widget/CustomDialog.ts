@@ -36,6 +36,8 @@ export function CustomDialog(props: CustomDialogProps = {
         cssBackgroundWindow: props.cssBackground ?? "background: rgba(0, 0, 0, .3);",
         exclusivity: Astal.Exclusivity.IGNORE,
         layer: Astal.Layer.OVERLAY,
+        halign: Gtk.Align.CENTER,
+        valign: Gtk.Align.CENTER,
         widthRequest: props.widthRequest ?? 400,
         heightRequest: props.heightRequest ?? 220,
         onDestroy: props.onFinish,
