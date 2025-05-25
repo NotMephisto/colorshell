@@ -6,8 +6,7 @@
 .apps-window-container {
   padding: 24px;
   background: colors.$bg-translucent;
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
+  border-radius: 32px 32px 0 0;
 
   & > entry {
     background: rgba(colors.$bg-primary, .4);
