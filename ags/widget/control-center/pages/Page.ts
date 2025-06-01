@@ -88,15 +88,20 @@ class Page extends Widget.Box {
                         } as Widget.LabelProps),
                     ]
                 } as Widget.BoxProps),
-                new Widget.Box({
-                    className: "content",
-                    spacing: props.spacing ?? 4,
-                    orientation: props.orientation ?? Gtk.Orientation.VERTICAL,
-                    expand: true,
-                    setup: props.setup,
-                    child: props.child,
-                    children: props.children
-                } as Widget.BoxProps),
+                new Widget.Scrollable({
+                    hscroll: Gtk.PolicyType.NEVER,
+                    vscroll: Gtk.PolicyType.AUTOMATIC,
+                    propagateNaturalHeight: true,
+                    child: new Widget.Box({
+                        className: "content",
+                        spacing: props.spacing ?? 4,
+                        orientation: props.orientation ?? Gtk.Orientation.VERTICAL,
+                        expand: true,
+                        setup: props.setup,
+                        child: props.child,
+                        children: props.children
+                    } as Widget.BoxProps),
+                } as Widget.ScrollableProps),
                 Separator({
                     alpha: .2,
                     spacing: 6,
