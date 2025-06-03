@@ -53,7 +53,7 @@ export const LogoutMenu = (mon: number) => new Widget.Window({
                     children: [
                         new Widget.Button({
                             className: "poweroff nf",
-                            label: "󰐥",
+                            //label: "󰐥",
                             onClick: () => AskPopup({
                                 title: "Power Off",
                                 text: "Are you sure you want to power off? Unsaved work will be lost.",
@@ -61,11 +61,17 @@ export const LogoutMenu = (mon: number) => new Widget.Window({
                                     exec(`sh "${GLib.getenv("XDG_CONFIG_HOME")}/hypr/scripts/save-hyprsunset.sh"`);
                                     execAsync("systemctl poweroff");
                                 }
-                            })
+                            }),
+                            children: [
+                                new Widget.Icon({
+                                    icon: "system-shutdown-symbolic",
+                                    css: "font-size: 50px;" 
+                                } as Widget.IconProps)
+                            ]
                         } as Widget.ButtonProps),
                         new Widget.Button({
                             className: "reboot nf",
-                            label: "󰜉",
+                            //label: "󰜉",
                             onClick: () => AskPopup({
                                 title: "Reboot",
                                 text: "Are you sure you want to Reboot? Unsaved work will be lost.",
@@ -73,20 +79,32 @@ export const LogoutMenu = (mon: number) => new Widget.Window({
                                     exec(`sh "${GLib.getenv("XDG_CONFIG_HOME")}/hypr/scripts/save-hyprsunset.sh"`);
                                     execAsync("systemctl reboot");
                                 }
-                            })
+                            }),
+                            children: [
+                                new Widget.Icon({
+                                    icon: "system-reboot-symbolic",
+                                    css: "font-size: 50px;" 
+                                } as Widget.IconProps)
+                            ]
                         } as Widget.ButtonProps),
                         new Widget.Button({
                             className: "suspend nf",
-                            label: "󰤄",
+                            //label: "󰤄",
                             onClick: () => AskPopup({
                                 title: "Suspend",
                                 text: "Are you sure you want to Suspend?",
                                 onAccept: () => execAsync("systemctl suspend")
-                            })
+                            }),
+                            children: [
+                                new Widget.Icon({
+                                    icon: "preferences-desktop-screensaver-symbolic",
+                                    css: "font-size: 50px;" 
+                                } as Widget.IconProps)
+                            ]
                         } as Widget.ButtonProps),
                         new Widget.Button({
                             className: "logout nf",
-                            label: "󰗽",
+                            //label: "󰗽",
                             onClick: () => AskPopup({
                                 title: "Log out",
                                 text: "Are you sure you want to log out? Your session will be ended.",
@@ -94,7 +112,13 @@ export const LogoutMenu = (mon: number) => new Widget.Window({
                                     exec(`sh "${GLib.getenv("XDG_CONFIG_HOME")}/hypr/scripts/save-hyprsunset.sh"`);
                                     execAsync(`sh -c "loginctl terminate-user ${GLib.getenv("USER") || "$USER"}"`);
                                 }
-                            })
+                            }),
+                            children: [
+                                new Widget.Icon({
+                                    icon: "system-log-out-symbolic",
+                                    css: "font-size: 50px;" 
+                                } as Widget.IconProps)
+                            ]
                         } as Widget.ButtonProps),
                     ]
                 } as Widget.BoxProps)

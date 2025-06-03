@@ -22,14 +22,14 @@ export function Status(): Gtk.Widget {
                 volumeStatus({
                     className: "sink",
                     endpoint: Wireplumber.getDefault().getDefaultSink(),
-                    icon: bind(Wireplumber.getDefault().getDefaultSink(), "mute").as((muted) =>
-                        !muted ? "󰕾" : "󰖁")
+                    icon: bind(Wireplumber.getDefault().getDefaultSink(), "volumeIcon").as((icon) =>
+                        !Wireplumber.getDefault().isMutedSink() && Wireplumber.getDefault().getSinkVolume() > 0 ? icon : "audio-volume-muted-symbolic")
                 }),
                 volumeStatus({
                     className: "source",
                     endpoint: Wireplumber.getDefault().getDefaultSource(),
-                    icon: bind(Wireplumber.getDefault().getDefaultSource(), "mute").as((muted) => 
-                        !muted ? "󰍬" : "󰍭")
+                    icon: bind(Wireplumber.getDefault().getDefaultSource(), "volumeIcon").as((icon) => 
+                        !Wireplumber.getDefault().isMutedSink() && Wireplumber.getDefault().getSourceVolume() > 0 ? icon : "microphone-sensitivity-muted-symbolic")
                 }),
                 StatusIcons()
             ]
@@ -47,11 +47,14 @@ function volumeStatus(props: { className?: string, endpoint: AstalWp.Endpoint, i
                 Wireplumber.getDefault().increaseEndpointVolume(props.endpoint, 5),
             child: new Widget.Box({
                 children: [
-                    new Widget.Label({
+                    new Widget.Icon({
                         className: "nf",
                         visible: props.icon,
-                        label: props.icon,
-                    } as Widget.LabelProps),
+                        icon: props.icon,
+                        css: `
+                            font-size: 12px;
+                            margin: 5px 5px`
+                    } as Widget.IconProps),
                     new Widget.Label({
                         className: "volume",
                         label: bind(props.endpoint, "volume").as((volume: number) => 

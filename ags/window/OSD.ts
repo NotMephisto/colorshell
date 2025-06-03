@@ -4,11 +4,17 @@ import { Wireplumber } from "../scripts/volume";
 
 export enum OSDModes {
     SINK,
+    SOURCE,
     BRIGHTNESS
 }
 
+interface OSDModeData {
+    icon: any
+
+}
+
 let osdMode: (Variable<OSDModes>|null);
-let osdIcon: (Binding<string | undefined>|null);
+let osdIcon: (Variable<string | undefined>|null);
 
 export function setOSDMode(newMode: OSDModes): void {
     if(!osdMode) return;
@@ -17,10 +23,13 @@ export function setOSDMode(newMode: OSDModes): void {
 }
 
 export const OSD = (mon: number) => {
-    osdMode = new Variable<OSDModes>(OSDModes.SINK);
+    osdMode = new Variable<OSDModes>([OSDModes.SINK, OSDModes.SOURCE]);
     osdIcon = osdMode().as((mode: OSDModes) => {
         switch(mode) {
-            case OSDModes.SINK: return "󰕾";
+            case OSDModes.SINK: return bind(Wireplumber.getDefault().getDefaultSink(), "volumeIcon").as(icon => 
+                !Wireplumber.getDefault().isMutedSink() && Wireplumber.getDefault().getSinkVolume() > 0 ? icon : "audio-volume-muted-symbolic");
+            case OSDModes.SOURCE: return bind(Wireplumber.getDefault().getDefaultSource(), "volumeIcon").as(icon => 
+                !Wireplumber.getDefault().isMutedSource() && Wireplumber.getDefault().getSourceVolume() > 0 ? icon : "microphone-sensitivity-muted-symbolic");
             case OSDModes.BRIGHTNESS: return "󰃠";
             default: return "󱧣";
         }
@@ -46,7 +55,8 @@ export const OSD = (mon: number) => {
             children: [
                 new Widget.Icon({
                     className: "icon",
-                    icon: bind(Wireplumber.getDefault().getDefaultSink(), "volumeIcon")
+                    icon: bind(Wireplumber.getDefault().getDefaultSink(), "volumeIcon").as(icon => 
+                        !Wireplumber.getDefault().isMutedSink() && Wireplumber.getDefault().getSinkVolume() > 0 ? icon : "audio-volume-muted-symbolic"),
                 } as Widget.IconProps),
                 new Widget.Box({
                     className: "volume",

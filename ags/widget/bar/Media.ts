@@ -3,14 +3,15 @@ import { Gtk, Widget } from "astal/gtk3";
 import AstalMpris from "gi://AstalMpris";
 import { Separator, SeparatorProps } from "../Separator";
 import { Windows } from "../../windows";
+import { getAppIcon, getIconByAppName } from "../../scripts/apps";
 
 
-const playerIcons = {
-    spotify: '󰓇',
-    clapper: '󰿎',
-    mpv: '',
+const playerIcons = { //need some fixes for "other" version of apps list
+    spotify: 'spotify-symbolic',
+    clapper: 'com.github.rafostar.Clapper-symbolic',
+    mpv: 'com.github.iwalton3.jellyfin-mpv-shim-symbolic',
     spotube: '󰋋',
-    firefox: '󰈹'
+    firefox: 'firefox-symbolic' 
 }
 
 export function Media(): Gtk.Widget {
@@ -29,36 +30,55 @@ export function Media(): Gtk.Widget {
                 players[0] ? [ 
                     new Widget.Button({
                         className: "link nf",
-                        label: "󰌹",
+                        icon: "edit-copy",
                         tooltipText: "Copy link to Clipboard",
                         visible: bind(players[0], "metadata").as((_metadata: GLib.HashTable) =>
                             players[0].get_meta("xesam:url") === null),
-                        onClick: () => execAsync(`sh -c "wl-copy \\"$(playerctl metadata 'xesam:url')\\""`)
+                        onClick: () => execAsync(`sh -c "wl-copy \\"$(playerctl metadata 'xesam:url')\\""`),
+                        children: [
+                            new Widget.Icon({
+                                icon: "edit-paste-symbolic",
+                            } as Widget.IconProps),
+                        ]
                     } as Widget.ButtonProps),
                     new Widget.Button({
                         className: "previous nf",
-                        label: "󰒮",
                         tooltipText: "Previous",
-                        onClick: () => players[0].canGoPrevious && players[0].previous()
+                        onClick: () => players[0].canGoPrevious && players[0].previous(),
+                        children: [
+                            new Widget.Icon({
+                                icon: "media-skip-backward-symbolic",
+                            } as Widget.IconProps),
+                        ]
                     } as Widget.ButtonProps),
                     new Widget.Button({
                         className: "pause nf",
-                        tooltipText: bind(players[0], "playback_status").as((status: AstalMpris.PlaybackStatus) =>
+                        tooltipText: bind(players[0], "playbackStatus").as((status: AstalMpris.PlaybackStatus) =>
                             status === AstalMpris.PlaybackStatus.PLAYING ? "Pause" : "Play"),
-                        label: bind(players[0], "playbackStatus").as((status: AstalMpris.PlaybackStatus) => 
-                            status === AstalMpris.PlaybackStatus.PLAYING ? "󰏤" : "󰐊"),
                         onClick: () => {
                             players[0].playbackStatus === AstalMpris.PlaybackStatus.PAUSED ?
                                 players[0].play()
                             :
                                 players[0].pause()
-                        }
+                        },
+                        children: [
+                            new Widget.Icon({
+                                icon: bind(players[0], "playbackStatus").as((status: AstalMpris.PlaybackStatus) => 
+                                    status === AstalMpris.PlaybackStatus.PLAYING 
+                                        ? "media-playback-pause-symbolic"
+                                        : "media-playback-start-symbolic"),
+                            } as Widget.IconProps),
+                        ],
                     } as Widget.ButtonProps),
                     new Widget.Button({
                         className: "next nf",
-                        label: "󰒭",
                         tooltipText: "Next",
-                        onClick: () => players[0].canGoNext && players[0].next()
+                        onClick: () => players[0].canGoNext && players[0].next(),
+                        children: [
+                            new Widget.Icon({
+                                icon: "media-skip-forward-symbolic",
+                            } as Widget.IconProps),
+                        ]
                     } as Widget.ButtonProps)
                 ] : new Widget.Label({
                     label: "Don't Stop The Music!"
@@ -80,13 +100,17 @@ export function Media(): Gtk.Widget {
                     spacing: 4,
                     children: bind(AstalMpris.get_default(), "players").as((players: Array<AstalMpris.Player>) =>
                         players[0] ? [
-                            new Widget.Label({
+                            new Widget.Icon({
                                 className: "icon nf",
-                                label: bind(players[0], "busName").as((busName: string) => {
-                                    const playerName: string = busName.split('.')[busName.split('.').length-1];
-                                    return playerIcons[playerName.toLowerCase() as keyof typeof playerIcons] || "󰎇";
+                                Icon: bind(players[0], "identity").as((ident) => {
+                                    const playerName: string = getAppIcon(ident);
+                                    console.log("Identify:>>>>>>>>>>>>>>", ident);
+                                    console.log("Icon:>>>>>>>>>>>>>>>>>>", getIconByAppName(ident.toLowerCase()));
+                                    if (ident.includes('Mozilla')) 
+                                        return "firefox-symbolic";
+                                    return getIconByAppName(ident) || "emblem-music-symbolic";
                                 })
-                            } as Widget.LabelProps),
+                            } as Widget.IconProps),
                             new Widget.Label({
                                 className: "title",
                                 label: bind(players[0], "title").as((title: string) => title || "No Title"),

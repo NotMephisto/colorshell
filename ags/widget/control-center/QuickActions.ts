@@ -8,22 +8,33 @@ import { Wallpaper } from "../../scripts/wallpaper";
 function LockButton(): Widget.Button {
     return new Widget.Button({
         className: "nf",
-        label: "󰌾",
+        //label: "󰌾",
         onClick: () => {
             Windows.close("control-center");
             AstalHyprland.get_default().dispatch("exec", "hyprlock");
-        }
+        },
+        children: [
+            new Widget.Icon({
+                icon: "system-lock-screen-symbolic",
+            } as Widget.IconProps)
+        ]
     } as Widget.ButtonProps)
 }
 
 function ColorPickerButton(): Widget.Button {
     return new Widget.Button({
         className: "nf",
-        label: "󰴱",
+        //label: "󰴱",
         onClick: () => AstalHyprland.get_default().dispatch(
             "exec", 
             "sh $HOME/.config/hypr/scripts/color-picker.sh"
-        )
+        ),
+        children: [
+            new Widget.Icon({
+                icon: "./icons/color-picker-symbolic.svg",
+                css: "color: white",
+            }  as Widget.IconProps)
+        ]
     } as Widget.ButtonProps)
 }
 

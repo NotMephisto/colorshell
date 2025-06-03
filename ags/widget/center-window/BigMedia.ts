@@ -97,59 +97,85 @@ export function BigMedia(): Gtk.Widget {
                         children: [
                             new Widget.Button({
                                 className: "link nf",
-                                label: "󰌹",
                                 tooltipText: "Copy link to Clipboard",
                                 visible: bind(players[0], "metadata").as((_meta: GLib.HashTable) =>
                                     players[0].get_meta("xesam:url") === null),
-                                onClick: () => execAsync(`sh -c "wl-copy \\"$(playerctl metadata 'xesam:url')\\""`)
+                                onClick: () => execAsync(`sh -c "wl-copy \\"$(playerctl metadata 'xesam:url')\\""`),
+                                children: [
+                                    new Widget.Icon({
+                                        icon: "edit-paste-symbolic",
+                                    } as Widget.IconProps),
+                                ]
                             } as Widget.ButtonProps),
                             new Widget.Button({
                                 className: "shuffle nf",
                                 visible: bind(players[0], "shuffleStatus").as((shuffleStatus: AstalMpris.Shuffle) =>
                                     shuffleStatus !== AstalMpris.Shuffle.UNSUPPORTED),
-                                label: bind(players[0], "shuffleStatus").as((shuffleStatus: AstalMpris.Shuffle) =>
-                                    shuffleStatus === AstalMpris.Shuffle.ON ? "󰒝" : "󰒞"),
                                 tooltipText: "Toggle Shuffle",
-                                onClick: () => players[0].shuffle()
+                                onClick: () => players[0].shuffle(),
+                                children: [
+                                    new Widget.Icon({
+                                        icon: bind(players[0], "shuffleStatus").as((shuffleStatus: AstalMpris.Shuffle) =>
+                                            shuffleStatus === AstalMpris.Shuffle.ON ? "media-playlist-consecutive-symbolic" : "media-playlist-shuffle-symbolic"),       // need to change logical work of this button
+                                    } as Widget.IconProps),
+                                ]
                             } as Widget.ButtonProps),
                             new Widget.Button({
                                 className: "previous nf",
-                                label: "󰒮",
                                 tooltipText: "Previous",
-                                onClick: () => players[0].canGoPrevious && players[0].previous()
+                                onClick: () => players[0].canGoPrevious && players[0].previous(),
+                                children: [
+                                    new Widget.Icon({
+                                        icon: "media-skip-backward-symbolic",
+                                    } as Widget.IconProps),
+                                ]
                             } as Widget.ButtonProps),
                             new Widget.Button({
                                 className: "pause nf",
                                 tooltipText: bind(players[0], "playback_status").as((status: AstalMpris.PlaybackStatus) =>
                                     status === AstalMpris.PlaybackStatus.PLAYING ? "Pause" : "Play"),
-                                label: bind(players[0], "playbackStatus").as((status: AstalMpris.PlaybackStatus) => 
-                                    status === AstalMpris.PlaybackStatus.PLAYING ? "󰏤" : "󰐊"),
                                 onClick: () => {
                                     players[0].playbackStatus === AstalMpris.PlaybackStatus.PAUSED ?
                                         players[0].play()
                                     :
                                         players[0].pause()
-                                }
+                                },
+                                children: [
+                                    new Widget.Icon({
+                                        icon: bind(players[0], "playbackStatus").as((status: AstalMpris.PlaybackStatus) => 
+                                            status === AstalMpris.PlaybackStatus.PLAYING 
+                                                ? "media-playback-pause-symbolic"
+                                                : "media-playback-start-symbolic"),
+                                    } as Widget.IconProps),
+                                ]
                             } as Widget.ButtonProps),
                             new Widget.Button({
                                 className: "next nf",
-                                label: "󰒭",
                                 tooltipText: "Next",
-                                onClick: () => players[0].canGoNext && players[0].next()
+                                onClick: () => players[0].canGoNext && players[0].next(),
+                                children: [
+                                    new Widget.Icon({
+                                        icon: "media-skip-forward-symbolic",
+                                    } as Widget.IconProps),
+                                ]
                             } as Widget.ButtonProps),
                             new Widget.Button({
                                 className: "repeat nf",
                                 visible: bind(players[0], "loopStatus").as((loopStatus: AstalMpris.Loop) =>
                                     loopStatus !== AstalMpris.Loop.UNSUPPORTED),
-                                label: bind(players[0], "loopStatus").as((loopStatus: AstalMpris.Loop) => {
-                                    switch(loopStatus) {
-                                        case AstalMpris.Loop.TRACK: return "󰑘";
-                                        case AstalMpris.Loop.PLAYLIST: return "󰑖";
-                                        default: return "󰑗";
-                                    }
-                                }),
                                 tooltipText: "Toggle Loop",
-                                onClick: () => players[0].loop()
+                                onClick: () => players[0].loop(),
+                                children: [
+                                    new Widget.Icon({
+                                        icon: bind(players[0], "loopStatus").as((loopStatus: AstalMpris.Loop) => {
+                                            switch(loopStatus) {
+                                                case AstalMpris.Loop.TRACK: return "media-playlist-repeat-song-symbolic"; // hmm....
+                                                case AstalMpris.Loop.PLAYLIST: return "media-playlist-repeat-symbolic";
+                                                default: return "./icons/arrows-loop-tall-disabled-symbolic.svg";
+                                            }
+                                        }),
+                                    } as Widget.IconProps),
+                                ],
                             } as Widget.ButtonProps)
                         ]
                     } as Widget.BoxProps),
