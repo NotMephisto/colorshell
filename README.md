@@ -80,12 +80,6 @@ You can do so by forking this repository, translating the shell in your fork and
 ## ⚙️ Installation
 See the Installation Guide on [Wiki/Installation].
 
-## 🎉 Tools
-- Browser: [Zen Browser]
-- Text Editor: [Neovim], my config is [here](https://github.com/retrozinndev/nvim-conf.lua)
-- Terminal Emulator: [Kitty]
-- Terminal shell: [Nushell]
-
 ## ❗ Issues
 Having issues? Please create a [new Issue] here, I'll be happy to help you out!
 
