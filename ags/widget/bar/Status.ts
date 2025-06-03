@@ -68,31 +68,33 @@ function volumeStatus(props: { className?: string, endpoint: AstalWp.Endpoint, i
 function StatusIcons(): Gtk.Widget {
     const bluetoothIcon: Variable<string> = Variable.derive([
         bind(AstalBluetooth.get_default(), "isPowered"),
-        bind(AstalBluetooth.get_default(), "isConnected")
+        bind(AstalBluetooth.get_default(), "isConnected"),
     ], (powered, connected) => {
         return powered ? (
-            connected ? "󰂱"
-            : "󰂯"
-        ) : "󰂲"
+            connected ? "software-update-urgent-symbolic" // I should find icon for connected state
+            : "bluetooth-active-symbolic"
+        ) : "bluetooth-hardware-disabled-symbolic"
     });
 
-    const networkIcon: Variable<string> = Variable.derive([
+    const networkIcon: Variable<string> = Variable.derive([ // Do I even need wired and wifi checks?
         bind(AstalNetwork.get_default(), "primary"),
         bind(AstalNetwork.get_default(), "wired"),
-        bind(AstalNetwork.get_default(), "wifi")
+        bind(AstalNetwork.get_default(), "wifi"),
+        bind(AstalNetwork.get_default().wired, "icon-name"),
+        bind(AstalNetwork.get_default().wifi, "icon-name")
     ],
-    (primary, wired, wifi) => {
+    (primary, wired, wifi, wired_icon, wifi_icon) => {
         switch(primary) {
             case AstalNetwork.Primary.WIRED: return wired ? 
-                    "󰛳"
-                : "󰛵";
+                    wired_icon
+                : "network-error-symbolic";
 
             case AstalNetwork.Primary.WIFI: return wifi ?
-                    "󰤨"
-                : "󰤭";
+                    wifi_icon
+                : "network-error-symbolic";
         }
 
-        return "󰲊";
+        return "network-wireless-hardware-disabled-symbolic";
     });
 
     const recordingTimer: Variable<string> = Variable.derive([
@@ -129,10 +131,10 @@ function StatusIcons(): Gtk.Widget {
                     tooltipText: tr("control_center.tiles.recording.enabled_desc"),
                     child: new Widget.Box({
                         children: [
-                            new Widget.Label({
+                            new Widget.Icon({
                                 className: "recording nf state",
-                                label: '󰻃'
-                            } as Widget.LabelProps),
+                                icon: "media-record-symbolic"
+                            } as Widget.IconProps),
                             new Widget.Label({
                                 className: "rec-time",
                                 label: recordingTimer()
@@ -141,32 +143,39 @@ function StatusIcons(): Gtk.Widget {
                     } as Widget.BoxProps)
                 } as Widget.EventBoxProps)
             } as Widget.RevealerProps),
-            new Widget.Label({
+            new Widget.Icon({
                 className: "bluetooth nf state",
                 visible: bind(AstalBluetooth.get_default(), "adapter").as(Boolean),
-                label: bluetoothIcon(),
+                icon: bluetoothIcon(),
                 onDestroy: () => bluetoothIcon.drop()
-            } as Widget.LabelProps),
-            new Widget.Label({
+            } as Widget.IconProps),
+            new Widget.Icon({
                 className: "network nf state",
-                label: networkIcon(),
+                icon: networkIcon(),
                 onDestroy: () => networkIcon.drop()
-            } as Widget.LabelProps),
+            } as Widget.IconProps),
             new Widget.Box({
                 children: [
-                    new Widget.Label({
+                    new Widget.Icon({
                         className: "bell nf state",
-                        label: bind(Notifications.getDefault().getNotifd(), "dontDisturb").as((dnd: boolean) => 
-                            dnd ? "󰂠" : "󰂚")
-                    } as Widget.LabelProps),
-                    new Widget.Label({
+                        icon: bind(Notifications.getDefault().getNotifd(), "dontDisturb").as((dnd: boolean) => 
+                            dnd ? "dialog-error-symbolic" : "org.gnome.Settings-notifications-symbolic")
+                    } as Widget.IconProps),
+                    new Widget.DrawingArea({
                         className: "notification-count nf",
                         xalign: 0,
                         yalign: 0.25,
                         visible: bind(Notifications.getDefault(), "history").as(history => 
                             history.length > 0),
-                        label: '󰧞'
-                    } as Widget.LabelProps)
+                        onDraw: {function(self, cr) { // hmm...
+                            const GdkRGBA = self.get_style_context()
+                            const color = GdkRGBA.get_color(GdkRGBA.get_state())
+
+                            cr.setSourceRGBA(color.red, color.green, color.blue, color.alpha)
+                            cr.arc(15 / 2, 15 / 2, 2.5, 0, 2 * Math.PI)
+                            cr.fill()
+                        }}
+                    } as Widget.DrawingAreaProps)
                 ]
             } as Widget.BoxProps)
         ]

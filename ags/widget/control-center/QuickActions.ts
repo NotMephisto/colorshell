@@ -8,7 +8,6 @@ import { Wallpaper } from "../../scripts/wallpaper";
 function LockButton(): Widget.Button {
     return new Widget.Button({
         className: "nf",
-        //label: "󰌾",
         onClick: () => {
             Windows.close("control-center");
             AstalHyprland.get_default().dispatch("exec", "hyprlock");
@@ -24,7 +23,6 @@ function LockButton(): Widget.Button {
 function ColorPickerButton(): Widget.Button {
     return new Widget.Button({
         className: "nf",
-        //label: "󰴱",
         onClick: () => AstalHyprland.get_default().dispatch(
             "exec", 
             "sh $HOME/.config/hypr/scripts/color-picker.sh"
@@ -41,30 +39,42 @@ function ColorPickerButton(): Widget.Button {
 function ScreenshotButton(): Widget.Button {
     return new Widget.Button({
         className: "nf",
-        label: "󰹑",
         onClick: () => {
             Windows.close("control-center");
             execAsync(`sh ${GLib.get_user_config_dir()}/hypr/scripts/screenshot.sh`);
-        }
+        },
+        children: [
+            new Widget.Icon({
+                icon: "applets-screenshooter-symbolic"
+            } as Widget.IconProps)
+        ]
     } as Widget.ButtonProps);
 }
 
 function SelectWallpaperButton(): Widget.Button {
     return new Widget.Button({
         className: "nf",
-        label: "󰸉",
         onClick: () => {
             Windows.close("control-center");
             Wallpaper.getDefault().pickWallpaper();
-        }
+        },
+        children: [
+            new Widget.Icon({
+                icon: "preferences-desktop-wallpaper-symbolic"
+            } as Widget.IconProps)
+        ]
     } as Widget.ButtonProps);
 }
 
 function LogoutButton(): Widget.Button {
     return new Widget.Button({
         className: "nf",
-        label: "󰗽",
-        onClick: () => Windows.open("logout-menu")
+        onClick: () => Windows.open("logout-menu"),
+        children: [
+            new Widget.Icon({
+                icon: "system-log-out-symbolic"
+            } as Widget.IconProps)
+        ]
     } as Widget.ButtonProps);
 }
 

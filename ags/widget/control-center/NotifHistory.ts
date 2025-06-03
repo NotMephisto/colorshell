@@ -47,11 +47,11 @@ export const NotifHistory = () => {
                         className: "clear-all",
                         child: new Widget.Box({
                             children: [
-                                new Widget.Label({
+                                new Widget.Icon({
                                     className: "nf",
                                     css: "margin-right: 6px",
-                                    label: "󰎟"
-                                } as Widget.LabelProps),
+                                    icon: "edit-clear-all-symbolic"
+                                } as Widget.IconProps),
                                 new Widget.Label({
                                     label: tr("clear")
                                 } as Widget.LabelProps)
