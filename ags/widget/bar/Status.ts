@@ -74,7 +74,7 @@ function StatusIcons(): Gtk.Widget {
         ) : "󰂲"
     });
 
-        const networkIcon: Variable<string> = Variable.derive([ // Much better!
+    const networkIcon: Variable<string> = Variable.derive([ // Much better!
         bind(AstalNetwork.get_default(), "primary"),
         bind(AstalNetwork.get_default().wired, "icon-name"),
         bind(AstalNetwork.get_default().wifi, "icon-name")
