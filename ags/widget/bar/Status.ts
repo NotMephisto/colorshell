@@ -70,13 +70,28 @@ function StatusIcons(): Gtk.Widget {
         bind(AstalBluetooth.get_default(), "isPowered"),
         bind(AstalBluetooth.get_default(), "isConnected"),
     ], (powered, connected) => {
+<<<<<<< Updated upstream
         return powered ? (
             connected ? "software-update-urgent-symbolic" // I should find icon for connected state
             : "bluetooth-active-symbolic"
         ) : "bluetooth-hardware-disabled-symbolic"
     });
 
+<<<<<<< Updated upstream
     const networkIcon: Variable<string> = Variable.derive([ // Do I even need wired and wifi checks?
+=======
+        const networkIcon: Variable<string> = Variable.derive([ // Much better!
+=======
+        console.log("Am I powered? A:", AstalBluetooth.get_default().get_is_powered())
+        return AstalBluetooth.get_default().get_is_powered() ? (
+            AstalBluetooth.get_default().get_is_connected() ? "software-update-urgent-symbolic" // I should find icon for connected state
+            : "bluetooth-active-symbolic"
+        ) : "bluetooth-hardware-disabled-symbolic"
+    });
+
+    const networkIcon: Variable<string> = Variable.derive([ // Much better!
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
         bind(AstalNetwork.get_default(), "primary"),
         bind(AstalNetwork.get_default(), "wired"),
         bind(AstalNetwork.get_default(), "wifi"),
