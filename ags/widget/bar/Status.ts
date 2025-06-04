@@ -73,23 +73,19 @@ function StatusIcons(): Gtk.Widget {
         ) : "󰂲"
     });
 
-    const networkIcon: Variable<string> = Variable.derive([
+        const networkIcon: Variable<string> = Variable.derive([ // Much better!
         bind(AstalNetwork.get_default(), "primary"),
-        bind(AstalNetwork.get_default(), "wired"),
-        bind(AstalNetwork.get_default(), "wifi")
+        bind(AstalNetwork.get_default().wired, "icon-name"),
+        bind(AstalNetwork.get_default().wifi, "icon-name")
     ],
-    (primary, wired, wifi) => {
+    (primary, wired_icon, wifi_icon) => {
         switch(primary) {
-            case AstalNetwork.Primary.WIRED: return wired ? 
-                    "󰛳"
-                : "󰛵";
-
-            case AstalNetwork.Primary.WIFI: return wifi ?
-                    "󰤨"
-                : "󰤭";
+            case AstalNetwork.Primary.WIRED: return wired_icon;
+            case AstalNetwork.Primary.WIFI: return wifi_icon;
+            default: "network-error-symbolic";
         }
 
-        return "󰲊";
+        return "network-wireless-hardware-disabled-symbolic";
     });
 
     const recordingTimer: Variable<string> = Variable.derive([
@@ -126,10 +122,10 @@ function StatusIcons(): Gtk.Widget {
                     tooltipText: tr("control_center.tiles.recording.enabled_desc"),
                     child: new Widget.Box({
                         children: [
-                            new Widget.Label({
+                            new Widget.Icon({
                                 className: "recording nf state",
-                                label: '󰻃'
-                            } as Widget.LabelProps),
+                                icon: "media-record-symbolic"
+                            } as Widget.IconProps),
                             new Widget.Label({
                                 className: "rec-time",
                                 label: recordingTimer()
@@ -144,11 +140,11 @@ function StatusIcons(): Gtk.Widget {
                 label: bluetoothIcon(),
                 onDestroy: () => bluetoothIcon.drop()
             } as Widget.LabelProps),
-            new Widget.Label({
+            new Widget.Icon({
                 className: "network nf state",
-                label: networkIcon(),
+                icon: networkIcon(),
                 onDestroy: () => networkIcon.drop()
-            } as Widget.LabelProps),
+            } as Widget.IconProps),
             new Widget.Box({
                 children: [
                     new Widget.Label({
