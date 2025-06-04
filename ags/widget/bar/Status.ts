@@ -52,6 +52,7 @@ function volumeStatus(props: { className?: string, endpoint: AstalWp.Endpoint, i
                     new Widget.Icon({
                         visible: props.icon,
                         icon: props.icon,
+                        css: `font-size: 12px; margin: 5px 5px`
                     } as Widget.IconProps),
                     new Widget.Label({
                         className: "volume",
@@ -74,7 +75,7 @@ function StatusIcons(): Gtk.Widget {
         ) : "󰂲"
     });
 
-    const networkIcon: Variable<string> = Variable.derive([ // Much better!
+    const networkIcon: Variable<string> = Variable.derive([
         bind(AstalNetwork.get_default(), "primary"),
         bind(AstalNetwork.get_default().wired, "icon-name"),
         bind(AstalNetwork.get_default().wifi, "icon-name")
@@ -135,12 +136,12 @@ function StatusIcons(): Gtk.Widget {
                     } as Widget.BoxProps)
                 } as Widget.EventBoxProps)
             } as Widget.RevealerProps),
-            new Widget.Label({
+            new Widget.Icon({
                 className: "bluetooth nf state",
                 visible: bind(AstalBluetooth.get_default(), "adapter").as(Boolean),
-                label: bluetoothIcon(),
+                icon: bluetoothIcon(),
                 onDestroy: () => bluetoothIcon.drop()
-            } as Widget.LabelProps),
+            } as Widget.IconProps),
             new Widget.Icon({
                 className: "network nf state",
                 icon: networkIcon(),
