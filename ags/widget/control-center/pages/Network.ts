@@ -13,11 +13,12 @@ export const PageNetwork: (() => Page) = () => new Page({
     className: "network",
     headerButtons: [
         new Widget.Button({
-            className: "reload nf",
-            label: "󰑓",
-            visible: bind(AstalNetwork.get_default(), "primary").as(
-                (primary: AstalNetwork.Primary) => primary === AstalNetwork.Primary.WIFI
-            ),
+            className: "reload",
+            image: new Widget.Icon({
+                icon: "arrow-circular-top-right-symbolic"
+            } as Widget.IconProps),
+            visible: bind(AstalNetwork.get_default(), "primary").as((primary) => 
+                primary === AstalNetwork.Primary.WIFI),
             tooltipText: "Re-scan connections",
             onClick: () => AstalNetwork.get_default().wifi.scan()
         } as Widget.ButtonProps)

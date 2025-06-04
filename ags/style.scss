@@ -242,15 +242,6 @@ selection {
   background: colors.$bg-tertiary;
 }
 
-label.nf,
-button.nf label {
-  font-size: 12px;
-  font-family: "Symbols Nerd Font Mono", "Noto Sans Nerd Font Mono",
-    "0xProto Nerd Font Mono", "Fira Code Nerd Font Mono", 
-    "Symbols Nerd Font", "Noto Sans Nerd Font", "Fira Code Nerd Font",
-    "Font Awesome";
-}
-
 trough {
   background: functions.toRGB(color.adjust($color: wal.$color1, $lightness: -20%));
   border-radius: 8px;

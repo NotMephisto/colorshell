@@ -9,7 +9,7 @@ export const TileDND = Tile({
         (dnd: boolean) => dnd ? tr("control_center.tiles.enabled") : tr("control_center.tiles.disabled")),
     onToggledOff: () => Notifications.getDefault().getNotifd().dontDisturb = false,
     onToggledOn: () => Notifications.getDefault().getNotifd().dontDisturb = true,
-    icon: "󰍶",
+    icon: "minus-circle-filled-symbolic",
     iconSize: 16,
     toggleState: Notifications.getDefault().getNotifd().dontDisturb
 });

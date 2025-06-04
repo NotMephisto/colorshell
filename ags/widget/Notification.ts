@@ -92,7 +92,7 @@ export function NotificationWidget(notification: AstalNotifd.Notification|number
                                     label: GLib.DateTime.new_from_unix_local(notification.time).format("%H:%M"),
                                 } as Widget.LabelProps),
                                 new Widget.Button({
-                                    className: "close nf",
+                                    className: "close",
                                     onClick: () => onClose && onClose(notification),
                                     image: new Widget.Icon({
                                         className: "close icon",

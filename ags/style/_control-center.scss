@@ -23,9 +23,17 @@
   }
 
   & .quickactions {
+    margin-bottom: .8em;
+
     & .hostname {
       font-size: 15px;
       font-weight: 600;
+    }
+
+    & > box:not(.button-row) icon {
+      font-size: 12px;
+      color: colors.$fg-disabled;
+      margin-right: 3px;
     }
 
     & .uptime {
@@ -46,31 +54,19 @@
   }
 
   & .sliders {
-    padding: 0;
-    & > box {
-      margin: 8px 0;
-
-      &:first-child {
-        margin-top: 0;
-      }
-
-      &:last-child {
-        margin-bottom: 0;
-      }
+    icon {
+      font-size: 16px;
     }
 
-    label.nf,
-    button.nf label {
-      margin-right: 8px;
-      font-size: 15px;
-    }
-
-    button.more {
-      @include mixins.hover-shadow;
+    button {
+      @include mixins.hover-shadow2;
 
       padding: 4px;
       border-radius: 16px;
-      margin-left: 6px;
+
+      icon {
+        font-size: 14px;
+      }
     }
 
     & .page .content {
@@ -133,6 +129,16 @@
       & label {
         font-size: 14px;
       }
+
+      & label.description {
+        font-size: 10px;
+        font-weight: 400;
+        color: colors.$fg-disabled;
+      }
+
+      & icon {
+        font-size: 16px;
+      }
     }
 
     & .bottom-buttons button {
@@ -176,14 +182,15 @@ box.history {
 
   & > .button-row {
     margin-top: 12px;
+
     & button {
       padding: 6px;
 
-      & label.nf {
+      & icon {
         font-size: 16px;
       }
 
-      & label:not(.nf) {
+      & label {
         font-size: 12px;
         font-weight: 600;
       }

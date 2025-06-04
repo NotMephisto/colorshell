@@ -33,8 +33,7 @@ export const TileNetwork = () => new Widget.Box({
                     onToggledOn: () => wifi.set_enabled(true),
                     onToggledOff: () => wifi.set_enabled(false),
                     onClickMore: () => TilesPages?.toggle(PageNetwork()),
-                    icon: "󰤨",
-                    iconSize: 16,
+                    icon: "network-wireless-signal-excellent-symbolic",
                     toggleState: bind(wifi, "enabled")
                 } as TileProps)();
 
@@ -57,12 +56,12 @@ export const TileNetwork = () => new Widget.Box({
                     icon: bind(wired, "internet").as((internet: AstalNetwork.Internet) => {
                         switch(internet) {
                             case AstalNetwork.Internet.CONNECTED: 
-                                return '󰛳';
+                                return "network-wired-symbolic";
                             case AstalNetwork.Internet.DISCONNECTED:
-                                return '󰲛';
+                                return "network-wired-disconnected-symbolic";
                         }
 
-                        return "󰛵";
+                        return "network-wired-no-route-symbolic";
                     }),
                     iconSize: 16,
                     toggleState: bind(wired, "internet").as((internet: AstalNetwork.Internet) => 
@@ -78,7 +77,7 @@ export const TileNetwork = () => new Widget.Box({
                 onToggledOn: () => execAsync("nmcli n on"),
                 onToggledOff: () => execAsync("nmcli n off"),
                 onClickMore: () => TilesPages?.toggle(PageNetwork()),
-                icon: "󰲛",
+                icon: "network-wired-disconnected-symbolic",
                 iconSize: 16,
                 toggleState: bind(wired, "internet").as((internet: AstalNetwork.Internet) => 
                     internet === AstalNetwork.Internet.CONNECTING || internet === AstalNetwork.Internet.CONNECTED)

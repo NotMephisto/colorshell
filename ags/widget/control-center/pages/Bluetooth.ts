@@ -1,10 +1,12 @@
-import { bind, Variable } from "astal";
+import { bind, Gio, Variable } from "astal";
 import { Gtk, Widget } from "astal/gtk3";
 import AstalBluetooth from "gi://AstalBluetooth";
 import { Page, PageButton } from "./Page";
 import { tr } from "../../../i18n/intl";
 import AstalHyprland from "gi://AstalHyprland";
 import { Windows } from "../../../windows";
+import { Notifications } from "../../../scripts/notifications";
+import AstalNotifd from "gi://AstalNotifd";
 
 export const BluetoothPage: (() => Page) = () => new Page({
     id: "bluetooth",
@@ -13,9 +15,13 @@ export const BluetoothPage: (() => Page) = () => new Page({
     className: "bluetooth",
     headerButtons: [
         new Widget.Button({
-            className: "discover nf",
-            label: bind(AstalBluetooth.get_default().adapter, "discovering").as((discovering) => 
-                !discovering ? '󰑓' : '󰙦'),
+            className: "discover",
+            image: new Widget.Icon({
+                icon: bind(AstalBluetooth.get_default().adapter, "discovering").as((discovering) => 
+                    !discovering ? 
+                        "arrow-circular-top-right-symbolic" 
+                    : "media-playback-stop-symbolic")
+            } as Widget.IconProps),
             tooltipText: bind(AstalBluetooth.get_default().adapter, "discovering").as((discovering) => 
                 !discovering ? 
                     tr("control_center.pages.bluetooth.start_discovering")
@@ -117,8 +123,11 @@ function DeviceWidget(dev: AstalBluetooth.Device): Gtk.Widget {
         bind(dev, "trusted")
     ], (connected, paired, trusted) => paired ? [
         new Widget.Button({
-            className: "nf",
-            label: connected ? '󰅖' : "󰢃",
+            image: new Widget.Icon({
+                icon: connected ? 
+                    "list-remove-symbolic"
+                : "user-trash-symbolic"
+            } as Widget.IconProps),
             tooltipText: tr(connected ? "disconnect" : "control_center.pages.bluetooth.unpair_device"),
             onClick: () => {
                 if(!connected) {
@@ -130,8 +139,11 @@ function DeviceWidget(dev: AstalBluetooth.Device): Gtk.Widget {
             },
         } as Widget.ButtonProps),
         new Widget.Button({
-            className: "nf",
-            label: trusted ? "󰫜" : "󰫚",
+            image: new Widget.Icon({
+                icon: trusted ? 
+                    "shield-safe-symbolic"
+                : "shield-danger-symbolic"
+            } as Widget.IconProps),
             tooltipText: tr(`control_center.pages.bluetooth.${trusted ? "un": ""}trust_device`),
             onClick: () => dev.set_trusted(!trusted)
         } as Widget.ButtonProps)
@@ -141,15 +153,36 @@ function DeviceWidget(dev: AstalBluetooth.Device): Gtk.Widget {
         className: bind(dev, "connected").as((connected) => connected ? "connected" : ""),
         title: bind(dev, "alias").as(alias => alias ?? "Unknown Device"),
         icon: dev.icon ?? "bluetooth-active-symbolic",
+        description: bind(dev, "connecting").as(connecting => 
+            connecting ? `${tr("connecting")}...` : ""),
         tooltipText: bind(dev, "connected").as(connected => !connected ? 
             tr("connect")
         : ""),
         onDestroy: () => devActions.drop(),
         onClick: () => {
             if(dev.connected) return;
-            if(!dev.paired) dev.pair();
 
-            dev.connect_device(null);
+            let skipConnection: boolean = false;
+            if(!dev.paired) 
+                (async () => dev.pair())().catch((err: Gio.IOErrorEnum) => {
+                    skipConnection = true;
+                    Notifications.getDefault().sendNotification({
+                        appName: "bluetooth",
+                        summary: "Device pairing error",
+                        body: `Couldn't connect to ${dev.alias ?? dev.name}, an error occurred: ${err.message || err.stack}`,
+                        urgency: AstalNotifd.Urgency.NORMAL
+                    })
+                });
+
+            if(!skipConnection)
+                (async () => dev.connect_device(null))().catch((err: Gio.IOErrorEnum) => 
+                    Notifications.getDefault().sendNotification({
+                        appName: "bluetooth",
+                        summary: "Device connection error",
+                        body: `Couldn't connect to ${dev.alias ?? dev.name}, an error occurred: ${err.message || err.stack}`,
+                        urgency: AstalNotifd.Urgency.NORMAL
+                    })
+                );
         },
         endWidget: new Widget.Box({
             visible: bind(dev, "batteryPercentage").as((batt: number) => 
@@ -160,12 +193,13 @@ function DeviceWidget(dev: AstalBluetooth.Device): Gtk.Widget {
                     children: [
                         new Widget.Label({
                             halign: Gtk.Align.END,
-                            label: bind(dev, "batteryPercentage").as((bat: number) =>
-                                `${Math.floor(bat * 100)}%`)
+                            label: bind(dev, "batteryPercentage").as((batt: number) =>
+                                `${Math.floor(batt * 100)}%`)
                         } as Widget.LabelProps),
                         new Widget.Icon({
-                            icon: "battery-symbolic",
-                            css: "font-size: 18px; margin-left: 6px;"
+                            icon: bind(dev, "batteryPercentage").as(batt => 
+                                `battery-level-${Math.floor(batt * 100)}-symbolic`),
+                            css: "font-size: 16px; margin-left: 6px;"
                         } as Widget.IconProps)
                     ]
                 } as Widget.BoxProps)

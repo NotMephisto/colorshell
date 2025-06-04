@@ -52,8 +52,10 @@ export const LogoutMenu = (mon: number) => new Widget.Window({
                     height_request: 360,
                     children: [
                         new Widget.Button({
-                            className: "poweroff nf",
-                            label: "󰐥",
+                            className: "poweroff",
+                            image: new Widget.Icon({
+                                icon: "system-shutdown-symbolic"
+                            } as Widget.IconProps),
                             onClick: () => AskPopup({
                                 title: "Power Off",
                                 text: "Are you sure you want to power off? Unsaved work will be lost.",
@@ -64,8 +66,10 @@ export const LogoutMenu = (mon: number) => new Widget.Window({
                             })
                         } as Widget.ButtonProps),
                         new Widget.Button({
-                            className: "reboot nf",
-                            label: "󰜉",
+                            className: "reboot",
+                            image: new Widget.Icon({
+                                icon: "arrow-circular-top-right-symbolic"
+                            } as Widget.IconProps),
                             onClick: () => AskPopup({
                                 title: "Reboot",
                                 text: "Are you sure you want to Reboot? Unsaved work will be lost.",
@@ -76,8 +80,10 @@ export const LogoutMenu = (mon: number) => new Widget.Window({
                             })
                         } as Widget.ButtonProps),
                         new Widget.Button({
-                            className: "suspend nf",
-                            label: "󰤄",
+                            className: "suspend",
+                            image: new Widget.Icon({
+                                icon: "weather-clear-night-symbolic"
+                            } as Widget.IconProps),
                             onClick: () => AskPopup({
                                 title: "Suspend",
                                 text: "Are you sure you want to Suspend?",
@@ -85,8 +91,10 @@ export const LogoutMenu = (mon: number) => new Widget.Window({
                             })
                         } as Widget.ButtonProps),
                         new Widget.Button({
-                            className: "logout nf",
-                            label: "󰗽",
+                            className: "logout",
+                            image: new Widget.Icon({
+                                icon: "system-log-out-symbolic"
+                            } as Widget.IconProps),
                             onClick: () => AskPopup({
                                 title: "Log out",
                                 text: "Are you sure you want to log out? Your session will be ended.",

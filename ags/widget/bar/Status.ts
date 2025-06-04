@@ -24,13 +24,15 @@ export function Status(): Gtk.Widget {
                     className: "sink",
                     endpoint: Wireplumber.getDefault().getDefaultSink(),
                     icon: bind(Wireplumber.getDefault().getDefaultSink(), "volumeIcon").as(icon => 
-                        !Wireplumber.getDefault().isMutedSink() && Wireplumber.getDefault().getSinkVolume() > 0 ? icon : "audio-volume-muted-symbolic"),
+                        !Wireplumber.getDefault().isMutedSink() && Wireplumber.getDefault().getSinkVolume() > 0 ? 
+                            icon : "audio-volume-muted-symbolic"),
                 }),
                 volumeStatus({
                     className: "source",
                     endpoint: Wireplumber.getDefault().getDefaultSource(),
                     icon: bind(Wireplumber.getDefault().getDefaultSource(), "volumeIcon").as(icon => 
-                        !Wireplumber.getDefault().isMutedSource() && Wireplumber.getDefault().getSourceVolume() > 0 ? icon : "microphone-sensitivity-muted-symbolic"),
+                        !Wireplumber.getDefault().isMutedSource() && Wireplumber.getDefault().getSourceVolume() > 0 ? 
+                            icon : "microphone-sensitivity-muted-symbolic"),
                 }),
                 StatusIcons()
             ]
@@ -69,9 +71,10 @@ function StatusIcons(): Gtk.Widget {
         bind(AstalBluetooth.get_default(), "isConnected")
     ], (powered, connected) => {
         return powered ? (
-            connected ? "󰂱"
-            : "󰂯"
-        ) : "󰂲"
+            connected ? 
+                "bluetooth-active-symbolic"
+            : "bluetooth-symbolic"
+        ) : "bluetooth-disabled-symbolic"
     });
 
     const networkIcon: Variable<string> = Variable.derive([
@@ -82,15 +85,15 @@ function StatusIcons(): Gtk.Widget {
     (primary, wired, wifi) => {
         switch(primary) {
             case AstalNetwork.Primary.WIRED: return wired ? 
-                    "󰛳"
-                : "󰛵";
+                    "network-wired-symbolic"
+                : "network-wired-no-route-symbolic";
 
             case AstalNetwork.Primary.WIFI: return wifi ?
-                    "󰤨"
-                : "󰤭";
+                    "network-wireless-signal-excellent-symbolic"
+                : "network-wireless-offline-symbolic";
         }
 
-        return "󰲊";
+        return "network-no-route-symbolic";
     });
 
     const recordingTimer: Variable<string> = Variable.derive([
@@ -103,18 +106,15 @@ function StatusIcons(): Gtk.Widget {
         const startedAtSeconds = dateTime.to_unix() - Recording.getDefault().startedAt!.to_unix();
         if(startedAtSeconds <= 0) return "00:00";
 
-        const hours = Math.floor(startedAtSeconds / 120);
         const minutes = Math.floor(startedAtSeconds / 60);
         const seconds = Math.floor(startedAtSeconds % 60);
 
-        return `${ hours > 0 ? `${hours < 10 ? `0${hours}` : hours }:` : ""
-            }${ minutes < 10 ? `0${minutes}` : minutes 
-            }:${ seconds < 10 ? `0${seconds}` : seconds }`;
+        return `${ minutes < 10 ? `0${minutes}` : minutes }:${ seconds < 10 ? `0${seconds}` : seconds }`;
     });
 
     return new Widget.Box({
         className: "status-icons",
-        spacing: 3,
+        spacing: 8,
         children: [
             new Widget.Revealer({
                 revealChild: bind(Recording.getDefault(), "recording"),
@@ -127,10 +127,11 @@ function StatusIcons(): Gtk.Widget {
                     tooltipText: tr("control_center.tiles.recording.enabled_desc"),
                     child: new Widget.Box({
                         children: [
-                            new Widget.Label({
-                                className: "recording nf state",
-                                label: '󰻃'
-                            } as Widget.LabelProps),
+                            new Widget.Icon({
+                                className: "recording state",
+                                icon: "media-record-symbolic",
+                                css: "margin-right: 4px;"
+                            } as Widget.IconProps),
                             new Widget.Label({
                                 className: "rec-time",
                                 label: recordingTimer()
@@ -139,32 +140,31 @@ function StatusIcons(): Gtk.Widget {
                     } as Widget.BoxProps)
                 } as Widget.EventBoxProps)
             } as Widget.RevealerProps),
-            new Widget.Label({
-                className: "bluetooth nf state",
+            new Widget.Icon({
+                className: "bluetooth state",
                 visible: bind(AstalBluetooth.get_default(), "adapter").as(Boolean),
-                label: bluetoothIcon(),
+                icon: bluetoothIcon(),
                 onDestroy: () => bluetoothIcon.drop()
-            } as Widget.LabelProps),
-            new Widget.Label({
-                className: "network nf state",
-                label: networkIcon(),
+            } as Widget.IconProps),
+            new Widget.Icon({
+                className: "network state",
+                icon: networkIcon(),
                 onDestroy: () => networkIcon.drop()
-            } as Widget.LabelProps),
+            } as Widget.IconProps),
             new Widget.Box({
                 children: [
-                    new Widget.Label({
-                        className: "bell nf state",
-                        label: bind(Notifications.getDefault().getNotifd(), "dontDisturb").as((dnd: boolean) => 
-                            dnd ? "󰂠" : "󰂚")
-                    } as Widget.LabelProps),
-                    new Widget.Label({
-                        className: "notification-count nf",
-                        xalign: 0,
-                        yalign: 0.25,
+                    new Widget.Icon({
+                        className: "bell state",
+                        icon: bind(Notifications.getDefault().getNotifd(), "dontDisturb").as((dnd) => 
+                            dnd ? "minus-circle-filled-symbolic"
+                            : "preferences-system-notifications-symbolic")
+                    } as Widget.IconProps),
+                    new Widget.Icon({
+                        className: "notification-count",
                         visible: bind(Notifications.getDefault(), "history").as(history => 
                             history.length > 0),
-                        label: '󰧞'
-                    } as Widget.LabelProps)
+                        icon: "circle-filled-symbolic"
+                    } as Widget.IconProps)
                 ]
             } as Widget.BoxProps)
         ]

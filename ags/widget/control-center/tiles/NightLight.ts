@@ -10,7 +10,7 @@ import { Widget } from "astal/gtk3";
 export const TileNightLight = () => isInstalled("hyprsunset") ? 
     Tile({
         title: tr("control_center.tiles.night_light.title"),
-        icon: "󰖔",
+        icon: "weather-clear-night-symbolic",
         description: Variable.derive([
             bind(NightLight.getDefault(), "temperature"),
             bind(NightLight.getDefault(), "gamma")

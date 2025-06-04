@@ -18,19 +18,16 @@ export const TileRecording = () => {
         const startedAtSeconds = dateTime.to_unix() - Recording.getDefault().startedAt!.to_unix();
         if(startedAtSeconds <= 0) return "00:00";
 
-        const hours = Math.floor(startedAtSeconds / 120);
         const minutes = Math.floor(startedAtSeconds / 60);
         const seconds = Math.floor(startedAtSeconds % 60);
 
-        return `${ hours > 0 ? `${hours < 10 ? `0${hours}` : hours }:` : ""
-            }${ minutes < 10 ? `0${minutes}` : minutes 
-            }:${ seconds < 10 ? `0${seconds}` : seconds }`;
+        return `${ minutes < 10 ? `0${minutes}` : minutes }:${ seconds < 10 ? `0${seconds}` : seconds }`;
     });
 
     return Tile({
         title: tr("control_center.tiles.recording.title") || "Screen Recording",
         description: description(),
-        icon: "󰻂",
+        icon: "media-record-symbolic",
         visible: wfRecorderInstalled,
         onDestroy: () => description.drop(),
         onToggledOff: () => Recording.getDefault().stopRecording(),

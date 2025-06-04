@@ -11,7 +11,10 @@ export const TileBluetooth = () => {
             bind(AstalBluetooth.get_default(), "isConnected")
         ],
         (powered: boolean, isConnected: boolean) => 
-            powered ? ( isConnected ? "󰂱" : "󰂯" ) : "󰂲"
+            powered ? ( isConnected ? 
+                    "bluetooth-active-symbolic"
+                : "bluetooth-symbolic"
+            ) : "bluetooth-disabled-symbolic"
     );
     return Tile({
         title: "Bluetooth",

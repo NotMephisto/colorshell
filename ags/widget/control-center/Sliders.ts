@@ -12,20 +12,18 @@ export function Sliders() {
         className: "sliders",
         orientation: Gtk.Orientation.VERTICAL,
         expand: true,
+        spacing: 10,
         children: [
             new Widget.Box({
                 className: "sink speaker",
+                spacing: 3,
                 children: bind(Wireplumber.getWireplumber(), "defaultSpeaker").as((sink) => [
                     new Widget.Button({
-                        className: "nf",
                         onClick: () => Wireplumber.getDefault().toggleMuteSink(),
-                        children: [
-                            new Widget.Icon ({
-                                icon: bind(sink, "volumeIcon").as((icon) => 
-                                    !Wireplumber.getDefault().isMutedSink() && Wireplumber.getDefault().getSinkVolume() > 0 ? icon : "audio-volume-muted-symbolic"),
-                                css: "margin-right: 10px;"
-                            } as Widget.IconProps),
-                        ]
+                        image: new Widget.Icon ({
+                            icon: bind(sink, "volumeIcon").as((icon) => 
+                                !Wireplumber.getDefault().isMutedSink() && Wireplumber.getDefault().getSinkVolume() > 0 ? icon : "audio-volume-muted-symbolic"),
+                        } as Widget.IconProps),
                     } as Widget.ButtonProps),
                     new Widget.Slider({
                         drawValue: false,
@@ -46,17 +44,14 @@ export function Sliders() {
             } as Widget.BoxProps),
             new Widget.Box({
                 className: "source microphone",
+                spacing: 3,
                 children: bind(Wireplumber.getWireplumber(), "defaultMicrophone").as((source) => [
                     new Widget.Button({
-                        className: "nf",
                         onClick: () => Wireplumber.getDefault().toggleMuteSource(),
-                        children: [
-                            new Widget.Icon ({
-                                icon: bind(source, "volumeIcon").as((icon) => 
-                                    !Wireplumber.getDefault().isMutedSource() && Wireplumber.getDefault().getSourceVolume() > 0 ? icon : "microphone-sensitivity-muted-symbolic"),
-                                css: "margin-right: 10px;"
-                            } as Widget.IconProps),
-                        ]
+                        image: new Widget.Icon ({
+                            icon: bind(source, "volumeIcon").as((icon) => 
+                                !Wireplumber.getDefault().isMutedSource() && Wireplumber.getDefault().getSourceVolume() > 0 ? icon : "microphone-sensitivity-muted-symbolic"),
+                        } as Widget.IconProps),
                     } as Widget.ButtonProps),
                     new Widget.Slider({
                         drawValue: false,

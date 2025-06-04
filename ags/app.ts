@@ -38,6 +38,7 @@ const runnerPlugins: Array<Runner.Plugin> = [
 
 App.start({
     instanceName: "astal",
+    icons: "icons/",
     requestHandler: (request: string, response: (result: any) => void): void => {
         response(handleArguments(request));
     },

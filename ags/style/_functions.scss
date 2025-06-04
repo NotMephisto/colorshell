@@ -2,7 +2,7 @@
 
 
 /**
- * GTK3 only supports sRGB color space, unfortunatly
+ * GTK3 only supports sRGB color space, unfortunately
  */
 @function toRGB($color) {
   @return rgba(

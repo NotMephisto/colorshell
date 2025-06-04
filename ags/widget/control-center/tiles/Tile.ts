@@ -65,11 +65,14 @@ export function Tile(props: TileProps): (() => Gtk.Widget) {
                     expand: true,
                     hexpand: true,
                     children: [
-                        new Widget.Label({
-                            className: "icon nf",
-                            label: props.icon || "icon",
-                            css: `label { font-size: ${props.iconSize || 12}px; }`
-                        } as Widget.LabelProps),
+                        new Widget.Icon({
+                            className: "icon",
+                            icon: props.icon,
+                            visible: (props.icon instanceof Binding) ?
+                                props.icon.as(Boolean)
+                            : Boolean(props.icon),
+                            css: `font-size: ${props.iconSize ?? 16}px;`
+                        } as Widget.IconProps),
                         new Widget.Box({
                             className: "text",
                             orientation: Gtk.Orientation.VERTICAL,

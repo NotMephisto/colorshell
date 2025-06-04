@@ -177,6 +177,7 @@ export function PageButton(props: {
     icon?: string | Binding<string>;
     title: string | Binding<string>;
     endWidget?: Gtk.Widget | Binding<Gtk.Widget>;
+    description?: string | Binding<string>;
     extraButtons?: Array<Widget.Button> | Binding<Array<Gtk.Widget>>;
     onDestroy?: (self: Widget.Box) => void;
     onClick?: (self: Widget.Button) => void;
@@ -203,13 +204,28 @@ export function PageButton(props: {
                             visible: props.icon,
                             css: "font-size: 20px; margin-right: 6px;"
                         } as Widget.IconProps),
-                        new Widget.Label({
-                            className: "title",
-                            halign: Gtk.Align.START,
-                            hexpand: true,
-                            truncate: true,
-                            label: props.title
-                        } as Widget.LabelProps),
+                        new Widget.Box({
+                            orientation: Gtk.Orientation.VERTICAL,
+                            expand: true,
+                            children: [ 
+                                new Widget.Label({
+                                    className: "title",
+                                    xalign: 0,
+                                    truncate: true,
+                                    label: props.title
+                                } as Widget.LabelProps),
+                                new Widget.Label({
+                                    className: "description",
+                                    xalign: 0,
+                                    visible: (props.description instanceof Binding) ?
+                                        props.description.as(Boolean)
+                                    : Boolean(props.description),
+                                    label: props.description,
+                                    truncate: true,
+                                    tooltipText: props.description
+                                } as Widget.LabelProps)
+                            ]
+                        } as Widget.BoxProps),
                         new Widget.Box({
                             visible: (props.endWidget instanceof Binding) ? 
                                 props.endWidget.as(Boolean)
