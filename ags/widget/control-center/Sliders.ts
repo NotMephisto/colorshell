@@ -17,8 +17,6 @@ export function Sliders() {
                 className: "sink speaker",
                 children: bind(Wireplumber.getWireplumber(), "defaultSpeaker").as((sink) => [
                     new Widget.Button({
-                        className: "nf",
-                        //label: bind(sink, "mute").as((muted) => !muted ? "f" : "audio-volume-muted-symbolic"),
                         onClick: () => Wireplumber.getDefault().toggleMuteSink(),
                         children: [
                             new Widget.Icon ({
@@ -50,7 +48,6 @@ export function Sliders() {
                 children: bind(Wireplumber.getWireplumber(), "defaultMicrophone").as((source) => [
                     new Widget.Button({
                         className: "nf",
-                        //label: bind(source, "mute").as((muted) => !muted ? "󰍬" : "󰍭"),
                         onClick: () => Wireplumber.getDefault().toggleMuteSource(),
                         children: [
                             new Widget.Icon ({

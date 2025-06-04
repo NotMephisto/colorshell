@@ -22,14 +22,14 @@ export function Status(): Gtk.Widget {
                 volumeStatus({
                     className: "sink",
                     endpoint: Wireplumber.getDefault().getDefaultSink(),
-                    icon: bind(Wireplumber.getDefault().getDefaultSink(), "volumeIcon").as((icon) =>
+                    icon: bind(Wireplumber.getDefault().getDefaultSink(), "volumeIcon").as(icon =>
                         !Wireplumber.getDefault().isMutedSink() && Wireplumber.getDefault().getSinkVolume() > 0 ? icon : "audio-volume-muted-symbolic")
                 }),
                 volumeStatus({
                     className: "source",
                     endpoint: Wireplumber.getDefault().getDefaultSource(),
-                    icon: bind(Wireplumber.getDefault().getDefaultSource(), "volumeIcon").as((icon) => 
-                        !Wireplumber.getDefault().isMutedSink() && Wireplumber.getDefault().getSourceVolume() > 0 ? icon : "microphone-sensitivity-muted-symbolic")
+                    icon: bind(Wireplumber.getDefault().getDefaultSource(), "volumeIcon").as(icon => 
+                        !Wireplumber.getDefault().isMutedSource() && Wireplumber.getDefault().getSourceVolume() > 0 ? icon : "microphone-sensitivity-muted-symbolic")
                 }),
                 StatusIcons()
             ]
@@ -51,9 +51,7 @@ function volumeStatus(props: { className?: string, endpoint: AstalWp.Endpoint, i
                         className: "nf",
                         visible: props.icon,
                         icon: props.icon,
-                        css: `
-                            font-size: 12px;
-                            margin: 5px 5px`
+                        css: `font-size: 12px; margin: 5px 5px`
                     } as Widget.IconProps),
                     new Widget.Label({
                         className: "volume",
@@ -70,18 +68,6 @@ function StatusIcons(): Gtk.Widget {
         bind(AstalBluetooth.get_default(), "isPowered"),
         bind(AstalBluetooth.get_default(), "isConnected"),
     ], (powered, connected) => {
-<<<<<<< Updated upstream
-        return powered ? (
-            connected ? "software-update-urgent-symbolic" // I should find icon for connected state
-            : "bluetooth-active-symbolic"
-        ) : "bluetooth-hardware-disabled-symbolic"
-    });
-
-<<<<<<< Updated upstream
-    const networkIcon: Variable<string> = Variable.derive([ // Do I even need wired and wifi checks?
-=======
-        const networkIcon: Variable<string> = Variable.derive([ // Much better!
-=======
         console.log("Am I powered? A:", AstalBluetooth.get_default().get_is_powered())
         return AstalBluetooth.get_default().get_is_powered() ? (
             AstalBluetooth.get_default().get_is_connected() ? "software-update-urgent-symbolic" // I should find icon for connected state
@@ -90,23 +76,15 @@ function StatusIcons(): Gtk.Widget {
     });
 
     const networkIcon: Variable<string> = Variable.derive([ // Much better!
->>>>>>> Stashed changes
->>>>>>> Stashed changes
         bind(AstalNetwork.get_default(), "primary"),
-        bind(AstalNetwork.get_default(), "wired"),
-        bind(AstalNetwork.get_default(), "wifi"),
         bind(AstalNetwork.get_default().wired, "icon-name"),
         bind(AstalNetwork.get_default().wifi, "icon-name")
     ],
-    (primary, wired, wifi, wired_icon, wifi_icon) => {
+    (primary, wired_icon, wifi_icon) => {
         switch(primary) {
-            case AstalNetwork.Primary.WIRED: return wired ? 
-                    wired_icon
-                : "network-error-symbolic";
-
-            case AstalNetwork.Primary.WIFI: return wifi ?
-                    wifi_icon
-                : "network-error-symbolic";
+            case AstalNetwork.Primary.WIRED: return wired_icon;
+            case AstalNetwork.Primary.WIFI: return wifi_icon;
+            default: "network-error-symbolic";
         }
 
         return "network-wireless-hardware-disabled-symbolic";

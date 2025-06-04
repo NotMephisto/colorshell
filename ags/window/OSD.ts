@@ -4,22 +4,6 @@ import { Wireplumber } from "../scripts/volume";
 
 export enum OSDModes {
     SINK,
-<<<<<<< Updated upstream
-    SOURCE,
-    BRIGHTNESS
-}
-
-interface OSDModeData {
-    icon: any
-
-}
-
-=======
-<<<<<<< Updated upstream
-    BRIGHTNESS
-}
-
-=======
     SOURCE,
 //    BRIGHTNESS
 }
@@ -59,8 +43,6 @@ const OSDModeConfigs: Record<OSDModes, OSDModeData> = {
     }
 }
 
->>>>>>> Stashed changes
->>>>>>> Stashed changes
 let osdMode: (Variable<OSDModes>|null);
 let osdIcon: (Variable<string | undefined>|null);
 
@@ -71,21 +53,6 @@ export function setOSDMode(newMode: OSDModes): void {
 }
 
 export const OSD = (mon: number) => {
-<<<<<<< Updated upstream
-    osdMode = new Variable<OSDModes>([OSDModes.SINK, OSDModes.SOURCE]);
-=======
-<<<<<<< Updated upstream
-    osdMode = new Variable<OSDModes>(OSDModes.SINK);
->>>>>>> Stashed changes
-    osdIcon = osdMode().as((mode: OSDModes) => {
-        switch(mode) {
-            case OSDModes.SINK: return bind(Wireplumber.getDefault().getDefaultSink(), "volumeIcon").as(icon => 
-                !Wireplumber.getDefault().isMutedSink() && Wireplumber.getDefault().getSinkVolume() > 0 ? icon : "audio-volume-muted-symbolic");
-            case OSDModes.SOURCE: return bind(Wireplumber.getDefault().getDefaultSource(), "volumeIcon").as(icon => 
-                !Wireplumber.getDefault().isMutedSource() && Wireplumber.getDefault().getSourceVolume() > 0 ? icon : "microphone-sensitivity-muted-symbolic");
-            case OSDModes.BRIGHTNESS: return "󰃠";
-            default: return "󱧣";
-=======
     osdMode = new Variable<OSDModes>([OSDModes.SINK]);
     //const currentConfig = osdMode.as((mode: OSDModes) => OSDModeConfigs[mode]); // hmm...
     
@@ -99,7 +66,6 @@ export const OSD = (mon: number) => {
                 !Wireplumber.getDefault().isMutedSource() && Wireplumber.getDefault().getSourceVolume() > 0 ? icon : "microphone-sensitivity-muted-symbolic");
             //case OSDModes.BRIGHTNESS: return "󰃠";
             default: return "audio-card-symbolic";
->>>>>>> Stashed changes
         }
     });
 
