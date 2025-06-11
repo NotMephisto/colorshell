@@ -1,0 +1,90 @@
+/* ------------------ */
+/* --- Custom CSS --- */
+/* ------------------ */
+
+/* --- EXAMPLE: Override Theme Colors --- */
+
+:root
+{
+	
+		/* The main accent color and the matching text value */
+	--adw-accent-bg-rgb: {{ colors.primary_container.dark.red }}, {{ colors.primary_container.dark.green }}, {{ colors.primary_container.dark.blue }};
+	--adw-accent-fg-rgb: {{ colors.on_primary_container.dark.red }}, {{ colors.on_primary_container.dark.green }}, {{ colors.on_primary_container.dark.blue }};
+	--adw-accent-rgb: {{ colors.primary.dark.red }}, {{ colors.primary.dark.green }}, {{ colors.primary.dark.blue }};
+
+	/* destructive-action buttons */
+	--adw-destructive-bg-rgb: {{ colors.error_container.dark.red }}, {{ colors.error_container.dark.green }}, {{ colors.error_container.dark.blue }};
+	--adw-destructive-fg-rgb: {{ colors.on_error_container.dark.red }}, {{ colors.on_error_container.dark.green }}, {{ colors.on_error_container.dark.blue }};
+	--adw-destructive-rgb: {{ colors.error.dark.red }}, {{ colors.error.dark.green }}, {{ colors.error.dark.blue }};
+
+	/* Levelbars, entries, labels and infobars. These don't need text colors */
+	--adw-success-bg-rgb: {{ colors.primary_container.dark.red }}, {{ colors.primary_container.dark.green }}, {{ colors.primary_container.dark.blue }};
+	--adw-success-fg-rgb: {{ colors.on_primary_container.dark.red }}, {{ colors.on_primary_container.dark.green }}, {{ colors.on_primary_container.dark.blue }};
+	--adw-success-rgb: {{ colors.primary.dark.red }}, {{ colors.primary.dark.green }}, {{ colors.primary.dark.blue }};
+
+	--adw-warning-bg-rgb: {{ colors.tertiary_container.dark.red }}, {{ colors.tertiary_container.dark.green }}, {{ colors.tertiary_container.dark.blue }};
+	--adw-warning-fg-rgb: {{ colors.on_secondary_container.dark.red }}, {{ colors.on_secondary_container.dark.green }}, {{ colors.on_secondary_container.dark.blue }};
+	--adw-warning-fg-a: 0.8;
+	--adw-warning-rgb: {{ colors.tertiary.dark.red }}, {{ colors.tertiary.dark.green }}, {{ colors.tertiary.dark.blue }};
+	
+	--adw-error-bg-rgb: {{ colors.error_container.dark.red }}, {{ colors.error_container.dark.green }}, {{ colors.error_container.dark.blue }};
+	--adw-error-fg-rgb: {{ colors.on_error_container.dark.red }}, {{ colors.on_error_container.dark.green }}, {{ colors.on_error_container.dark.blue }};
+	--adw-error-rgb: {{ colors.error.dark.red }}, {{ colors.error.dark.green }}, {{ colors.error.dark.blue }};
+
+	/* Window */
+	--adw-window-bg-rgb: {{ colors.background.dark.red }}, {{ colors.background.dark.green }}, {{ colors.background.dark.blue }};
+	--adw-window-fg-rgb: {{ colors.on_background.dark.red }}, {{ colors.on_background.dark.green }}, {{ colors.on_background.dark.blue }};
+
+	/* Views - e.g. text view or tree view */
+	--adw-view-bg-rgb: {{ colors.surface_container_high.dark.red }}, {{ colors.surface_container_high.dark.green }}, {{ colors.surface_container_high.dark.blue }};
+	--adw-view-fg-rgb: {{ colors.on_surface.dark.red }}, {{ colors.on_surface.dark.green }}, {{ colors.on_surface.dark.blue }};
+
+	/* Header bar, search bar, tab bar */
+	--adw-headerbar-bg-rgb: {{ colors.background.dark.red }}, {{ colors.background.dark.green }}, {{ colors.background.dark.blue }};
+	--adw-headerbar-fg-rgb: {{ colors.on_primary_container.dark.red }}, {{ colors.on_primary_container.dark.green }}, {{ colors.on_primary_container.dark.blue }};
+	--adw-headerbar-border-rgb: {{ colors.outline.dark.red }}, {{ colors.outline.dark.green }}, {{ colors.outline.dark.blue }};
+	--adw-headerbar-backdrop-rgb: var(--adw-window-bg-rgb);
+	--adw-headerbar-shade-rgb: 0, 0, 0;
+	--adw-headerbar-shade-a: 0.36;
+	--adw-headerbar-darker-shade-rgb: 0, 0, 0;
+	--adw-headerbar-darker-shade-a: 0.9;
+
+	/* Split pane views */
+	--adw-sidebar-bg-rgb: {{ colors.surface_container_low.dark.red }}, {{ colors.surface_container_low.dark.green }}, {{ colors.surface_container_low.dark.blue }};
+	--adw-sidebar-fg-rgb:  {{ colors.on_surface.dark.red }}, {{ colors.on_surface.dark.green }}, {{ colors.on_surface.dark.blue }};
+	--adw-sidebar-backdrop-rgb: 42, 42, 42;
+	--adw-sidebar-shade-rgb: 0, 0, 0;
+	--adw-sidebar-shade-a: 0.36;
+
+	--adw-secondary-sidebar-bg-rgb: {{ colors.surface_container_low.dark.red }}, {{ colors.surface_container_low.dark.green }}, {{ colors.surface_container_low.dark.blue }};
+	--adw-secondary-sidebar-fg-rgb: {{ colors.on_surface.dark.red }}, {{ colors.on_surface.dark.green }}, {{ colors.on_surface.dark.blue }};
+	--adw-secondary-sidebar-backdrop-rgb: 39, 39, 39;
+	--adw-secondary-sidebar-shade-rgb: 0, 0, 0;
+	--adw-secondary-sidebar-shade-a: 0.36;
+
+	/* Cards, boxed lists */
+	--adw-card-bg-rgb: {{ colors.on_background.dark.red }}, {{ colors.on_background.dark.green }}, {{ colors.on_background.dark.blue }};
+	--adw-card-bg-a: 0.08;
+	--adw-card-fg-rgb: {{ colors.on_background.dark.red }}, {{ colors.on_background.dark.green }}, {{ colors.on_background.dark.blue }};
+	--adw-card-shade-rgb: 0, 0, 0;
+	--adw-card-shade-a: 0.36;
+
+	/* Dialogs */
+	--adw-dialog-bg-rgb: {{ colors.surface.dark.red }}, {{ colors.surface.dark.green }}, {{ colors.surface.dark.blue }};
+	--adw-dialog-fg-rgb: {{ colors.on_surface.dark.red }}, {{ colors.on_surface.dark.green }}, {{ colors.on_surface.dark.blue }};
+
+	/* Popovers */
+	--adw-popover-bg-rgb: {{ colors.surface.dark.red }}, {{ colors.surface.dark.green }}, {{ colors.surface.dark.blue }};
+	--adw-popover-fg-rgb: {{ colors.on_surface.dark.red }}, {{ colors.on_surface.dark.green }}, {{ colors.on_surface.dark.blue }};
+	--adw-popover-shade-rgb: 0, 0, 0;
+	--adw-popover-shade-a: 0.36;
+
+	/* Thumbnails */
+	--adw-thumbnail-bg-rgb: {{ colors.surface.dark.red }}, {{ colors.surface.dark.green }}, {{ colors.surface.dark.blue }};
+	--adw-thumbnail-fg-rgb: {{ colors.on_surface.dark.red }}, {{ colors.on_surface.dark.green }}, {{ colors.on_surface.dark.blue }};
+
+	/* Miscellaneous */
+	--adw-shade-rgb: 0, 0, 0;
+	--adw-shade-a: 0.36;
+}
+

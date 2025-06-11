@@ -1,0 +1,54 @@
+#config_directory/config.toml
+[config]
+#[templates.rofi]
+
+#input_path = '~/.config/matugen/templates/colors-rofi.rasi'
+#output_path = '~/.config/rofi/matugen/colors-rofi.rasi'
+
+#[templates.swaync]
+
+#input_path = '~/.config/matugen/templates/colors.css'
+#output_path = '~/.config/swaync/matugen/colors.css'
+
+[templates.colors]
+
+input_path = '~/.config/matugen/templates/colors.css'
+output_path = '~/.config/matugen/colors.css'
+
+[templates.hypr]
+
+input_path = '~/.config/matugen/templates/matugen-hyprland.conf'
+output_path = '~/.config/hypr/matugen/matugen-hyprland.conf'
+
+[templates.kitty]
+
+input_path = '~/.config/matugen/templates/colors-kitty.conf'
+output_path = '~/.config/kitty/kitty.conf'
+post_hook = 'kill -SIGUSR1 kitty'
+#post_hook = 'kill -SIGUSR1 $KITTY_PID'
+
+[templates.cava]
+
+input_path = '~/.config/matugen/templates/colors-cava'
+output_path = '~/.config/cava/config'
+
+[templates.ags]
+
+input_path = '~/.config/matugen/templates/material-colors.scss'
+output_path = '~/.config/ags/style/_material-colors.scss'
+#post_hook = 'astal restart'
+
+[templates.steam]
+
+input_path = '~/.config/matugen/templates/colors-steam.css'
+output_path = '~/.steam/steam/steamui/adwaita/custom/custom.css'
+
+[templates.spotify]
+
+input_path = '~/.config/matugen/templates/colors-spotify.ini'
+output_path = '~/.config/spicetify/Themes/Comfy/color.ini'
+
+[config.custom_colors]
+test = { color = "#352b29", blend = true }
+
+

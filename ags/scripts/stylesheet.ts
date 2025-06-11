@@ -70,7 +70,7 @@ export class Stylesheet {
         )
 
         monitorFile(
-            `${GLib.get_user_cache_dir()}/wal/colors.scss`,
+            `${GLib.get_user_cache_dir()}/wal/colors.scss`, // от этого нужно избавиться... или нет?
             (file: string) => {
                 execAsync(`bash -c "cp -f ${file} ./style/_wal.scss"`).catch(r => {
                     console.error(`Stylesheet: Failed to copy pywal stylesheet to style dir. Stderr: ${r}`);

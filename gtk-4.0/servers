@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xbel version="1.0"
+      xmlns:bookmark="http://www.freedesktop.org/standards/desktop-bookmarks"
+      xmlns:mime="http://www.freedesktop.org/standards/shared-mime-info"
+>
+  <bookmark href="ftp://192.168.31.128:2121/" added="2024-06-08T07:29:03.734556Z" modified="2024-06-08T07:29:03.734558Z" visited="2024-06-08T07:29:03.734557Z">
+    <title>/ on 192.168.31.128:2121</title>
+    <info>
+      <metadata owner="http://freedesktop.org">
+        <bookmark:applications>
+          <bookmark:application name="org.gnome.Nautilus" exec="&apos;org.gnome.Nautilus %u&apos;" modified="2024-06-08T07:29:03.734557Z" count="1"/>
+        </bookmark:applications>
+      </metadata>
+    </info>
+  </bookmark>
+  <bookmark href="davs://192.168.31.61:5001/" added="2024-07-31T22:19:35.965515Z" modified="2024-07-31T22:19:35.965518Z" visited="2024-07-31T22:19:35.965516Z">
+    <title>/</title>
+    <info>
+      <metadata owner="http://freedesktop.org">
+        <bookmark:applications>
+          <bookmark:application name="org.gnome.Nautilus" exec="&apos;org.gnome.Nautilus %u&apos;" modified="2024-07-31T22:19:35.965517Z" count="1"/>
+        </bookmark:applications>
+      </metadata>
+    </info>
+  </bookmark>
+  <bookmark href="dav://192.168.31.61:5000/" added="2024-07-31T22:21:09.800886Z" modified="2024-07-31T22:21:09.800889Z" visited="2024-07-31T22:21:09.800887Z">
+    <title>/</title>
+    <info>
+      <metadata owner="http://freedesktop.org">
+        <bookmark:applications>
+          <bookmark:application name="org.gnome.Nautilus" exec="&apos;org.gnome.Nautilus %u&apos;" modified="2024-07-31T22:21:09.800888Z" count="1"/>
+        </bookmark:applications>
+      </metadata>
+    </info>
+  </bookmark>
+</xbel>

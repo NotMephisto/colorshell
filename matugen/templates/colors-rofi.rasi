@@ -1,0 +1,28 @@
+* {
+active-background: {{ colors.secondary_container.default.hex }};
+active-foreground: {{ colors.on_background.default.hex }};
+normal-background: {{ colors.background.default.hex }};
+normal-foreground: {{ colors.on_background.default.hex }};
+urgent-background: #4E5C5D;
+urgent-foreground: {{ colors.on_background.default.hex }};
+
+alternate-active-background: #8D807A;
+alternate-active-foreground: {{ colors.on_background.default.hex }};
+alternate-normal-background: {{ colors.background.default.hex }};
+alternate-normal-foreground: {{ colors.on_background.default.hex }};
+alternate-urgent-background: {{ colors.background.default.hex }};
+alternate-urgent-foreground: {{ colors.on_background.default.hex }};
+
+selected-active-background: {{ colors.secondary_container.default.hex }};
+selected-active-foreground: {{ colors.on_background.default.hex }};
+selected-normal-background: {{ colors.secondary_container.default.hex }};
+selected-normal-foreground: {{ colors.on_background.default.hex }};
+selected-urgent-background: {{ colors.secondary_container.default.hex }};
+selected-urgent-foreground: {{ colors.on_background.default.hex }};
+
+background-color: {{ colors.background.default.hex }};
+background: {{ colors.background.default.rgb }};
+foreground: {{ colors.on_background.default.hex }};
+border-color: {{ colors.primary.default.hex }};
+}
+

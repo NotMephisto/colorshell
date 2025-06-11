@@ -11,6 +11,8 @@ import { Recording } from "../../scripts/recording";
 import { getDateTime } from "../../scripts/time";
 import { tr } from "../../i18n/intl";
 
+import { IconStatus } from "../../scripts/icons";
+
 
 export function Status(): Gtk.Widget {
     const recordingTimer: Variable<string> = Variable.derive([
@@ -123,8 +125,8 @@ function StatusIcons(): Gtk.Widget {
 
     const networkIcon: Variable<string> = Variable.derive([
         bind(AstalNetwork.get_default(), "primary"),
-        bind(AstalNetwork.get_default().wired, "icon"),
-        bind(AstalNetwork.get_default().wifi, "icon")
+        bind(AstalNetwork.get_default().wired, "icon-name"),
+        bind(AstalNetwork.get_default().wifi, "icon-name")
     ],
     (primary, wired_icon, wifi_icon) => {
         switch(primary) {
