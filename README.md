@@ -1,4 +1,4 @@
-# colorshell with Matugen
+# colorshell + Matugen
 
 > [!IMPORTANT]
 This's a fork of [retrozinndev/colorshell](https://github.com/retrozinndev/colorshell) with some changes that 
