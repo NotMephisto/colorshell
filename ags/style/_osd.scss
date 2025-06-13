@@ -1,9 +1,10 @@
 @use "sass:color";
-@use "./wal";
+@use "./colors";
+@use "./material-colors";
 @use "./functions" as funs;
 
 .osd {
-  background: funs.toRGB(color.change($color: wal.$background, $alpha: 65%));
+  background: funs.toRGB(color.change($color: material-colors.$background, $alpha: 45%));
   padding: 14px 16px;
   border-radius: 20px;
 
@@ -24,7 +25,7 @@
     levelbar {
       trough block {
         border-radius: 2px;
-        background: funs.toRGB(color.adjust($color: wal.$color1, $lightness: -36%));
+        background: funs.toRGB(color.change($color: material-colors.$on_primary, $alpha: 75%));
 
         &.empty {
           border-radius: 2px;
@@ -32,7 +33,7 @@
 
         &.filled {
           padding: 3px 0;
-          background: wal.$color1;
+          background: material-colors.$primary;
         }
       }
     }

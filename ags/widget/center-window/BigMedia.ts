@@ -55,6 +55,7 @@ export function BigMedia(): Gtk.Widget {
                     className: "progress",
                     hexpand: true,
                     visible: bind(players[0], "canSeek"),
+
                     children: [
                         new Widget.Slider({
                             min: 0,
@@ -64,6 +65,7 @@ export function BigMedia(): Gtk.Widget {
                             value: bind(players[0], "position").as((position: number) =>
                                 Math.floor(position)),
                             onDragged: (slider: Widget.Slider) => {
+                                getLogs(players);
                                 if(dragTimer === undefined) 
                                     dragTimer = timeout(600, () =>
                                         players[0].set_position(Math.round(slider.value)));
@@ -189,7 +191,7 @@ export function BigMedia(): Gtk.Widget {
                         halign: Gtk.Align.END,
                         label: bind(players[0], "length").as((len/* bananananananana */: number) => {
                             const sec: number = Math.floor(len % 60);
-                            return len > 0 ? 
+                            return (len > 0) ? // && !Number.isFinite(len) 
                                 `${Math.floor(len / 60)}:${sec < 10 ? "0" : ""}${sec}`
                             : "0:00";
                         })
@@ -218,4 +220,12 @@ function getAlbumArt(player: AstalMpris.Player): Binding<string | undefined> {
 
         return artUrl;
     });
+}
+
+function getLogs(players: Array<AstalMpris.Player>): void{
+    players.forEach(player => {
+        console.log("Player array: ", player);
+        console.log("Player name: ", player.name);
+
+    })
 }

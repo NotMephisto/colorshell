@@ -1,6 +1,6 @@
 @use "sass:color";
 
-@use "./style/wal";
+@use "./style/material-colors";
 @use "./style/mixins";
 @use "./style/functions";
 @use "./style/colors";
@@ -193,12 +193,12 @@ tooltip {
 
 menu {
   padding: 4px;
-  background: wal.$background;
+  background: material-colors.$background;
   border-radius: 14px;
                                
   & separator {
     margin: 0 4px;
-    color: wal.$background;
+    color: material-colors.$background;
   }
                                
   & menuitem {
@@ -208,7 +208,7 @@ menu {
     font-weight: 600;
                                
     &:hover, &:focus {
-      background: wal.$color1;
+      background: functions.toRGB(color.adjust($color: material-colors.$primary_container, $lightness: -2%));
     }
   }
 }
@@ -243,13 +243,13 @@ selection {
 }
 
 trough {
-  background: functions.toRGB(color.adjust($color: wal.$color1, $lightness: -20%));
+  background: functions.toRGB(color.adjust($color: material-colors.$primary_container, $lightness: -6%));
   border-radius: 8px;
   margin: 2px 0;
 }
 
 trough highlight {
-  background: wal.$color1;
+  background: material-colors.$primary;
   min-height: .9em;
   border-top-left-radius: inherit;
   border-bottom-left-radius: inherit;
@@ -258,7 +258,7 @@ trough highlight {
 trough slider {
   border-radius: 50%;
   margin: -2px 0;
-  background: wal.$foreground;
+  background: material-colors.$on_background;
   margin-left: -1px;
   min-width: 1.2em;
   min-height: 1.2em;

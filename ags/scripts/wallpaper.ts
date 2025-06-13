@@ -77,6 +77,22 @@ class Wallpaper extends GObject.Object {
         return this.instance;
     }
 
+    public async getRefreshRate(): Promise<number> {
+        return await execAsync("sh -c \"hyprctl numberonitors | grep -oP '\d+x\d+@\K[\d.]+' | head -n 1 \"").then(stdout => {
+            const result: (number) = parseInt(stdout.trim(), 10); //.split('=')[1]?.trim()
+
+            if(isNaN(result)) {
+                console.warn(`Warnig! Value ${result} is undefined`);
+                return 60;
+            }
+            
+            return result;
+        }).catch(r => {
+            console.error("Refresh Rate: Couldn't grep monitor's refresh rate. Using default value...");
+            return 60;
+        })
+    }
+
     public async getWallpaper(): Promise<string|undefined> {
         return await execAsync("sh -c \"swww query | grep -oP 'currently displaying: image: \K.*' \"").then(stdout => { // Проверки на изменения обоев (через ./cache/swww и чтение файлов)
             const loaded: (string|undefined) = stdout; //.split('=')[1]?.trim()
@@ -93,18 +109,26 @@ class Wallpaper extends GObject.Object {
 
     public reloadColors(): void {
         execAsync(`matugen -m dark image ${this.pathReplacer(this.#wallpaper)}`).then(() => {
-            console.log("Wallpaper: reloaded shell colors. \nSome applications will need to be restarted for the changes to take effect.");
+            console.log("Wallpaper: updated shell colors. Some applications may need to be restarted for the changes to take effect.");
         }).catch(r => {
-            console.error(`Wallpaper: Something went wrong. Stderr: ${r}`);
+            if (r.toString().includes('Invalid UTF-8 in child stdout')) {
+                console.log("Wallpaper: updated shell colors. Some applications may need to be restarted for the changes to take effect.");
+            } else {
+                console.error(`Wallpaper: Something went wrong. Stderr: ${r}`);
+            }
         });
     }
+
     public pathReplacer(path: string|undefined): string|undefined { // not the best choose for resolving this problem
         if (path) return path.replace(/[\[\]\{\}\(\)\&\*\#\№\!\@'\s]/g, '\\$&');
     } 
 
     public setWallpaper(path: string|Gio.File, write: boolean = true): void {
+        const fps = exec("sh -c \"hyprctl numberonitors | grep -oP '\d+x\d+@\K[\d.]+' | head -n 1 \"");
+        console.log("Log:", fps);
         execAsync(`swww img ${this.pathReplacer(path)} --transition-fps 165 --transition-type any --transition-duration 2`).then(() => {
             this.#wallpaper = (typeof path === "string") ? path : path.get_path()!;
+            console.log("Refresh Rate: ", this.getRefreshRate());
             console.log("Wallpaper: ", this.#wallpaper);
             console.log("Replacer: ", this.pathReplacer(path));
             this.reloadColors();

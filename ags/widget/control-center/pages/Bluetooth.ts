@@ -80,12 +80,12 @@ export const BluetoothPage: (() => Page) = () => new Page({
                     visible: bind(AstalBluetooth.get_default(), "devices").as((devs) => 
                         devs.filter(dev => dev.paired || dev.connected).length > 0),
                     children: bind(AstalBluetooth.get_default(), "devices").as((devs) => {
-                        const connectedDevices = devs.filter((dev) => dev.connected || dev.paired)
+                        const connectedDevices = devs.filter((dev) => (dev.connected || dev.paired) && dev.trusted)
 
                         return [
                             new Widget.Label({
                                 className: "sub-header",
-                                label: tr("control_center.pages.bluetooth.paired_devices"),
+                                label: tr("devices"),
                                 xalign: 0,
                             } as Widget.LabelProps),
                             ...connectedDevices.map((dev) => DeviceWidget(dev))
@@ -99,7 +99,7 @@ export const BluetoothPage: (() => Page) = () => new Page({
                     visible: bind(AstalBluetooth.get_default(), "devices").as((devs) => 
                         devs.filter((dev) => !dev.connected && !dev.paired).length > 0),
                     children: bind(AstalBluetooth.get_default(), "devices").as((devices) => {
-                        const discoveredDevices = devices.filter((dev) => !dev.connected && !dev.paired);
+                        const discoveredDevices = devices.filter((dev) => !dev.connected && !dev.paired && !dev.trusted);
 
                         return [
                             new Widget.Label({
@@ -172,7 +172,7 @@ function DeviceWidget(dev: AstalBluetooth.Device): Gtk.Widget {
                         body: `Couldn't connect to ${dev.alias ?? dev.name}, an error occurred: ${err.message || err.stack}`,
                         urgency: AstalNotifd.Urgency.NORMAL
                     })
-                });
+                }).then(() => dev.set_trusted(true));
 
             if(!skipConnection)
                 (async () => dev.connect_device(null))().catch((err: Gio.IOErrorEnum) => 

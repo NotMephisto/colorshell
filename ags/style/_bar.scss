@@ -1,7 +1,7 @@
 @use "sass:color";
 @use "./mixins";
 @use "./colors";
-@use "./wal";
+@use "./material-colors";
 @use "./functions";
 
 .bar-container {
@@ -101,11 +101,11 @@
     &.special-workspaces {
       & > eventbox {
         & box {
-          background: wal.$color4;
+          background: material-colors.$tertiary;
         }
 
         &:hover > box {
-          background: functions.toRGB(color.adjust(wal.$color4, $lightness: -6%));
+          background: functions.toRGB(color.adjust(material-colors.$tertiary, $lightness: -6%));
         }
       }
     }

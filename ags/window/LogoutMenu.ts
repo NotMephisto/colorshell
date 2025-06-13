@@ -99,7 +99,8 @@ export const LogoutMenu = (mon: number) => new Widget.Window({
                                 title: "Log out",
                                 text: "Are you sure you want to log out? Your session will be ended.",
                                 onAccept: () => {
-                                    exec(`sh "${GLib.getenv("XDG_CONFIG_HOME")}/hypr/scripts/save-hyprsunset.sh"`);
+                                    //exec(`sh "${GLib.getenv("XDG_CONFIG_HOME")}/hypr/scripts/save-hyprsunset.sh"`);
+                                    //execAsync('systemctl logout');
                                     execAsync(`sh -c "loginctl terminate-user ${GLib.getenv("USER") || "$USER"}"`);
                                 }
                             })

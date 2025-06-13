@@ -59,7 +59,9 @@ App.start({
 
         connections.set(Wireplumber.getDefault(), [
             Wireplumber.getDefault().getDefaultSink().connect("notify::volume", () => 
-                triggerOSD(OSDModes.SINK))
+                triggerOSD(OSDModes.SINK)),
+            Wireplumber.getDefault().getDefaultSource().connect("notify::volume", () => 
+                triggerOSD(OSDModes.SOURCE)),
         ]);
 
         connections.set(Notifications.getDefault(), [
