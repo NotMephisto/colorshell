@@ -24,7 +24,6 @@ export function Tray(): Gtk.Widget {
                         [ bind(item, "menuModel"), bind(item, "actionGroup") ],
                         (menuModel: Gio.MenuModel, actionGroup: Gio.ActionGroup) => {
                             const menu = menuFromModel(menuModel, actionGroup);
-
                             return new Widget.Button({
                                 className: "item-button",
                                 tooltipMarkup: bind(item, "tooltipMarkup"),

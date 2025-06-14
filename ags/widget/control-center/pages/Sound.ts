@@ -52,8 +52,8 @@ export function PageSound(): Page {
                                 orientation: Gtk.Orientation.HORIZONTAL,
                                 children: [
                                     new Widget.Icon({
-                                        icon: bind(stream, "name").as(name => 
-                                            getAppIcon(name.split(' ')[0]) ?? "application-x-executable-symbolic"),
+                                        icon: bind(stream, "icon").as(icon =>
+                                            icon ?? "application-x-executable-symbolic"),
                                         css: "font-size: 18px; margin-right: 6px;"
                                     } as Widget.IconProps),
                                     new Widget.Box({

@@ -3,10 +3,11 @@
 @use "./colors";
 @use "./functions" as funs;
 
-.center-window-container {
+.popup-window.center-window .center-window-container {
   background: colors.$bg-translucent;
-  border-radius: 18px;
+  border-radius: 24px;
   padding: 12px;
+  box-shadow: 0 0 6px colors.$bg-translucent;
 
   & .big-media {
     padding: 6px;
@@ -86,7 +87,7 @@
 
   & .calendar-box {
     & calendar {
-      $border-radius: 10px;
+      $border-radius: 14px;
       font-weight: 600;
       padding-bottom: 2px;
 

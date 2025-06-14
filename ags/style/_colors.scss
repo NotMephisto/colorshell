@@ -7,6 +7,7 @@ $bg-secondary: functions.toRGB(color.adjust($color: material-colors.$background,
 $bg-tertiary: functions.toRGB(color.adjust($color: $bg-secondary, $lightness: 10%));
 $bg-light: material-colors.$on_background;
 $bg-translucent: functions.toRGB(color.change($color: $bg-primary, $alpha: 75%));
+$bg-translucent-primary: $bg-translucent;
 $bg-translucent-secondary: functions.toRGB(color.change($color: $bg-translucent, $alpha: 78%));
 $fg-primary: material-colors.$on_background;
 $fg-light: $bg-primary;

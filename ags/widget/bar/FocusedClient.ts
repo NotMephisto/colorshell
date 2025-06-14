@@ -1,7 +1,7 @@
 import { bind } from "astal";
 import { Gtk, Widget } from "astal/gtk3";
 import AstalHyprland from "gi://AstalHyprland";
-import { getAppIcon } from "../../scripts/apps";
+import { getSymbolicIcon } from "../../scripts/apps";
 
 const hyprland = AstalHyprland.get_default();
 
@@ -16,7 +16,7 @@ export function FocusedClient(): Gtk.Widget {
                 vexpand: true,
                 css: ".icon { font-size: 18px; }",
                 icon: bind(focusedClient, "class").as(clss => 
-                    getAppIcon(clss) ?? "application-x-executable-symbolic")
+                    getSymbolicIcon(clss) ?? "application-x-executable-symbolic")
             }),
             new Widget.Box({
                 className: "text-content",

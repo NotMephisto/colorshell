@@ -101,11 +101,11 @@
     &.special-workspaces {
       & > eventbox {
         & box {
-          background: material-colors.$tertiary;
+          background: functions.toRGB(color.adjust(material-colors.$secondary, $lightness: -17%));
         }
 
         &:hover > box {
-          background: functions.toRGB(color.adjust(material-colors.$tertiary, $lightness: -6%));
+          background: functions.toRGB(color.adjust(material-colors.$secondary, $lightness: -6%));
         }
       }
     }

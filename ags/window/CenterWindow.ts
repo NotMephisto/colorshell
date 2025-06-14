@@ -24,7 +24,9 @@ export const CenterWindow = (mon: number) => PopupWindow({
                     new Widget.Box({
                         className: "datetime",
                         orientation: Gtk.Orientation.VERTICAL,
-                        valign: Gtk.Align.START,
+                        halign: Gtk.Align.CENTER,
+                        valign: Gtk.Align.CENTER,
+                        vexpand: true,
                         children: [
                             new Widget.Label({
                                 className: "time",
@@ -56,6 +58,7 @@ export const CenterWindow = (mon: number) => PopupWindow({
                 orientation: Gtk.Orientation.HORIZONTAL,
                 cssColor: "gray",
                 margin: 5,
+                spacing: 8,
                 alpha: .3,
                 visible: bind(AstalMpris.get_default(), "players").as(players => players.length > 0),
             } as SeparatorProps),

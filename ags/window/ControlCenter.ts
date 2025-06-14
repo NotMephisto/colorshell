@@ -5,7 +5,6 @@ import { Sliders } from "../widget/control-center/Sliders";
 import { NotifHistory } from "../widget/control-center/NotifHistory";
 import { PopupWindow, PopupWindowProps } from "../widget/PopupWindow";
 
-
 export const ControlCenter = (mon: number) => PopupWindow({
     namespace: "control-center",
     className: "control-center",
@@ -19,6 +18,7 @@ export const ControlCenter = (mon: number) => PopupWindow({
     widthRequest: 395,
     child: new Widget.Box({
         orientation: Gtk.Orientation.VERTICAL,
+        spacing: 16,
         children: [
             new Widget.Box({
                 className: "control-center-container",

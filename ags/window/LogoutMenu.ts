@@ -28,9 +28,9 @@ export const LogoutMenu = (mon: number) => new Widget.Window({
                 new Widget.Box({
                     className: "top",
                     hexpand: true,
-                    vexpand: false,
+                    vexpand: true,
                     orientation: Gtk.Orientation.VERTICAL,
-                    valign: Gtk.Align.START,
+                    valign: Gtk.Align.CENTER,
                     children: [
                         new Widget.Label({
                             className: "time",
@@ -40,7 +40,7 @@ export const LogoutMenu = (mon: number) => new Widget.Window({
                         new Widget.Label({
                             className: "date",
                             label: getDateTime().as((dateTime: GLib.DateTime) => 
-                                dateTime.format("%A, %B %d %Y"))
+                                dateTime.format("%A, %B %d"))
                         } as Widget.LabelProps)
                     ]
                 } as Widget.BoxProps),
@@ -49,7 +49,7 @@ export const LogoutMenu = (mon: number) => new Widget.Window({
                     homogeneous: true,
                     vexpand: true,
                     valign: Gtk.Align.CENTER,
-                    height_request: 360,
+                    height_request: 320,
                     children: [
                         new Widget.Button({
                             className: "poweroff",
@@ -99,7 +99,7 @@ export const LogoutMenu = (mon: number) => new Widget.Window({
                                 title: "Log out",
                                 text: "Are you sure you want to log out? Your session will be ended.",
                                 onAccept: () => {
-                                    //exec(`sh "${GLib.getenv("XDG_CONFIG_HOME")}/hypr/scripts/save-hyprsunset.sh"`);
+                                    exec(`sh "${GLib.getenv("XDG_CONFIG_HOME")}/hypr/scripts/save-hyprsunset.sh"`);
                                     //execAsync('systemctl logout');
                                     execAsync(`sh -c "loginctl terminate-user ${GLib.getenv("USER") || "$USER"}"`);
                                 }

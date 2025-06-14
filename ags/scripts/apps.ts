@@ -69,3 +69,11 @@ export function getAppIcon(app: (string|AstalApps.Application)): (string|undefin
 
     return getIconByAppName(app.name);
 }
+
+export function getSymbolicIcon(app: (string|AstalApps.Application)): (string|undefined) {
+
+    if (Astal.Icon.lookup_icon(`${getAppIcon(app)}-symbolic`))
+        return `${getAppIcon(app)}-symbolic`
+
+    return undefined;
+}
