@@ -2,7 +2,6 @@ import { bind } from "astal";
 import { Gtk, Widget } from "astal/gtk3";
 import AstalMpris from "gi://AstalMpris";
 import { getSymbolicIcon } from "../../scripts/apps";
-import { getPlayers } from "../../scripts/player";
 import { Separator, SeparatorProps } from "../Separator";
 import { Windows } from "../../windows";
 import { Clipboard } from "../../scripts/clipboard";
