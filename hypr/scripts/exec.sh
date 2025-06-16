@@ -9,8 +9,8 @@
 
 
 if uwsm check is-active; then
-    hyprctl dispatch exec "uwsm app -- $@" > /dev/null
+    exec uwsm-app -- $@
     exit 0
 fi
 
-hyprctl dispatch exec "$@" > /dev/null
+exec $@
