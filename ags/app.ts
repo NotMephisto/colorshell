@@ -1,6 +1,6 @@
 import AstalNotifd from "gi://AstalNotifd";
 
-import { App } from "astal/gtk3"
+import { App, Astal } from "astal/gtk3"
 import { Wireplumber } from "./scripts/volume";
 
 import { handleArguments } from "./scripts/arg-handler";
@@ -21,6 +21,9 @@ import { Wallpaper } from "./scripts/wallpaper";
 import { Stylesheet } from "./scripts/stylesheet";
 import { Clipboard } from "./scripts/clipboard";
 import { PluginClipboard } from "./runner/plugins/clipboard";
+
+
+import { Players } from "./scripts/player";
 
 
 let osdTimer: (Time|undefined);
@@ -72,6 +75,10 @@ App.start({
                 _.notifications.length === 0 && Windows.close("floating-notifications");
             })
         ]);
+        
+        //need more tests and works...
+        //console.log("Active Player:", Players.getDefault().getActivePlayer());
+        console.log("App name", Astal.Icon.lookup_icon(`org.gnome.Evince-symbolic`));
 
         console.log("Initializing wallpaper handler");
         Wallpaper.getDefault();

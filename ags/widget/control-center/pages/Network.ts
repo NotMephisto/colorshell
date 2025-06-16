@@ -4,8 +4,9 @@ import AstalNetwork from "gi://AstalNetwork";
 import { bind } from "astal";
 import NM from "gi://NM";
 import { Windows } from "../../../windows";
-import AstalHyprland from "gi://AstalHyprland";
 import { tr } from "../../../i18n/intl";
+import { execApp } from "../../../scripts/apps";
+import { getDecoded } from "../../../scripts/utils";
 
 export const PageNetwork: (() => Page) = () => new Page({
     id: "network",
@@ -27,7 +28,7 @@ export const PageNetwork: (() => Page) = () => new Page({
         title: tr("control_center.pages.more_settings"),
         onClick: () => {
             Windows.close("control-center");
-            AstalHyprland.get_default().dispatch("exec", "[animationstyle gnomed] nm-connection-editor");
+            execApp("nm-connection-editor", "[animationstyle gnomed]");
         }
     }],
     children: [
@@ -60,10 +61,10 @@ export const PageNetwork: (() => Page) = () => new Page({
                                     } as Widget.IconProps),
                                     onClick: () => {
                                         Windows.close("control-center");
-                                        AstalHyprland.get_default().dispatch("exec", 
-                                            `[animationstyle gnomed; float] nm-connection-editor --edit ${
-                                                dev.activeConnection?.connection.get_uuid()
-                                            }`);
+                                        execApp(
+                                            `nm-connection-editor --edit ${dev.activeConnection?.connection.get_uuid()}`,
+                                            "[animationstyle gnomed; float]"
+                                        );
                                     }
                                 } as Widget.ButtonProps)
                             ]
@@ -80,7 +81,7 @@ export const PageNetwork: (() => Page) = () => new Page({
             children: AstalNetwork.get_default().wifi ? bind(AstalNetwork.get_default().wifi.get_device(), "accessPoints").as((aps) =>
                 aps.map(ap => new Widget.Button({
                     hexpand: true,
-                    onClick: () => console.log("connect to " + ap.get_ssid().toArray().toString()), // TODO I don't have a WiFi board :(
+                    onClick: () => console.log("connect to " + getDecoded(ap.get_ssid().toArray())), // TODO I don't have a WiFi board :(
                     child: new Widget.Box({
                         hexpand: true,
                         children: [
@@ -92,7 +93,7 @@ export const PageNetwork: (() => Page) = () => new Page({
                             new Widget.Label({
                                 className: "ssid",
                                 halign: Gtk.Align.START,
-                                label: ap.ssid.get_data()?.toString() ?? "Wi-Fi"
+                                label: getDecoded(ap.ssid.get_data()) ?? "Wi-Fi"
                             } as Widget.LabelProps),
                             new Widget.Label({
                                 className: "status",

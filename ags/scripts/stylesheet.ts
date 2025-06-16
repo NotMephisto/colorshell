@@ -1,7 +1,8 @@
 // handles stylesheet compiling and reloading
 
-import { monitorFile, AstalIO, timeout, GLib, Gio, execAsync, exec, readFile } from "astal";
+import { monitorFile, AstalIO, timeout, GLib, Gtk, Gdk, Gio, execAsync, exec, readFile } from "astal";
 import { App } from "astal/gtk3";
+import { Players } from "./player";
 
 export class Stylesheet {
     private static instance: Stylesheet;
@@ -12,11 +13,11 @@ export class Stylesheet {
         "./style.scss"
     ];
 
-    public compileSass(): void {
+    public async compileSass(): Promise<void> {
         console.log("Stylesheet: Compiling Sass");
 
-        exec(`bash -c "sass ${this.#styles.map(style => `-I ${style}`).join('\s')
-            } ${this.#outputPath.get_path()!}/style.css"`);
+        exec(`bash -c "sass ${this.#styles.map(style => `-I ${style}`).join('\s')} ${
+            this.#outputPath.get_path()!}/style.css"`);
     }
 
     public async reapply(cssFilePath: string): Promise<void> {
@@ -37,8 +38,10 @@ export class Stylesheet {
     }
 
     public async compileApply(): Promise<void> {
-        this.compileSass();
-        this.reapply(this.#outputPath.get_path()! + "/style.css");
+        await this.compileSass().catch((err: Gio.IOErrorEnum) => 
+            console.error(`Stylesheet: An Error occurred and Sass couldn't be compiled. Stderr:\n${err.message ? 
+                `\t${err.message}\n` : ""}${err.stack}\n`)
+        ).then(() => this.reapply(this.#outputPath.get_path()! + "/style.css"));
     }
 
     public static getDefault(): Stylesheet {
@@ -46,6 +49,18 @@ export class Stylesheet {
             this.instance = new Stylesheet();
 
         return this.instance;
+    }
+
+    public async getDominantColor(picture: (string|Gio.File)): Promise<string> {
+        
+        const Pixbuf = GdkPixbuf.Pixbuf.new_for_path(picture);
+        
+        const width = picture.get_width();
+        const height = picture.get_height();
+
+        const pictureRGB = picture.getRGB()
+        
+        return pictureRGB
     }
 
     constructor() {
@@ -68,14 +83,5 @@ export class Stylesheet {
                 }
             )
         )
-
-        monitorFile(
-            `${GLib.get_user_cache_dir()}/wal/colors.scss`, // от этого нужно избавиться... или нет?
-            (file: string) => {
-                execAsync(`bash -c "cp -f ${file} ./style/_wal.scss"`).catch(r => {
-                    console.error(`Stylesheet: Failed to copy pywal stylesheet to style dir. Stderr: ${r}`);
-                });
-            }
-        );
     }
 }

@@ -1,7 +1,7 @@
 import { Page, PageButton, PageProps } from "./Page";
 import { bind, Variable } from "astal";
 import { Astal, Gtk, Widget } from "astal/gtk3";
-import { getAppIcon } from "../../../scripts/apps";
+import { getSymbolicIcon } from "../../../scripts/apps";
 import { Wireplumber } from "../../../scripts/volume";
 import { tr } from "../../../i18n/intl";
 
@@ -26,8 +26,8 @@ export function PageSound(): Page {
                 PageButton({
                     className: bind(speaker, "isDefault").as(isDefault => isDefault ? "default" : ""),
                     icon: bind(speaker, "icon").as(icon => 
-                        Astal.Icon.lookup_icon(icon)? icon : "audio-card-symbolic"),
-                    title: speaker.description ?? "Speaker",
+                        getSymbolicIcon(icon) ?? "audio-card-symbolic"),
+                    title: bind(speaker, "description").as(desc => desc ?? "Speaker"),
                     onClick: () => speaker.set_is_default(true),
                     endWidget: new Widget.Icon({
                         icon: "object-select-symbolic",

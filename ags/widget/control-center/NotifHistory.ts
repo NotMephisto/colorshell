@@ -10,6 +10,47 @@ export const NotifHistory = () => {
         orientation: Gtk.Orientation.VERTICAL,
         className: bind(Notifications.getDefault(), "history").as(history => history.length > 0 ? "history" : "history hide"),
         children: [
+            new Widget.Box({
+                vexpand: false,
+                hexpand: true,
+                className: "button-row",
+                children: [
+                    new Widget.Box({
+                        className: "dnd-box",
+                        halign: Gtk.Align.START,
+                        children: [
+                            new Widget.Label({
+                                label: tr("control_center.tiles.dnd.title")
+                            }),
+                            new Widget.Switch({
+                                /*onNotifyActive: (self) => {
+                                    console.log(self.get_state, self.get_active);
+                                }*/
+                                //hm....
+                                active: (self) => Notifications.getDefault().getNotifd().dontDisturb = !self.get_state,
+                                state: Notifications.getDefault().getNotifd().dontDisturb
+                            })
+                        ] 
+
+                    }),
+                    new Widget.Button({
+                        className: "clear-all",
+                        halign: Gtk.Align.END,
+                        child: new Widget.Box({
+                            children: [
+                                new Widget.Icon({
+                                    css: "margin-right: 6px;",
+                                    icon: "edit-clear-all-symbolic"
+                                } as Widget.IconProps),
+                                new Widget.Label({
+                                    label: tr("clear")
+                                } as Widget.LabelProps)
+                            ]
+                        } as Widget.BoxProps),
+                        onClick: () => Notifications.getDefault().clearHistory(),
+                    } as Widget.ButtonProps)
+                ]
+            }),
             new Widget.Scrollable({
                 className: "history",
                 hscroll: Gtk.PolicyType.NEVER,
@@ -36,30 +77,7 @@ export const NotifHistory = () => {
                             () => Notifications.getDefault().removeHistory(notification.id), true)
                     ))
                 } as Widget.BoxProps)
-            } as Widget.ScrollableProps),
-            new Widget.Box({
-                vexpand: false,
-                hexpand: true,
-                halign: Gtk.Align.END,
-                className: "button-row",
-                children: [
-                    new Widget.Button({
-                        className: "clear-all",
-                        child: new Widget.Box({
-                            children: [
-                                new Widget.Icon({
-                                    css: "margin-right: 6px;",
-                                    icon: "edit-clear-all-symbolic"
-                                } as Widget.IconProps),
-                                new Widget.Label({
-                                    label: tr("clear")
-                                } as Widget.LabelProps)
-                            ]
-                        } as Widget.BoxProps),
-                        onClick: () => Notifications.getDefault().clearHistory(),
-                    } as Widget.ButtonProps)
-                ]
-            })
+            } as Widget.ScrollableProps)
         ]
     } as Widget.BoxProps);
 }

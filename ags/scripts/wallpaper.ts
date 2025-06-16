@@ -1,4 +1,5 @@
-import { AstalIO, execAsync, Gio, GLib, GObject, monitorFile, property, register, timeout } from "astal";
+import { AstalIO, execAsync, exec, Gio, GLib, GObject, monitorFile, property, register, timeout } from "astal";
+import { getDecoded } from "./utils";
 
 export { Wallpaper };
 
@@ -9,8 +10,6 @@ class Wallpaper extends GObject.Object {
     #wallpapersPath: string;
     #swwwPath: Gio.File;
     #swwwFile: Gio.File;
-    //#loaded: boolean;
-    #decoder: TextDecoder;
     #swwwFiles: Array<{name: string, content: any}>;
 
     #monitor: Gio.FileMonitor;
@@ -24,7 +23,6 @@ class Wallpaper extends GObject.Object {
     constructor() {
         super();
         this.#swwwFiles = [];
-        this.#decoder = new TextDecoder('utf-8');
 
         this.#wallpapersPath = GLib.getenv("WALLPAPERS") ?? `${GLib.get_home_dir()}/wallpapers`;
 
@@ -56,14 +54,11 @@ class Wallpaper extends GObject.Object {
                 this.#swwwFile = iter.get_child(fileInfo);
                 
                 const [success, contents] = this.#swwwFile.load_contents(null);
-
-                console.log("Success:", success);
-                console.log("Content:", this.#decoder.decode(contents));
                 
                 if (success) {
                     this.#swwwFiles.push({
                         name: fileInfo.get_name(),
-                        content: this.#decoder.decode(contents),
+                        content: getDecoded(contents),
                     });
                 }
             }

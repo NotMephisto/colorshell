@@ -2,11 +2,10 @@ import { bind } from "astal";
 import { Gtk, Widget } from "astal/gtk3";
 import AstalMpris from "gi://AstalMpris";
 import { getSymbolicIcon } from "../../scripts/apps";
-import { getPlayers } from "../../scripts/player";
+import { Players } from "../../scripts/player";
 import { Separator, SeparatorProps } from "../Separator";
 import { Windows } from "../../windows";
 import { Clipboard } from "../../scripts/clipboard";
-import { Sliders } from "../control-center/Sliders";
 
 export function Media(): Gtk.Widget {
     
@@ -28,11 +27,9 @@ export function Media(): Gtk.Widget {
                             icon: "edit-paste-symbolic"
                         } as Widget.IconProps),
                         tooltipText: "Copy link to Clipboard",
-                        visible: bind(players[0], "metadata").as((meta) => 
-                            Boolean(meta["xesam:url"]?.get_string()[0])),
-                        onClick: () => Clipboard.getDefault().copyAsync(
-                            players[0].metadata["xesam:url"].get_string()[0]
-                        )
+                        visible: bind(players[0], "metadata").as((metadata) =>
+                            metadata["xesam:url"]?.get_string()[0] != null),
+                        onClick: () => console.log(players[0].metadata["xesam:url"]?.get_string()[0]!)
                     } as Widget.ButtonProps),
                     new Widget.Button({
                         className: "previous",
@@ -89,7 +86,6 @@ export function Media(): Gtk.Widget {
                             new Widget.Icon({
                                 icon: bind(players[0], "busName").as((busName: string) => {
                                     const splitName = busName.split('.').filter(str => str !== "" && !str.toLowerCase().includes('instance'));
-                                    //console.log("Slit:", splitName);
                                     if (getSymbolicIcon(splitName[splitName.length - 1])) {
                                         return getSymbolicIcon(splitName[splitName.length - 1]);
                                     } else {

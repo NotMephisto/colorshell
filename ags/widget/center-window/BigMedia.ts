@@ -1,7 +1,7 @@
 import { AstalIO, bind, Binding, execAsync, GLib, timeout } from "astal";
 import { Gtk, Widget } from "astal/gtk3";
 import AstalMpris from "gi://AstalMpris";
-
+import { Players } from "../../scripts/player";
 
 export function BigMedia(): Gtk.Widget {
     let dragTimer: (AstalIO.Time|undefined);
@@ -22,8 +22,8 @@ export function BigMedia(): Gtk.Widget {
                         hexpand: false,
                         orientation: Gtk.Orientation.VERTICAL,
                         marginTop: 6,
-                        visible: getAlbumArt(players[0]).as(Boolean),
-                        css: getAlbumArt(players[0]).as((artUrl: string|undefined) => 
+                        visible: Players.getDefault().getAlbumArt(players[0]).as(Boolean),
+                        css: Players.getDefault().getAlbumArt(players[0]).as((artUrl: string|undefined) => 
                             artUrl ? `.image { background-image: url('${artUrl}'); }` : undefined),
                         width_request: 132,
                         height_request: 128
@@ -197,25 +197,4 @@ export function BigMedia(): Gtk.Widget {
                 })
             ])
     } as Widget.BoxProps);
-}
-
-
-/**
- * This function handles album art/cover of playing media. If a file is provided
- * by the player, it adds the "file://" uri as a prefix, so you can use it in css.
- *
- * @param player the player you want to pull album art from
- * @returns Binding to player.artUrl containing the album art uri, or an undefined binding ig none was found.
-* */
-function getAlbumArt(player: AstalMpris.Player): Binding<string | undefined> {
-    return bind(player, "artUrl").as((artUrl: string) => {
-
-        if(!artUrl) 
-            return undefined;
-
-        if(artUrl.startsWith("/")) 
-            return "file://" + artUrl;
-
-        return artUrl;
-    });
 }
