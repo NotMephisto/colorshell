@@ -5,16 +5,6 @@ import { getSymbolicIcon } from "../../scripts/apps";
 import { Separator, SeparatorProps } from "../Separator";
 import { Windows } from "../../windows";
 
-<<<<<<< ryo
-=======
-
-const playerIcons = {
-    spotify: "spotify-symbolic",
-    mpv: "mpv-symbolic",
-    Clapper: "com.github.rafostar.Clapper-symbolic"
-};
-
->>>>>>> ryo
 export function Media(): Gtk.Widget {
     const connections: Array<number> = [];
 
