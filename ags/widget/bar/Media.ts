@@ -5,7 +5,6 @@ import { getSymbolicIcon } from "../../scripts/apps";
 import { Separator, SeparatorProps } from "../Separator";
 import { Windows } from "../../windows";
 import { Clipboard } from "../../scripts/clipboard";
-import { Sliders } from "../control-center/Sliders";
 
 export function Media(): Gtk.Widget {
     
