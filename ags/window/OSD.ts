@@ -136,6 +136,6 @@ export const OSD = (mon: number) => {
                 OSDSink(),
                 OSDSource(),
             ]
-        })
-    });
+        } as Widget.BoxProps)
+    } as Widget.WindowProps);
 }
