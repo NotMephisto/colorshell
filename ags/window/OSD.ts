@@ -18,6 +18,7 @@ export function setOSDMode(newMode: OSDModes): void {
 }
 
 function createOSD(
+    props: Widget.BoxProps,
     bindable: AstalWp.Endpoint,
     iconName: string | Binding<string>,
     labelOSD: string | Binding<string>,
@@ -26,7 +27,8 @@ function createOSD(
 
 ) {
     return new Widget.Box({
-        className: "osd",
+        ...props,
+        className: `osd ${props.className || ''}`, 
         children: [
             new Widget.Icon({
                 className: "icon",
@@ -74,6 +76,7 @@ function createOSD(
 function OSDSink() {
     const audio = Wireplumber.getDefault().getDefaultSink();
     return createOSD(
+        { name: "sink" },
         audio,
         bind(audio, "volumeIcon").as(icon => 
             !Wireplumber.getDefault().isMutedSink() && Wireplumber.getDefault().getSinkVolume() > 0 ? 
@@ -90,6 +93,7 @@ function OSDSink() {
 function OSDSource() {
     const source = Wireplumber.getDefault().getDefaultSource();
     return createOSD(
+        { name: "source" },
         source,
         bind(source, "volumeIcon").as(icon => 
             !Wireplumber.getDefault().isMutedSource() && Wireplumber.getDefault().getSourceVolume() > 0 ? 
@@ -120,11 +124,18 @@ export const OSD = (mon: number) => {
 
             osdMode = null;
         },
-        child: new Widget.Box({ //need to add Widger.Stack or use setup instead
+        child: new Widget.Stack({
+            visibleChildName: bind(osdMode, "value").as((mode: OSDModes) => {
+                switch (mode) {
+                    case OSDModes.SINK: return "sink";
+                    case OSDModes.SOURCE: return "source";
+                    default: return "sink";
+                }
+            }),
             children: [
                 OSDSink(),
-                OSDSource()
+                OSDSource(),
             ]
-        } as Widget.BoxProps)
-    } as Widget.WindowProps);
+        })
+    });
 }
