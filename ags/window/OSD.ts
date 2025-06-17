@@ -3,7 +3,7 @@ import { Astal, Gtk, Widget } from "astal/gtk3";
 import { Wireplumber } from "../scripts/volume";
 import AstalWp from "gi://AstalWp";
 
-export enum OSDModes {
+export enum OSDModes { //Should I add layout change indicator? 
     SINK,
     SOURCE,
     BRIGHTNESS
@@ -124,7 +124,7 @@ export const OSD = (mon: number) => {
 
             osdMode = null;
         },
-        child: new Widget.Stack({
+        child: new Widget.Stack({ // It should change dynamically... hmm...
             visibleChildName: bind(osdMode, "value").as((mode: OSDModes) => {
                 switch (mode) {
                     case OSDModes.SINK: return "sink";
