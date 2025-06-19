@@ -93,7 +93,8 @@ export const PageNetwork: (() => Page) = () => new Page({
                             ssid ?? "Unknown SSID"),
                         icon: bind(ap, "iconName"),
                         endWidget: new Widget.Icon({
-                            icon: bind(ap, "flags").as(flags => flags & NM.__80211ApFlags.PRIVACY ? 
+                            // @ts-ignore ts-for-gir generated the types wrong
+                            icon: bind(ap, "flags").as(flags => flags & NM["80211ApFlags" as keyof typeof NM].PRIVACY ? 
                                 "channel-secure-symbolic"
                             : "channel-insecure-symbolic"),
                             css: "font-size: 18px;"
@@ -117,8 +118,9 @@ export const PageNetwork: (() => Page) = () => new Page({
 
                             connection.add_setting(setting);
 
+                            // @ts-ignore same as previous, type gen issues 
                             // Check if access point has encryption(needs a password)
-                            if(ap.flags & NM.__80211ApFlags.PRIVACY) {
+                            if(ap.flags & NM["80211ApFlags" as keyof typeof NM].PRIVACY) {
                                 const passwdPopup = EntryPopup({
                                     isPassword: true,
                                     title: `${tr("connect")}: ${ssid}`,
@@ -128,7 +130,9 @@ export const PageNetwork: (() => Page) = () => new Page({
                                     onAccept: (input) => {
                                         const pskSetting = NM.SettingWirelessSecurity.new();
                                         pskSetting.keyMgmt = "wpa-psk";
-                                        if(ap.flags & NM.__80211ApSecurityFlags.KEY_MGMT_SAE)
+
+                                        // @ts-ignore type gen issues (the type exists)
+                                        if(ap.flags & NM["80211ApSecurityFlags" as keyof typeof NM].KEY_MGMT_SAE)
                                             pskSetting.keyMgmt = "sae";
 
                                         pskSetting.psk = input;
