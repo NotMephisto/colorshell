@@ -1,6 +1,7 @@
-import { AstalIO, bind, Binding, execAsync, GLib, timeout } from "astal";
+import { AstalIO, bind, Binding, exec, timeout } from "astal";
 import { Gtk, Widget } from "astal/gtk3";
 import AstalMpris from "gi://AstalMpris";
+import { Clipboard } from "../../scripts/clipboard";
 
 
 export function BigMedia(): Gtk.Widget {
@@ -101,9 +102,14 @@ export function BigMedia(): Gtk.Widget {
                                     icon: "edit-paste-symbolic"
                                 } as Widget.IconProps),
                                 tooltipText: "Copy link to Clipboard",
-                                visible: bind(players[0], "metadata").as((_meta: GLib.HashTable) =>
-                                    players[0].get_meta("xesam:url") === null),
-                                onClick: () => execAsync(`sh -c "wl-copy \\"$(playerctl metadata 'xesam:url')\\""`)
+                                visible: bind(players[0], "metadata").as(Boolean),
+                                onClick: async () => {
+                                    const link = exec(`playerctl --player=${
+                                        players[0].busName.replace(/^org\.mpris\.MediaPlayer2\./i, "")
+                                    } metadata xesam:url`);
+
+                                    link && Clipboard.getDefault().copyAsync(link);
+                                }
                             } as Widget.ButtonProps),
                             new Widget.Button({
                                 className: "shuffle",
