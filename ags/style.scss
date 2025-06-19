@@ -177,17 +177,18 @@ entry {
   }
 }
 
-tooltip {
-  padding: 16px;
+tooltip > box {
+  padding: 7px 8px;
+  margin: 12px;
+  margin-top: 0;
+  border-radius: 12px;
+  background: rgba(colors.$bg-primary, .98);
+  box-shadow: 0 5px 6px 1px colors.$bg-translucent-primary;
 
-  & > box {
-    padding: 7px 8px;
-    border-radius: 10px;
-    background: rgba(colors.$bg-primary, .98);
+  & label {
     font-size: 13.1px;
     font-weight: 500;
     color: colors.$fg-primary;
-    box-shadow: 0 1px 4px 1px rgba(colors.$bg-primary, .6);
   }
 }
 
