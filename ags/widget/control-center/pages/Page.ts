@@ -179,6 +179,7 @@ export function PageButton({ onDestroy, ...props }: {
     endWidget?: Gtk.Widget | Binding<Gtk.Widget>;
     description?: string | Binding<string>;
     extraButtons?: Array<Widget.Button> | Binding<Array<Gtk.Widget>>;
+    switches?: Array<Widget.Switch> | Binding<Array<Gtk.Widget>>;
     onDestroy?: (self: Widget.Box) => void;
     onClick?: (self: Widget.Button) => void;
     tooltipText?: string | Binding<string>;
@@ -231,7 +232,7 @@ export function PageButton({ onDestroy, ...props }: {
                                     label: props.description,
                                     truncate: true,
                                     tooltipText: props.description
-                                } as Widget.LabelProps)
+                                } as Widget.LabelProps),
                             ]
                         } as Widget.BoxProps),
                         new Widget.Box({
@@ -244,6 +245,10 @@ export function PageButton({ onDestroy, ...props }: {
                     ]
                 } as Widget.BoxProps)
             } as Widget.ButtonProps),
+             new Widget.Box({
+                visible: (props.switches instanceof Binding) ? props.switches.as(Boolean) : Boolean(props.switches),
+                children: props.switches
+            } as Widget.BoxProps),
             new Widget.Box({
                 className: "extra-buttons button-row",
                 visible: (props.extraButtons instanceof Binding) ? 

@@ -35,7 +35,7 @@ export const PageNightLight: (() => Page) = () => new Page({
             css: "margin-top: 6px;",
             xalign: 0
         } as Widget.LabelProps),
-        new Widget.Slider({
+        new Widget.Slider({ // Need add a limiter for 25%
             className: "gamma",
             setup: (slider) => {
                 slider.value = NightLight.getDefault().gamma;

@@ -1,5 +1,4 @@
 import { Astal } from "astal/gtk3";
-
 import { execAsync } from "astal";
 import AstalApps from "gi://AstalApps";
 import AstalHyprland from "gi://AstalHyprland";
@@ -65,22 +64,30 @@ export function getIconByAppName(appName: string): (string|undefined) {
 export function getAppIcon(app: (string|AstalApps.Application)): (string|undefined) {
     if(!app) return undefined;
 
-    if(typeof app === "string")
+    if(typeof app === "string"){
+        //console.log("Icon app (getIconByAppName):",getIconByAppName(app));
         return getIconByAppName(app);
+    }
 
-    if(app.iconName && Astal.Icon.lookup_icon(app.iconName))
+    if(app.iconName && Astal.Icon.lookup_icon(app.iconName)) {
+        //console.log("Icon app (app.iconName):", app.iconName);
         return app.iconName;
+    }
+        
 
-    if(app.wmClass)
+    if(app.wmClass) {
+        //console.log("Icon app (getIconByAppName.wm):",getIconByAppName(app.wmClass));
         return getIconByAppName(app.wmClass);
-
+    }
+        
+    //console.log("Icon app (getIconByAppName.name): ",getIconByAppName(app.name));
     return getIconByAppName(app.name);
 }
 
-export function getSymbolicIcon(app: (string|AstalApps.Application)): (string|undefined) {
+export function getSymbolicIcon(app: (string|AstalApps.Application)): (string|undefined) { // greatly works with iconpacks (For example, MoreWaita)
+    const icon = getAppIcon(app);
 
-    if (Astal.Icon.lookup_icon(`${getAppIcon(app)}-symbolic`))
-        return `${getAppIcon(app)}-symbolic`
-
-    return undefined;
+    return (icon && Astal.Icon.lookup_icon(`${icon}-symbolic`)) ?
+         `${icon}-symbolic`
+         : undefined;
 }

@@ -1,7 +1,7 @@
 import { bind, Variable } from "astal";
 import { Gtk, Widget } from "astal/gtk3"
 import AstalHyprland from "gi://AstalHyprland";
-import { getSymbolicIcon } from "../../scripts/apps";
+import { getAppIcon, getSymbolicIcon } from "../../scripts/apps";
 
 export const SpecialWorkspaces: (() => Gtk.Widget) = () => new Widget.EventBox({
     className: "special-ws-eventbox",
@@ -20,16 +20,19 @@ export const SpecialWorkspaces: (() => Gtk.Widget) = () => new Widget.EventBox({
                         return name.charAt(0).toUpperCase().concat(name.substring(1, name.length));
                     }),
                     child: new Widget.Box({
-                        child: new Widget.Icon({
-                            className: "last-app-icon",
-                            visible: Variable.derive([
-                                bind(workspace, "lastClient"),
-                                bind(AstalHyprland.get_default(), "focusedWorkspace")
-                            ], (lastClient, focusedWorkspace) => focusedWorkspace?.id === workspace.id ?
-                                 false : Boolean(lastClient))(),
-                            icon: bind(workspace, "lastClient").as((lastClient) =>
-                                getSymbolicIcon(lastClient) ?? "dialog-error")
-                        } as Widget.IconProps)
+                        child: bind(workspace, "lastClient").as(lastClient => 
+                            new Widget.Icon({
+                                className: "last-app-icon",
+                                visible: Variable.derive([
+                                    bind(workspace, "lastClient"),
+                                    bind(AstalHyprland.get_default(), "focusedWorkspace")
+                                ], (lastClient, focusedWorkspace) => focusedWorkspace?.id === workspace.id ?
+                                     false : Boolean(lastClient))(),
+                                icon: bind(lastClient, "initialClass").as((initialClass) =>
+                                    getSymbolicIcon(initialClass) ?? getAppIcon(initialClass) ?? 
+                                        "application-x-executable-symbolic")
+                            } as Widget.IconProps)
+                        )
                     } as Widget.BoxProps),
                     onClickRelease: () => AstalHyprland.get_default().dispatch(
                         "togglespecialworkspace", workspace.name.replace(/^special\:/, "")

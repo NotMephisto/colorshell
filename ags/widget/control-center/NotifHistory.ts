@@ -13,26 +13,24 @@ export const NotifHistory = () => {
             new Widget.Box({
                 vexpand: false,
                 hexpand: true,
-                className: "button-row",
+                className: "top-row",
                 children: [
                     new Widget.Box({
                         className: "dnd-box",
+                        hexpand: true,
                         halign: Gtk.Align.START,
                         children: [
                             new Widget.Label({
+                                css: "margin-right: 6px;",
                                 label: tr("control_center.tiles.dnd.title")
-                            }),
+                            } as Widget.LabelProps),
                             new Widget.Switch({
-                                /*onNotifyActive: (self) => {
-                                    console.log(self.get_state, self.get_active);
-                                }*/
-                                //hm....
-                                active: (self) => Notifications.getDefault().getNotifd().dontDisturb = !self.get_state,
-                                state: Notifications.getDefault().getNotifd().dontDisturb
-                            })
+                                onNotifyActive: (self) => Notifications.getDefault().getNotifd().dontDisturb = self.active,
+                                state: Notifications.getDefault().getNotifd().dontDisturb,
+                            } as Widget.SwitchProps)
                         ] 
 
-                    }),
+                    } as Widget.BoxProps),
                     new Widget.Button({
                         className: "clear-all",
                         halign: Gtk.Align.END,

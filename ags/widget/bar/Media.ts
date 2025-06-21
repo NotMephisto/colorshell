@@ -1,8 +1,7 @@
-import { bind } from "astal";
+import { bind, exec } from "astal";
 import { Gtk, Widget } from "astal/gtk3";
 import AstalMpris from "gi://AstalMpris";
 import { getSymbolicIcon } from "../../scripts/apps";
-import { Players } from "../../scripts/player";
 import { Separator, SeparatorProps } from "../Separator";
 import { Windows } from "../../windows";
 import { Clipboard } from "../../scripts/clipboard";
@@ -27,9 +26,14 @@ export function Media(): Gtk.Widget {
                             icon: "edit-paste-symbolic"
                         } as Widget.IconProps),
                         tooltipText: "Copy link to Clipboard",
-                        visible: bind(players[0], "metadata").as((metadata) =>
-                            metadata["xesam:url"]?.get_string()[0] != null),
-                        onClick: () => console.log(players[0].metadata["xesam:url"]?.get_string()[0]!)
+                        // AstalMpris.Player.metadata works only sometimes, so I'm not using it
+                        visible: bind(players[0], "metadata").as(Boolean),
+                        onClick: async () => {
+                            const link = exec(`playerctl --player=${
+                                players[0].busName.replace(/^org\.mpris\.MediaPlayer2\./i, "")
+                            } metadata xesam:url`);
+                            link && Clipboard.getDefault().copyAsync(link);
+                        }
                     } as Widget.ButtonProps),
                     new Widget.Button({
                         className: "previous",

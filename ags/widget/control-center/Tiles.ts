@@ -1,7 +1,7 @@
 import { Gtk, Widget } from "astal/gtk3";
 import { TileNetwork } from "./tiles/Network";
 import { TileBluetooth } from "./tiles/Bluetooth";
-import { TileDND } from "./tiles/DoNotDisturb";
+import { TileMode } from "./tiles/DoNotDisturb";
 import { TileRecording } from "./tiles/Recording";
 import { TileNightLight } from "./tiles/NightLight";
 import { Pages } from "./Pages";
@@ -11,7 +11,7 @@ export const tileList: Array<() => Gtk.Widget> = [
     TileNetwork,
     TileBluetooth,
     TileRecording,
-    TileDND,
+    TileMode,
     TileNightLight
 ];
 

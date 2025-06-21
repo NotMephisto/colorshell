@@ -1,15 +1,16 @@
 import { bind } from "astal";
 import { Notifications } from "../../../scripts/notifications";
 import { Tile } from "./Tile";
+import { Wallpaper } from "../../../scripts/wallpaper";
 import { tr } from "../../../i18n/intl";
 
-export const TileDND = Tile({
-    title: tr("control_center.tiles.dnd.title"),
-    description: bind(Notifications.getDefault().getNotifd(), "dontDisturb").as(
-        (dnd: boolean) => dnd ? tr("control_center.tiles.enabled") : tr("control_center.tiles.disabled")),
-    onToggledOff: () => Notifications.getDefault().getNotifd().dontDisturb = false,
-    onToggledOn: () => Notifications.getDefault().getNotifd().dontDisturb = true,
-    icon: "minus-circle-filled-symbolic",
+// KdeConnect or Theme changer?
+export const TileMode = Tile({
+    title: tr("control_center.tiles.thememode.title"),
+    description: bind(Wallpaper.getDefault(), "mode").as(mode => mode ? tr("control_center.tiles.thememode.dark") : tr("control_center.tiles.thememode.light")),
+    onToggledOff: () => Wallpaper.getDefault().darkMode(false),
+    onToggledOn: () => Wallpaper.getDefault().darkMode(true),
+    icon: "dark-mode-symbolic",
     iconSize: 16,
-    toggleState: Notifications.getDefault().getNotifd().dontDisturb
+    toggleState: bind(Wallpaper.getDefault(), "mode")
 });

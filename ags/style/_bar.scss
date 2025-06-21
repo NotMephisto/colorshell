@@ -237,7 +237,7 @@
 
   .apps {
     & > box {
-      min-width: 24px;
+      min-width: 22px;
 
       & > icon {
         transition: 120ms linear;
@@ -249,7 +249,7 @@
     }
 
     &:hover icon {
-      -gtk-icon-transform: scale(1.14);
+      -gtk-icon-transform: scale(1.144);
     }
   }
 }

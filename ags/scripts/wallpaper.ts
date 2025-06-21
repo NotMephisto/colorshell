@@ -1,5 +1,6 @@
 import { AstalIO, execAsync, exec, Gio, GLib, GObject, monitorFile, property, register, timeout } from "astal";
-import { getDecoded } from "./utils";
+import { decoder } from "./utils";
+import { getWiredIcon } from "./icons";
 
 export { Wallpaper };
 
@@ -10,9 +11,15 @@ class Wallpaper extends GObject.Object {
     #wallpapersPath: string;
     #swwwPath: Gio.File;
     #swwwFile: Gio.File;
-    #swwwFiles: Array<{name: string, content: any}>;
-
+    #swwwFiles: Array<{name: string, content: (string|Gio.File)}>;
+    #themeMode: string;
+    #mode: (boolean|undefined);
+    
     #monitor: Gio.FileMonitor;
+
+    @property(Boolean)
+    public get mode(): (boolean|undefined) { return this.#mode; }
+    public set mode(newBoo: boolean) { this.darkMode(newBoo); }
 
     @property(String)
     public get wallpaper(): (string|undefined) { return this.#wallpaper; }
@@ -38,30 +45,7 @@ class Wallpaper extends GObject.Object {
             if(tmeout) return;
             else tmeout = timeout(1500, () => tmeout = undefined);
 
-            if (!this.#swwwPath.query_exists(null)) {
-                console.error(`Wallpaper: Couldn't load the cache directory: ${this.#swwwPath.get_path()}`);
-                return;
-            }
-
-            const iter = this.#swwwPath.enumerate_children('standard::*',
-                Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS, null);
-            for (const fileInfo of iter) {
-                
-                if (fileInfo.get_file_type() === Gio.FileType.DIRECTORY) {
-                    continue;
-                }
-                
-                this.#swwwFile = iter.get_child(fileInfo);
-                
-                const [success, contents] = this.#swwwFile.load_contents(null);
-                
-                if (success) {
-                    this.#swwwFiles.push({
-                        name: fileInfo.get_name(),
-                        content: getDecoded(contents),
-                    });
-                }
-            }
+            this.getWallpaper();
         })
     }
 
@@ -88,27 +72,54 @@ class Wallpaper extends GObject.Object {
         })
     }
 
-    public async getWallpaper(): Promise<string|undefined> {
-        return await execAsync("sh -c \"swww query | grep -oP 'currently displaying: image: \K.*' \"").then(stdout => { // Проверки на изменения обоев (через ./cache/swww и чтение файлов)
-            const loaded: (string|undefined) = stdout; //.split('=')[1]?.trim()
+    public getWallpaper(): (string|Gio.File) {
+        if (!this.#swwwPath.query_exists(null)) {
+            console.error(`Wallpaper: Couldn't load the cache directory: ${this.#swwwPath.get_path()}`);
+            return;
+        }
 
-            if(!loaded) 
-                console.warn(`Wallpaper: Couldn't get wallpaper. There is(are) no loaded wallpaper(s)`);
-
-            return loaded;
-        }).catch((err: Gio.IOErrorEnum) => {
-            console.error(`Wallpaper: Couldn't get wallpaper. Stderr: \n${err.message ? `${err.message} /` : ""} Stack: \n ${err.stack}`);
-            return undefined;
-        });
+        const iter = this.#swwwPath.enumerate_children('standard::*',
+            Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS, null);
+        for (const fileInfo of iter) {        
+            if (fileInfo.get_file_type() === Gio.FileType.DIRECTORY) {
+                continue;
+            }
+                
+            this.#swwwFile = iter.get_child(fileInfo);
+                
+            const [success, contents] = this.#swwwFile.load_contents(null);
+                
+            if (success) {
+                const decoded_content = decoder.decode(contents);
+                const lines = decoded_content.split('\n').filter(filter => filter.trim() != '')
+                this.#swwwFiles.push({
+                    name: fileInfo.get_name(), // could be used for paramets swww (monitor)
+                    content: lines[1],
+                });
+            }
+        }
     }
 
-    public reloadColors(): void {
-        execAsync(`matugen -m dark image ${this.pathReplacer(this.#wallpaper)}`).then(() => {
+    public darkMode(isEnabled: boolean): void {
+        this.#themeMode = (isEnabled) ? "dark" : "light";
+        this.#mode = isEnabled;
+
+        this.getWallpaper();
+        this.reloadColors(this.#swwwFiles[0].content);
+    }
+
+    public changeTheme(): void {
+        execAsync(`matugen -m ${this.#themeMode}`)
+    }
+
+    public reloadColors(path: string|Gio.File): void {
+        execAsync(`matugen image ${this.pathReplacer(path)} -m ${this.#themeMode}`).then(() => {
             console.log("Wallpaper: updated shell colors. Some applications may need to be restarted for the changes to take effect.");
         }).catch(r => {
             if (r.toString().includes('Invalid UTF-8 in child stdout')) {
                 console.log("Wallpaper: updated shell colors. Some applications may need to be restarted for the changes to take effect.");
             } else {
+                // Для всех остальных ошибок выводим сообщение
                 console.error(`Wallpaper: Something went wrong. Stderr: ${r}`);
             }
         });
@@ -118,15 +129,20 @@ class Wallpaper extends GObject.Object {
         if (path) return path.replace(/[\[\]\{\}\(\)\&\*\#\№\!\@'\s]/g, '\\$&');
     } 
 
-    public setWallpaper(path: string|Gio.File, write: boolean = true): void {
+    public setWallpaper(path: string|Gio.File): void {
         const fps = exec("sh -c \"hyprctl numberonitors | grep -oP '\d+x\d+@\K[\d.]+' | head -n 1 \"");
         console.log("Log:", fps);
         execAsync(`swww img ${this.pathReplacer(path)} --transition-fps 165 --transition-type any --transition-duration 2`).then(() => {
+            /*if (this.getWallpaper === path) {
+                console.error(`Are you going to change the wallpaper to the same one?`);
+                return;
+            };*/
             this.#wallpaper = (typeof path === "string") ? path : path.get_path()!;
             console.log("Refresh Rate: ", this.getRefreshRate());
             console.log("Wallpaper: ", this.#wallpaper);
             console.log("Replacer: ", this.pathReplacer(path));
-            this.reloadColors();
+            this.reloadColors(this.#wallpaper);
+            //write && this.writeChanges();wallpaper
         }).catch(r => {
             console.error(`Wallpaper: Couldn't set wallpaper. Stderr: ${r}`);
         });
@@ -135,6 +151,11 @@ class Wallpaper extends GObject.Object {
     public async pickWallpaper(): Promise<string|undefined> {
         return (await execAsync(`zenity --file-selection`).then(wall => {
             if(!wall) return undefined;
+            //console.log("Wall: ", wall);
+            /*if (this.getWallpaper() === wall) {
+                console.error(`Are you going to change the wallpaper to the same one?`);
+                return;
+            };*/
             this.setWallpaper(wall);
             return wall;
         }).catch(r => {

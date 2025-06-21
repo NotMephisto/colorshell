@@ -177,17 +177,18 @@ entry {
   }
 }
 
-tooltip {
-  padding: 16px;
+tooltip > box {
+  padding: 7px 8px;
+  margin: 12px;
+  margin-top: 0;
+  border-radius: 12px;
+  background: rgba(colors.$bg-primary, .98);
+  box-shadow: 0 5px 6px 1px colors.$bg-translucent-primary;
 
-  & > box {
-    padding: 7px 8px;
-    border-radius: 10px;
-    background: rgba(colors.$bg-primary, .98);
+  & label {
     font-size: 13.1px;
     font-weight: 500;
     color: colors.$fg-primary;
-    box-shadow: 0 1px 4px 1px rgba(colors.$bg-primary, .6);
   }
 }
 
@@ -213,7 +214,7 @@ menu {
   }
 }
 
-.button-row {
+.button-row, .top-row {
   & > button {
     background: colors.$bg-secondary;
     margin: 0 1px;
@@ -224,19 +225,37 @@ menu {
       background: colors.$bg-tertiary;
     }
 
-    &:first-child {
+    &:first-child:not(.top-row) { // probably NEED FIXES
       border-top-left-radius: 10px;
       border-bottom-left-radius: 10px;
       margin-left: 0;
     }
 
-    &:last-child {
+    &:last-child:not(.top-row) { // need fixes
       border-top-right-radius: 10px;
       border-bottom-right-radius: 10px;
       margin-right: 0;
     }
   }
 }
+
+//Need some workouts///////////////
+switch {
+  padding: 4px;
+  border-radius: 16px;
+  background: functions.toRGB(color.adjust($color: material-colors.$background, $lightness: +12%));
+  &:checked {
+    background: colors.$bg-tertiary;
+  }
+}
+
+switch slider {
+  border-radius: 12px;
+  color: colors.$bg-primary;
+  background: material-colors.$on_background;
+  transition: all 0.2s ease-in-out;
+}
+/////////////////////////////////////
 
 selection {
   background: colors.$bg-tertiary;

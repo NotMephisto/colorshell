@@ -40,6 +40,11 @@ export default {
             dnd: {
                 title: "Do Not Disturb"
             },
+            thememode: {
+                title: "Theme Mode",
+                light: "Light",
+                dark: "Dark"
+            },
             night_light: {
                 title: "Night Light",
                 default_desc: "Fidelity"
