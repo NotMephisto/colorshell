@@ -246,6 +246,7 @@ export function PageButton({ onDestroy, ...props }: {
                 } as Widget.BoxProps)
             } as Widget.ButtonProps),
              new Widget.Box({
+                //className: "switches",
                 visible: (props.switches instanceof Binding) ? props.switches.as(Boolean) : Boolean(props.switches),
                 children: props.switches
             } as Widget.BoxProps),

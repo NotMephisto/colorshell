@@ -1,9 +1,10 @@
 import { Page, PageButton, PageProps } from "./Page";
 import { bind, Variable } from "astal";
 import { Astal, Gtk, Widget } from "astal/gtk3";
-import { getSymbolicIcon } from "../../../scripts/apps";
+import { getAppIcon, getSymbolicIcon } from "../../../scripts/apps";
 import { Wireplumber } from "../../../scripts/volume";
 import { tr } from "../../../i18n/intl";
+import { analyser } from "../../../scripts/utils";
 
 export function PageSound(): Page {
     const endpoints = Variable.derive([
@@ -52,8 +53,8 @@ export function PageSound(): Page {
                                 orientation: Gtk.Orientation.HORIZONTAL,
                                 children: [
                                     new Widget.Icon({
-                                        icon: bind(stream, "icon").as(icon =>
-                                            icon ?? "application-x-executable-symbolic"),
+                                        icon: bind(stream, "description").as(icon =>
+                                            getSymbolicIcon(icon) ?? "application-x-executable-symbolic"),
                                         css: "font-size: 18px; margin-right: 6px;"
                                     } as Widget.IconProps),
                                     new Widget.Box({
@@ -69,7 +70,10 @@ export function PageSound(): Page {
                                                 ),
                                                 onDestroy: () => connections.map(id => eventbox.disconnect(id)),
                                                 child: new Widget.Label({
-                                                    label: bind(stream, "name").as(name => name || "Unknown"),
+                                                    label: bind(stream, "description").as(desc => {
+                                                        let title = `${stream.name.substring(0, 33)}${stream.name.length >= 33 ? '...' : ""}`
+                                                        return `${desc} - ${title}`;
+                                                        }),
                                                     truncate: true,
                                                     tooltipText: bind(stream, "name"),
                                                     className: "name",

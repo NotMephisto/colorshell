@@ -20,7 +20,7 @@ export const SpecialWorkspaces: (() => Gtk.Widget) = () => new Widget.EventBox({
                         return name.charAt(0).toUpperCase().concat(name.substring(1, name.length));
                     }),
                     child: new Widget.Box({
-                        child: bind(workspace, "lastClient").as(lastClient => 
+                        child: bind(workspace, "lastClient").as(lastClient => //need fixes for properly booting after system starts 
                             new Widget.Icon({
                                 className: "last-app-icon",
                                 visible: Variable.derive([

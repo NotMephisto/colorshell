@@ -3,6 +3,7 @@ import { Page, PageButton } from "./Page";
 import AstalNetwork from "gi://AstalNetwork";
 import { bind, GLib } from "astal";
 import NM from "gi://NM";
+import NMA from "gi://NMA";
 import { Windows } from "../../../windows";
 import { tr } from "../../../i18n/intl";
 import { execApp } from "../../../scripts/apps";
@@ -11,6 +12,9 @@ import { Notifications } from "../../../scripts/notifications";
 import { AskPopup, AskPopupProps } from "../../AskPopup";
 import { encoder } from "../../../scripts/utils";
 import { setOSDMode } from "../../../window/OSD";
+
+const client = AstalNetwork.get_default().get_client();
+const Network = AstalNetwork.get_default();
 
 export const PageNetwork: (() => Page) = () => new Page({
     id: "network",
@@ -22,10 +26,10 @@ export const PageNetwork: (() => Page) = () => new Page({
             image: new Widget.Icon({
                 icon: "arrow-circular-top-right-symbolic"
             } as Widget.IconProps),
-            visible: bind(AstalNetwork.get_default(), "primary").as((primary) => 
+            visible: bind(Network, "primary").as((primary) => 
                 primary === AstalNetwork.Primary.WIFI),
             tooltipText: "Re-scan connections",
-            onClick: () => AstalNetwork.get_default().wifi.scan()
+            onClick: () => Network.wifi.scan()
         } as Widget.ButtonProps)
     ],
     bottomButtons: [{
@@ -40,8 +44,8 @@ export const PageNetwork: (() => Page) = () => new Page({
             className: "devices",
             hexpand: true,
             orientation: Gtk.Orientation.VERTICAL,
-            visible: bind(AstalNetwork.get_default().get_client(), "devices").as((devs) => devs.length > 0),
-            children: bind(AstalNetwork.get_default().get_client(), "devices").as((devices) => {
+            visible: bind(Network.get_client(), "devices").as((devs) => devs.length > 0),
+            children: bind(Network.get_client(), "devices").as((devices) => {
                 devices = devices.filter(dev => dev.interface !== "lo");
 
                 return [
@@ -62,12 +66,14 @@ export const PageNetwork: (() => Page) = () => new Page({
                                     css: `margin: 2px 0px;
                                         font-size: 18px;`,
                                     onNotifyActive: (self) => {
-                                        console.log("ALL VALUES|VARIABLES: ", self.state, dev, dev.activeConnection?.connection.get_connection_type(), dev.get_device_type(), dev.activeConnection?.connection.get_id(), 
-                                        dev.activeConnection?.connection.get_interface_name(), AstalNetwork.get_default().get_client().get_connection_by_id(dev.activeConnection?.connection.get_id()),
-                                        dev.get_active_connection());
+
+                                        const isDeviceActive = dev.state === NM.DeviceState.ACTIVATED
+
+                                        if (self.active === isDeviceActive) {
+                                            return;
+                                        }
                                         
-                                        //Uncomment it with cautions!
-                                        //controlConnection(dev.get_active_connection(), dev, self.active)
+                                        controlConnection(dev, self.active)
                                     },
                                     state: bind(dev, "state").as(state => state === NM.DeviceState.ACTIVATED ? true : false)
                                 } as Widget.SwitchProps) 
@@ -91,113 +97,155 @@ export const PageNetwork: (() => Page) = () => new Page({
                 ]
             })
         } as Widget.BoxProps),
-        new Widget.Box({
-            className: "wireless-aps",
-            visible: bind(AstalNetwork.get_default(), "primary").as((primary) => primary === AstalNetwork.Primary.WIFI),
-            hexpand: true,
-            orientation: Gtk.Orientation.VERTICAL,
-            children: AstalNetwork.get_default().wifi ? bind(AstalNetwork.get_default().wifi, "accessPoints").as((aps) => [
+            new Widget.Box({
+                className: "wireless-aps",
+                visible: bind(Network, "primary").as((primary) => primary === AstalNetwork.Primary.WIFI),
+                hexpand: true,
+                orientation: Gtk.Orientation.VERTICAL,
+                children: Network.wifi ? bind(Network.wifi, "accessPoints").as((aps) => [
                     new Widget.Label({
                         className: "sub-header",
                         label: "Wi-Fi"
-                    } as Widget.LabelProps),
-                    ...aps.filter(ap => ap.ssid).map(ap => PageButton({
-                        className: bind(AstalNetwork.get_default().wifi, "activeAccessPoint").as(activeAP =>
-                            activeAP.ssid === ap.ssid ? "active" : ""),
-                        title: bind(ap, "ssid").as(ssid => 
-                            ssid ?? "Unknown SSID"),
-                        icon: bind(ap, "iconName"),
-                        endWidget: new Widget.Icon({
-                            icon: bind(ap, "flags").as(flags => flags & NM["80211ApFlags" as keyof typeof NM].PRIVACY ? 
-                                "channel-secure-symbolic"
-                            : "channel-insecure-symbolic"),
-                            css: "font-size: 18px;"
-                        } as Widget.IconProps),
-                        extraButtons: [
-                            new Widget.Button({
-                                image: new Widget.Icon({
-                                    icon: "window-close-symbolic",
+                        } as Widget.LabelProps),
+                            ...aps.filter(ap => ap.ssid).map(ap => {
+                                return PageButton({
+                                    title: bind(ap, "ssid").as(ssid => 
+                                        ssid ?? "Unknown SSID"),
+                                    icon: bind(ap, "iconName"),
+                                    endWidget: new Widget.Icon({
+                                    // @ts-ignore ts-for-gir generated the types wrong
+                                    icon: bind(ap, "flags").as(flags => flags & NM["80211ApFlags" as keyof typeof NM].PRIVACY ? 
+                                            "channel-secure-symbolic"
+                                        : "channel-insecure-symbolic"),
                                     css: "font-size: 18px;"
-                                } as Widget.IconProps)
-                            } as Widget.ButtonProps)
-                        ],
-                        onClick: () => {
-                            const ssid: string = ap.ssid ?? "Unknown SSID",
-                                ssidBytes = GLib.Bytes.new(encoder.encode(ssid));
+                                    } as Widget.IconProps),
+                                    extraButtons: [
+                                        new Widget.Button({
+                                            image: new Widget.Icon({
+                                                icon: "window-close-symbolic",
+                                                css: "font-size: 18px;"
+                                            } as Widget.IconProps)
+                                        } as Widget.ButtonProps)
+                                    ],
+                                    onClick: () => { // Unknown signal goes from here!
 
-                            const connection = new NM.Connection();
-                            const setting = NM.SettingWireless.new();
-                            setting.ssid = ssidBytes;
-                            setting.bssid = ap.bssid;
+                                        if (!ap.ssid) {
+                                            return;
+                                        }
 
-                            connection.add_setting(setting);
+                                        const savedConnections = client.get_connections();
+                                        let existingWifiConnection: NM.RemoteConnection | null;
 
-                            // Check if access point has encryption(needs a password)
-                            if(ap.flags & NM["80211ApFlags" as keyof typeof NM].PRIVACY) {
-                                const passwdPopup = EntryPopup({
-                                    isPassword: true,
-                                    title: `${tr("connect")}: ${ssid}`,
-                                    acceptText: tr("connect"),
-                                    closeOnAccept: false,
-                                    text: `Input password for ${ssid}`,
-                                    onAccept: (input) => {
-                                        const pskSetting = NM.SettingWirelessSecurity.new();
-                                        pskSetting.keyMgmt = "wpa-psk";
-                                        if(ap.flags & NM["80211ApSecurityFlags" as keyof typeof NM].KEY_MGMT_SAE)
-                                            pskSetting.keyMgmt = "sae";
+                                        for (const conn of savedConnections) {
+                                            const wirelessSetting = conn.get_setting_wireless();
 
-                                        pskSetting.psk = input;
-
-                                        AstalNetwork.get_default().get_client().add_connection_async(
-                                            connection, true, null, (client, asyncRes) => {
-                                                const remoteConnection = client!.add_connection_finish(asyncRes);
-                                                if(!remoteConnection) {
-                                                    notifyConnectionError(ssid);
-                                                    return;
-                                                }
-
-                                                passwdPopup.close();
-                                                saveToDisk(remoteConnection, ssid);
+                                            if (wirelessSetting && wirelessSetting.ssid && GLib.ByteArray.toString(wirelessSetting.ssid) === ap.ssid) {
+                                                existingWifiConnection = conn;
+                                                break;
                                             }
-                                        );
-                                    },
-                                } as EntryPopupProps);
+                                        }
 
-                                return;
-                            }
-
-                            AstalNetwork.get_default().get_client().add_connection_async(connection, false, null, (_, asyncRes) => {
-                                const remoteConnection = AstalNetwork.get_default().get_client().add_connection_finish(asyncRes);
-
-                                if(!remoteConnection) {
-                                    notifyConnectionError(ssid);
-                                    return;
-                                }
-
-                                activateWirelessConnection(remoteConnection, ssid);
-                            });
-                        }
-                    }))
-                ]
-            ) : [],
-        } as Widget.BoxProps)
+                                        if (existingWifiConnection) {
+                                            client.activate_connection_async(existingWifiConnection, Network.wifi.get_device(), ap.dbus_path, null, (_, asyncRes) => errorNotif(asyncRes, ""))
+                                        } else {
+                                            const uuid = NM.utils_uuid_generate();
+                                            const ssidBytes = GLib.Bytes.new(encoder.encode(ap.ssid));
+                                            //const availableConnections = ap.get_available_connections();
+                                            const Bssid = ap.bssid;
+                                            //console.log("\nAvailable connections (Wifi): ", availableConnections);                                                                                                                                                                
+                                            const connection = NM.SimpleConnection.new();
+                                            const connSetting = NM.SettingConnection.new();
+                                            const wifiSetting = NM.SettingWireless.new();
+                                            const wifiSecuritySetting = NM.SettingWirelessSecurity.new();
+                                            const setting8021x = NM.Setting8021x.new();
+                                                                                                                                                             
+                                            // @ts-ignore yep, type-gen issues again
+                                            if(ap.rsnFlags !& NM["80211ApSecurityFlags"].KEY_MGMT_802_1X &&
+                                            // @ts-ignore
+                                            ap.wpaFlags !& NM["80211ApSecurityFlags"].KEY_MGMT_802_1X) {
+                                                return;
+                                            }
+                                                                                                                                                             
+                                            connSetting.uuid = uuid;
+                                            connection.add_setting(connSetting);
+                                                                                                                                                             
+                                            connection.add_setting(wifiSetting);
+                                            wifiSetting.ssid = ssidBytes;
+                        
+                                            wifiSecuritySetting.keyMgmt = "wpa-eap";
+                                            connection.add_setting(wifiSecuritySetting);
+                                                                                                                                                             
+                                            setting8021x.add_eap_method("ttls");
+                                            setting8021x.phase2Auth = "mschapv2";
+                                            connection.add_setting(setting8021x);
+                                                                                                                                                             
+                                            const nmAP = Network.wifi.get_device().accessPoints.filter(nmAccessPoint => nmAccessPoint.ssid === ssidBytes)[0];
+                                            const dialog = NMA.WifiDialog.new(
+                                                Network.get_client(), connection, 
+                                                Network.wifi.get_device(), nmAP, 
+                                                false
+                                            );
+                        
+                                            dialog.show();
+                                        }
+                                    }
+                                });
+                            })
+                        ]
+                    ) : [],
+                } as Widget.BoxProps)
     ]
 });
+// For switches
+function controlConnection(device: (NM.Device|null), check: boolean): void {
+    
+    const activeConnection = device.get_active_connection() ?? null;
+    console.log(
+        "\nGot:", check, 
+        "\nActive connection: ", activeConnection,
+        "\nUuid: ", device.uuid, 
+        "\nUid: ", device.uid,
+        "\nInterface: ", device.activeConnection?.connection.get_interface_name(),
+        "\nDevice type: ", device.get_device_type(),
+        "\nGet connection: ", client.get_connection_by_uuid(device.uuid ?? NM.utils_uuid_generate()),
+    ); //logs
+    
+    if (check === true) { // for switches
+        const availableConnections = device.get_available_connections();
+        
+        if (availableConnections.length <= 0) {
+            return;
+        }
 
-function controlConnection(connection: (NM.Connection|NM.ActiveConnection|NM.RemoteConnection|null), device: (any|null), check: boolean): void {
-    check ? AstalNetwork.get_default().get_client().activate_connection_async(
-        connection.get_connection(), device, null, null, (_, asyncRes) => errorNotif(asyncRes, ""))
-        : AstalNetwork.get_default().get_client().deactivate_connection_async(
-            connection, null, (_, asyncRes) => errorNotif(asyncRes, ""))
+
+        const connection = availableConnections[0];
+        client.activate_connection_async(connection, device, null, null, (_, asyncRes) => { //cool! Now it's working properly!
+            try {
+                console.log("Activation was successful.");
+            } catch (e) {
+                console.error(`Activation error: ${e.message}`);
+                check = false;
+            }
+        });
+    } else {
+        client.deactivate_connection_async(activeConnection, null, (_, asyncRes) => { //cool, successfully deactivating all interfaces
+            try {
+                console.log("Deactivation was successful.");
+            } catch (e) {
+                console.error(`Deactivation error: ${e.message}`);
+                check = true;
+            }
+        })
+    }
 }
 
 function activateWirelessConnection(connection: NM.RemoteConnection, ssid: string): void {
-    AstalNetwork.get_default().get_client().activate_connection_async(
-        connection, AstalNetwork.get_default().wifi.get_device(), null, null, (_, asyncRes) => errorNotif(asyncRes, ssid));
+    Network.get_client().activate_connection_async(
+        connection, Network.wifi.get_device(), null, null, (_, asyncRes) => errorNotif(asyncRes, ssid));
 }
 
 function errorNotif(asyncRes: any, ssid: string = ""): void {
-    const activeConnection = AstalNetwork.get_default().get_client().activate_connection_finish(asyncRes);
+    const activeConnection = Network.get_client().activate_connection_finish(asyncRes);
     if(!activeConnection) {
         Notifications.getDefault().sendNotification({
             appName: "network",

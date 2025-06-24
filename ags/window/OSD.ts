@@ -3,7 +3,7 @@ import { Astal, Gtk, Widget } from "astal/gtk3";
 import { Wireplumber } from "../scripts/volume";
 import AstalWp from "gi://AstalWp";
 
-export enum OSDModes { //Should I add layout change indicator? 
+export enum OSDModes {
     SINK,
     SOURCE,
     BRIGHTNESS
@@ -29,6 +29,7 @@ function createOSD(
     return new Widget.Box({
         ...props,
         className: `osd ${props.className || ''}`, 
+        expand: true,
         children: [
             new Widget.Icon({
                 className: "icon",
@@ -42,7 +43,7 @@ function createOSD(
                     new Widget.Label({
                         className: "device",
                         label: labelOSD,
-                        halign: Gtk.Align.CENTER
+                        truncate: true,
                     } as Widget.LabelProps),
                     new Widget.Box({
                         vexpand: false,
@@ -53,9 +54,7 @@ function createOSD(
                                 width_request: 120,
                                 value: valueOSD,
                                 maxValue: maxValueOSD,
-                                vexpand: false,
-                                expand: false,
-                                halign: Gtk.Align.CENTER
+                                expand: true,
                             } as Widget.LevelBarProps),
                             /*new Widget.Label({
                                 className: "value",
@@ -81,8 +80,8 @@ function OSDSink() {
         bind(audio, "volumeIcon").as(icon => 
             !Wireplumber.getDefault().isMutedSink() && Wireplumber.getDefault().getSinkVolume() > 0 ? 
                 icon : "audio-volume-muted-symbolic"),
-        bind(audio, "name").as((name: string) => 
-            name || "Speaker"),
+        bind(audio, "description").as((description: string) => 
+            description || "Speaker"),
         bind(audio, "volume").as((volume: number) => 
             Math.floor(volume * 100)),
         bind(Wireplumber.getWireplumber(), "defaultSpeaker").as(() => 
@@ -98,8 +97,8 @@ function OSDSource() {
         bind(source, "volumeIcon").as(icon => 
             !Wireplumber.getDefault().isMutedSource() && Wireplumber.getDefault().getSourceVolume() > 0 ? 
                 icon : "microphone-sensitivity-muted-symbolic"),
-        bind(source, "name").as((name: string) => 
-            name || "Microphone"),
+        bind(source, "description").as((description: string) => 
+            description || "Microphone"),
         bind(source, "volume").as((volume: number) => 
             Math.floor(volume * 100)),
         bind(Wireplumber.getWireplumber(), "defaultMicrophone").as(() =>
@@ -112,6 +111,7 @@ export const OSD = (mon: number) => {
 
     return new Widget.Window({
         namespace: "osd",
+        className: "osd-window",
         layer: Astal.Layer.OVERLAY,
         anchor: Astal.WindowAnchor.BOTTOM,
         canFocus: false,
@@ -124,7 +124,7 @@ export const OSD = (mon: number) => {
 
             osdMode = null;
         },
-        child: new Widget.Stack({ // It should change dynamically... hmm...
+        child: new Widget.Stack({
             visibleChildName: bind(osdMode, "value").as((mode: OSDModes) => {
                 switch (mode) {
                     case OSDModes.SINK: return "sink";

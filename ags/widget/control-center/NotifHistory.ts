@@ -8,7 +8,7 @@ import { tr } from "../../i18n/intl";
 export const NotifHistory = () => {
     return new Widget.Box({
         orientation: Gtk.Orientation.VERTICAL,
-        className: bind(Notifications.getDefault(), "history").as(history => history.length > 0 ? "history" : "history hide"),
+        className: bind(Notifications.getDefault(), "history").as(history => history.length > 0 ? "history" : "history hide"), //edit it
         children: [
             new Widget.Box({
                 vexpand: false,
