@@ -139,7 +139,8 @@ export const PageNetwork: (() => Page) = () => new Page({
                                         for (const conn of savedConnections) {
                                             const wirelessSetting = conn.get_setting_wireless();
 
-                                            if (wirelessSetting && wirelessSetting.ssid && GLib.ByteArray.toString(wirelessSetting.ssid) === ap.ssid) {
+                                            if (wirelessSetting && wirelessSetting.ssid && GLib.Bytes.new(encoder.encode(wirelessSetting.ssid)) === ap.ssid) {
+                                                console.log("Got ssid!");
                                                 existingWifiConnection = conn;
                                                 break;
                                             }
