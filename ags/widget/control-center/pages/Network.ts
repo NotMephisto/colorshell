@@ -178,7 +178,8 @@ export const PageNetwork: (() => Page) = () => new Page({
                                             setting8021x.add_eap_method("ttls");
                                             setting8021x.phase2Auth = "mschapv2";
                                             connection.add_setting(setting8021x);
-                                                                                                                                                             
+                                                                                    
+                                            //Problem                                                                         
                                             const nmAP = Network.wifi.get_device().accessPoints.filter(nmAccessPoint => nmAccessPoint.ssid === ssidBytes)[0];
                                             const dialog = NMA.WifiDialog.new(
                                                 Network.get_client(), connection, 
