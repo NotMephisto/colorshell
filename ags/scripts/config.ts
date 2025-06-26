@@ -38,7 +38,7 @@ export type ConfigEntries = Partial<{
     }>;
 }>;
 
-type ValueTypes = "string" | "boolean" | "object" | "integer" | "undefined" | "any";
+type ValueTypes = "string" | "boolean" | "object" | "number" | "undefined" | "any";
 
 
 @register({ GTypeName: "Config" })
@@ -52,8 +52,8 @@ class Config extends GObject.Object implements Subscribable {
     * in the `entries` field */
     public readonly defaults: ConfigEntries = {
         notifications: {
-            timeout_low: 2000,
-            timeout_normal: 5000,
+            timeout_low: 4000,
+            timeout_normal: 6000,
             timeout_critical: 0
         },
 
@@ -218,7 +218,13 @@ class Config extends GObject.Object implements Subscribable {
                 }\` is either \`undefined\` or not in the expected value type \`${expectType
                 }\`, returning default value`);
 
-            property = this.getPropertyDefault(path);
+            property = this.defaults;
+
+            for(let i = 0; i < pathArray.length; i++) {
+                const currentPath = pathArray[i];
+
+                property = property[currentPath as keyof typeof property];
+            }
         }
 
         if(expectType !== "any" && typeof property !== expectType) {
