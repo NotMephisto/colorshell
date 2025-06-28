@@ -1,7 +1,7 @@
-import { AstalIO, bind, Binding, execAsync, GLib, timeout } from "astal";
+import { AstalIO, bind, Binding, exec, timeout } from "astal";
 import { Gtk, Widget } from "astal/gtk3";
 import AstalMpris from "gi://AstalMpris";
-
+import { Players } from "../../scripts/player";
 
 export function BigMedia(): Gtk.Widget {
     let dragTimer: (AstalIO.Time|undefined);
@@ -22,8 +22,8 @@ export function BigMedia(): Gtk.Widget {
                         hexpand: false,
                         orientation: Gtk.Orientation.VERTICAL,
                         marginTop: 6,
-                        visible: getAlbumArt(players[0]).as(Boolean),
-                        css: getAlbumArt(players[0]).as((artUrl: string|undefined) => 
+                        visible: Players.getDefault().getAlbumArt(players[0]).as(Boolean),
+                        css: Players.getDefault().getAlbumArt(players[0]).as((artUrl: string|undefined) => 
                             artUrl ? `.image { background-image: url('${artUrl}'); }` : undefined),
                         width_request: 132,
                         height_request: 128
@@ -60,7 +60,8 @@ export function BigMedia(): Gtk.Widget {
                             min: 0,
                             hexpand: true,
                             max: bind(players[0], "length").as((length: number) =>
-                                Math.floor(length)),
+                                (length > 129600000) ? Math.floor(players[0].get_position())
+                                    : Math.floor(length)), // for streams and players whitch dont have a length
                             value: bind(players[0], "position").as((position: number) =>
                                 Math.floor(position)),
                             onDragged: (slider: Widget.Slider) => {
@@ -101,9 +102,13 @@ export function BigMedia(): Gtk.Widget {
                                     icon: "edit-paste-symbolic"
                                 } as Widget.IconProps),
                                 tooltipText: "Copy link to Clipboard",
-                                visible: bind(players[0], "metadata").as((_meta: GLib.HashTable) =>
-                                    players[0].get_meta("xesam:url") === null),
-                                onClick: () => execAsync(`sh -c "wl-copy \\"$(playerctl metadata 'xesam:url')\\""`)
+                                visible: bind(players[0], "metadata").as(Boolean),
+                                onClick: async () => {
+                                    const link = exec(`playerctl --player=${
+                                        players[0].busName.replace(/^org\.mpris\.MediaPlayer2\./i, "")
+                                    } metadata xesam:url`);
+                                    link && Clipboard.getDefault().copyAsync(link);
+                                }
                             } as Widget.ButtonProps),
                             new Widget.Button({
                                 className: "shuffle",
@@ -189,7 +194,8 @@ export function BigMedia(): Gtk.Widget {
                         halign: Gtk.Align.END,
                         label: bind(players[0], "length").as((len/* bananananananana */: number) => {
                             const sec: number = Math.floor(len % 60);
-                            return (len > 0 && Number.isFinite(len)) ? 
+                            console.log(len);
+                            return (len > 0 && len < 129600000) ?
                                 `${Math.floor(len / 60)}:${sec < 10 ? "0" : ""}${sec}`
                             : "0:00";
                         })
