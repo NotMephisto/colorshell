@@ -21,12 +21,14 @@ import { Wallpaper } from "./scripts/wallpaper";
 import { Stylesheet } from "./scripts/stylesheet";
 import { Clipboard } from "./scripts/clipboard";
 import { PluginClipboard } from "./runner/plugins/clipboard";
+import { Config } from "./scripts/config";
 
 
 import { Players } from "./scripts/player";
 
 
 let osdTimer: (Time|undefined);
+let osdDebounceTimer: (Time|undefined);
 let connections = new Map<GObject.Object, (Array<number> | number)>();
 
 const defaultWindows: Array<keyof typeof Windows.windows> = [ "bar" ];
@@ -48,6 +50,10 @@ App.start({
     main: (..._args: Array<string>) => {
         console.log(`Initialized astal instance as: ${ App.instanceName || "astal" }`);
 
+
+        console.log("Config: initializing configuration file");
+        Config.getDefault();
+
         Stylesheet.getDefault().compileApply();
 
         App.vfunc_dispose = () => {
@@ -63,7 +69,11 @@ App.start({
         connections.set(Wireplumber.getDefault(), [
             Wireplumber.getDefault().getDefaultSink().connect("notify::volume", () => 
                 triggerOSD(OSDModes.SINK)),
+            Wireplumber.getDefault().getDefaultSink().connect("notify::mute", () => 
+                triggerOSD(OSDModes.SINK)),
             Wireplumber.getDefault().getDefaultSource().connect("notify::volume", () => 
+                triggerOSD(OSDModes.SOURCE)),
+            Wireplumber.getDefault().getDefaultSource().connect("notify::mute", () => 
                 triggerOSD(OSDModes.SOURCE)),
         ]);
 
@@ -78,7 +88,7 @@ App.start({
         
         //need more tests and works...
         //console.log("Active Player:", Players.getDefault().getActivePlayer());
-        console.log("App name", Astal.Icon.lookup_icon(`org.gnome.Evince-symbolic`));
+        //console.log("App name", Astal.Icon.lookup_icon(`org.gnome.Evince-symbolic`));
 
         console.log("Initializing wallpaper handler");
         Wallpaper.getDefault();
@@ -96,23 +106,25 @@ App.start({
 });
 
 function triggerOSD(osdModeParam: OSDModes) {
-    if(Windows.isVisible("control-center")) return;
+    if (Windows.isVisible("control-center")) return;
 
-    Windows.open("osd");
-
-    if(!osdTimer) {
-        setOSDMode(osdModeParam);
-        osdTimer = timeout(3000, () => {
-            osdTimer = undefined;
-            Windows.close("osd");
-        });
-
-        return;
+    if (osdDebounceTimer) {
+        osdDebounceTimer.cancel();
     }
 
-    osdTimer.cancel();
-    osdTimer = timeout(3000, () => {
-        Windows.close("osd");
-        osdTimer = undefined;
+    // For some reasons Wireplumber refreshin hole devices list if 
+    // you trigger micro mute
+    osdDebounceTimer = timeout(1, () => {
+        Windows.open("osd");
+        setOSDMode(osdModeParam);
+
+        if (osdTimer) {
+            osdTimer.cancel();
+        }
+
+        osdTimer = timeout(3000, () => {
+            Windows.close("osd");
+            osdTimer = undefined;
+        });
     });
 }
