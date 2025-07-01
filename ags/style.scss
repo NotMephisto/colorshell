@@ -226,6 +226,7 @@ menu {
     }
 
     &:first-child:not(.top-row) { // probably NEED FIXES
+    &:first-child {
       border-top-left-radius: 10px;
       border-bottom-left-radius: 10px;
       margin-left: 0;

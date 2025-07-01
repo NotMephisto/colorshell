@@ -104,6 +104,7 @@ export function Media(): Gtk.Widget {
                                 truncate: true
                             } as Widget.LabelProps),
                             Separator({
+                                visible: bind(players[0], "artist").as(artist => artist ? true : false),
                                 orientation: Gtk.Orientation.HORIZONTAL,
                                 size: 1,
                                 margin: 5,
@@ -112,9 +113,10 @@ export function Media(): Gtk.Widget {
                             } as SeparatorProps),
                             new Widget.Label({
                                 className: "artist",
-                                label: bind(players[0], "artist").as((artist: string) => artist || "No Artist"),
+                                visible: bind(players[0], "artist").as(artist => artist ? true : false),
+                                label: bind(players[0], "artist").as((artist: string) => artist),
                                 maxWidthChars: 18,
-                                truncate: true
+                                truncate: true,
                             } as Widget.LabelProps)
                         ] : new Widget.Label({
                             label: "Crazy to think this widget haven't disappeared yet!"

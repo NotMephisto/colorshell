@@ -32,6 +32,7 @@ export const NotifHistory = () => {
 
                     } as Widget.BoxProps),
                     new Widget.Button({
+                        css: `border-radius: 10px;`,
                         className: "clear-all",
                         halign: Gtk.Align.END,
                         child: new Widget.Box({
