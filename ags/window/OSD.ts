@@ -128,7 +128,6 @@ export const OSD = (mon: number) => {
                 switch (mode) {
                     case OSDModes.SINK: return "sink";
                     case OSDModes.SOURCE: return "source";
-                    default: return "sink";
                 }
             }),
             onDestroy: () => {
