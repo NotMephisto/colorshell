@@ -1,6 +1,10 @@
 # colorshell
 <p>(previously retrozinndev/Hyprland-Dots)</p>
 
+> [!warning]
+> [AGS v3](https://github.com/aylur/ags/blob/main) is going to be an official release soon(for now, it's only in the main branch) <br>
+> I'm currently migrating this shell to the new AGS version. More info in [#12](https://github.com/retrozinndev/colorshell/issues/12).
+
 > [!note]
 > My personal dotfiles are now on [retrozinndev/Hyprland-Dots](https://github.com/retrozinndev/Hyprland-Dots)
 
