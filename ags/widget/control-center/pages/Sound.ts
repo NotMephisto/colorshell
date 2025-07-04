@@ -54,7 +54,7 @@ export function PageSound(): Page {
                                 children: [
                                     new Widget.Icon({
                                         icon: bind(stream, "description").as(icon =>
-                                            getSymbolicIcon(icon) ?? getIconByAppName(icon)),
+                                            getSymbolicIcon(icon) ?? getIconByAppName(icon) ?? "application-x-executable-symbolic"),
                                         css: "font-size: 20px; margin-right: 6px;"
                                     } as Widget.IconProps),
                                     new Widget.Box({
