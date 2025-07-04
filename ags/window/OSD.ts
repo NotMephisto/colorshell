@@ -9,13 +9,22 @@ export enum OSDModes {
     SOURCE,
     LAYOUT,
     BRIGHTNESS
+    //CAPSLOCK,
+    //NUMLOCK,
+    //PLAYER
 }
 
 let osdMode: (Variable<OSDModes>|null);
 const layoutVar = new Variable("");
 
-export function updateLayout(layout: string) {
-    layoutVar.set(layout.substring(0, 2).toUpperCase());
+//It can be used to get values from connected elements and further process them. 
+export function variableHandler(mode: OSDModes, value: any) {
+    console.log(`Got value ${value}`);
+    switch (mode) {
+        case OSDModes.LAYOUT:
+            layoutVar.set(value.substring(0, 2).toUpperCase());
+            break;
+    }
 }
 
 export function setOSDMode(newMode: OSDModes): void {
