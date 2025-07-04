@@ -195,12 +195,15 @@ export function BigMedia(): Gtk.Widget {
                         valign: Gtk.Align.START,
                         halign: Gtk.Align.END,
                         label: bind(players[0], "length").as((len/* bananananananana */: number) => {
+                            const maxLen: number = 9223372036854;
+
                             const sec: number = Math.floor(len % 60);
                             const min = Math.floor((len % 3600) / 60);
-                            const hours: number = Math.floor(len / 3600);
-                            return (len > 0 && hours < 32) ?
-                                `${hours > 0 ? `${hours}:` : ''}${min < 10 && hours > 0 ? `0${min}` : `${min}`}:${sec < 10 ? `0${sec}` : `${sec}`}`
-                                    : `0:00`;
+                            const hour: number = Math.floor(len / 3600);
+
+                            return (len > 0 && hour < maxLen / 10000000) ?
+                                `${hour > 0 ? `${hour}:` : ''}${min < 10 && hour > 0 ? `0${min}` : `${min}`}:${sec < 10 ? `0${sec}` : `${sec}`}`
+                                    : (len <= 0 ? `0:00` : "Live");
                         })
                     } as Widget.LabelProps)
                 })
