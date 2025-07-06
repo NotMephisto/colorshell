@@ -1,10 +1,12 @@
 import { bind, exec } from "astal";
 import { Gtk, Widget } from "astal/gtk3";
 import AstalMpris from "gi://AstalMpris";
-import { getSymbolicIcon } from "../../scripts/apps";
+import { getAppIcon, getIconByAppName, getSymbolicIcon } from "../../scripts/apps";
 import { Separator, SeparatorProps } from "../Separator";
 import { Windows } from "../../windows";
 import { Clipboard } from "../../scripts/clipboard";
+
+import { AstalPlayers } from "../../scripts/player";
 
 export function Media(): Gtk.Widget {
     
@@ -18,8 +20,8 @@ export function Media(): Gtk.Widget {
             className: "media-controls button-row",
             expand: false,
             homogeneous: false,
-            children: bind(AstalMpris.get_default(), "players").as((players: Array<AstalMpris.Player>) =>
-                players[0] ? [ 
+            children: bind(AstalPlayers.getDefault(), "activePlayer").as((activePlayer: AstalMpris.Player) =>
+                activePlayer ? [ 
                     new Widget.Button({
                         className: "link",
                         image: new Widget.Icon({
@@ -27,12 +29,11 @@ export function Media(): Gtk.Widget {
                         } as Widget.IconProps),
                         tooltipText: "Copy link to Clipboard",
                         // AstalMpris.Player.metadata works only sometimes, so I'm not using it
-                        visible: bind(players[0], "metadata").as(Boolean),
+                        visible: bind(activePlayer, "metadata").as(Boolean),
                         onClick: async () => {
                             const link = exec(`playerctl --player=${
-                                players[0].busName.replace(/^org\.mpris\.MediaPlayer2\./i, "")
+                                activePlayer.busName.replace(/^org\.mpris\.MediaPlayer2\./i, "")
                             } metadata xesam:url`);
-
                             link && Clipboard.getDefault().copyAsync(link);
                         }
                     } as Widget.ButtonProps),
@@ -42,23 +43,23 @@ export function Media(): Gtk.Widget {
                             icon: "media-skip-backward-symbolic"
                         } as Widget.IconProps),
                         tooltipText: "Previous",
-                        onClick: () => players[0].canGoPrevious && players[0].previous()
+                        onClick: () => activePlayer.canGoPrevious && activePlayer.previous()
                     } as Widget.ButtonProps),
                     new Widget.Button({
                         className: "play-pause",
-                        tooltipText: bind(players[0], "playback_status").as((status) =>
+                        tooltipText: bind(activePlayer, "playback_status").as((status) =>
                             status === AstalMpris.PlaybackStatus.PLAYING ? 
                                 "Pause"
                             : "Play"),
                         image: new Widget.Icon({
-                            icon: bind(players[0], "playbackStatus").as((status: AstalMpris.PlaybackStatus) => 
+                            icon: bind(activePlayer, "playbackStatus").as((status: AstalMpris.PlaybackStatus) => 
                             status === AstalMpris.PlaybackStatus.PLAYING ? 
                                 "media-playback-pause-symbolic"
                             : "media-playback-start-symbolic")
                         } as Widget.IconProps),
-                        onClick: () => players[0].playbackStatus === AstalMpris.PlaybackStatus.PAUSED ?
-                            players[0].play()
-                        : players[0].pause()
+                        onClick: () => activePlayer.playbackStatus === AstalMpris.PlaybackStatus.PAUSED ?
+                            activePlayer.play()
+                        : activePlayer.pause()
                     } as Widget.ButtonProps),
                     new Widget.Button({
                         className: "next",
@@ -66,7 +67,7 @@ export function Media(): Gtk.Widget {
                             icon: "media-skip-forward-symbolic"
                         } as Widget.IconProps),
                         tooltipText: "Next",
-                        onClick: () => players[0].canGoNext && players[0].next()
+                        onClick: () => activePlayer.canGoNext && activePlayer.next()
                     } as Widget.ButtonProps)
                 ] : new Widget.Label({
                     label: "Don't Stop The Music!"
@@ -77,8 +78,8 @@ export function Media(): Gtk.Widget {
 
     const mediaWidget = new Widget.EventBox({
         className: "media-eventbox",
-        visible: bind(AstalMpris.get_default(), "players").as((players: Array<AstalMpris.Player>) => 
-            players[0] && players[0].get_available()),
+        visible: bind(AstalPlayers.getDefault(), "activePlayer").as((activePlayer: AstalMpris.Player) => 
+            activePlayer && activePlayer.get_available()),
         onDestroy: (_) => connections.map(id => _.disconnect(id)),
         onClick: () => Windows.toggle("center-window"),
         child: new Widget.Box({
@@ -86,30 +87,31 @@ export function Media(): Gtk.Widget {
             children: [
                 new Widget.Box({
                     spacing: 4,
-                    children: bind(AstalMpris.get_default(), "players").as((players: Array<AstalMpris.Player>) =>
-                        players[0] ? [
+                    children: bind(AstalPlayers.getDefault(), "activePlayer").as((activePlayer: AstalMpris.Player) =>
+                        activePlayer ? [
                             new Widget.Icon({
-                                icon: getSymbolicIcon(players[0].get_entry()) ?? 
-                                    getSymbolicIcon(players[0].get_bus_name().split('.').filter(str => !str.toLowerCase().includes('instance')).join('.')) ??
+                                icon: getSymbolicIcon(activePlayer.get_entry()) ?? 
+                                    getSymbolicIcon(activePlayer.get_bus_name().split('.').filter(str => !str.toLowerCase().includes('instance')).join('.')) ??
                                         "folder-music-symbolic"
                             } as Widget.IconProps),
                             new Widget.Label({
                                 className: "title",
-                                label: bind(players[0], "title").as((title: string) => title || "No Title"),
+                                label: bind(activePlayer, "title").as((title: string) => title || "No Title"),
                                 maxWidthChars: 20,
                                 truncate: true
                             } as Widget.LabelProps),
                             Separator({
-                                visible: bind(players[0], "artist").as(artist => artist ? true : false),
+                                visible: bind(activePlayer, "artist").as(artist => artist ? true : false),
                                 orientation: Gtk.Orientation.HORIZONTAL,
                                 size: 1,
                                 margin: 5,
+                                //cssColor: `rgb(180, 180, 180)`,
                                 alpha: .3
                             } as SeparatorProps),
                             new Widget.Label({
                                 className: "artist",
-                                visible: bind(players[0], "artist").as(artist => artist ? true : false),
-                                label: bind(players[0], "artist").as((artist: string) => artist),
+                                visible: bind(activePlayer, "artist").as(artist => artist ? true : false),
+                                label: bind(activePlayer, "artist").as((artist: string) => artist),
                                 maxWidthChars: 18,
                                 truncate: true,
                             } as Widget.LabelProps)
