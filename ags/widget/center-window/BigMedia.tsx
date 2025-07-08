@@ -91,10 +91,10 @@ export const BigMedia = () => {
                               return pos > 0 && player.length > 0 ? 
                                   `${Math.floor(pos / 60)}:${sec < 10 ? "0" : ""}${sec}`
                               : "0:00";
-                          })}
+                          })} $type="start"
                         />
 
-                        <Gtk.Box class={"controls button-row"}>
+                        <Gtk.Box class={"controls button-row"} $type="center">
                             <Gtk.Button class={"link"} iconName={"edit-paste-symbolic"}
                               tooltipText={"Copy link to clipboard"}
                               onClicked={() => {
@@ -157,7 +157,7 @@ export const BigMedia = () => {
                               return (len > 0 && Number.isFinite(len)) ? 
                                   `${Math.floor(len / 60)}:${sec < 10 ? "0" : ""}${sec}`
                               : "0:00";
-                          })}
+                          })} $type="end"
                         />
                     </Gtk.CenterBox>
                 </Gtk.Box>

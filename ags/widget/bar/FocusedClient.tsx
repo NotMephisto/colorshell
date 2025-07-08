@@ -19,7 +19,7 @@ export const FocusedClient = () => {
                         getSymbolicIcon(clss) ?? getAppIcon(clss) ?? 
                           getAppIcon(focusedClient.initialClass) ?? 
                               "application-x-executable-symbolic")
-                  } css={"font-size: 18px;"} vexpand={true} />
+                  } vexpand={true} />
                 
                 <Gtk.Box valign={Gtk.Align.CENTER} class={"text-content"} 
                   orientation={Gtk.Orientation.VERTICAL}>
@@ -30,8 +30,8 @@ export const FocusedClient = () => {
                       tooltipText={createBinding(focusedClient, "class")}/>
                     <Gtk.Label class={"title"} xalign={0} maxWidthChars={50} 
                       ellipsize={Pango.EllipsizeMode.END} 
-                      label={createBinding(focusedClient, "class")}
-                      tooltipText={createBinding(focusedClient, "class")}/>
+                      label={createBinding(focusedClient, "title")}
+                      tooltipText={createBinding(focusedClient, "title")}/>
                 </Gtk.Box>
             </Gtk.Box>}
         </With>

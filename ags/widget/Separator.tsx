@@ -28,8 +28,8 @@ export function Separator(props: SeparatorProps = {
       hexpand={props.orientation === Gtk.Orientation.VERTICAL}
       class={`separator ${ props.orientation === Gtk.Orientation.VERTICAL ? 
         "vertical" : "horizontal" }`} visible={props.visible}
-      css={`.vertical { padding: {${props.spacing ?? 0}px ${props.margin ?? 7}px; }
-        .horizontal { padding: {${props.margin ?? 4}px ${props.spacing ?? 0}px; }`}>
+      css={`.vertical { padding: ${props.spacing ?? 0}px ${props.margin ?? 7}px; }
+        .horizontal { padding: ${props.margin ?? 4}px ${props.spacing ?? 0}px; }`}>
 
         <Gtk.Box class={`${props.orientation === Gtk.Orientation.VERTICAL ? 
             "vertical"

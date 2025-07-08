@@ -18,7 +18,7 @@ export let [player, setPlayer] = createState(dummyPlayer);
 export const Media = () => {
     const connections: Map<GObject.Object, Array<number>|number> = new Map();
 
-    if(AstalMpris.get_default().players[0] && player.get() !== dummyPlayer)
+    if(AstalMpris.get_default().players[0])
         setPlayer(AstalMpris.get_default().players[0]);
 
     connections.set(AstalMpris.get_default(), [
@@ -26,9 +26,6 @@ export const Media = () => {
             player.available && setPlayer(player)),
 
         AstalMpris.get_default().connect("player-closed", (_, closedPlayer) => {
-            if(player.get()?.busName !== closedPlayer.busName) 
-                return;
-
             const players = AstalMpris.get_default().players.filter(pl => pl?.available);
 
             if(players.length > 0) {
@@ -113,7 +110,7 @@ export const Media = () => {
                         title ?? "No Title")} maxWidthChars={20} ellipsize={Pango.EllipsizeMode.END}
                     />
                     <Separator orientation={Gtk.Orientation.HORIZONTAL} size={1} margin={5}
-                      alpha={.3} />
+                      alpha={.3} spacing={6} />
                     <Gtk.Label class={"artist"} label={createBinding(player.get(), "artist").as(artist =>
                         artist ?? "No Artist")} maxWidthChars={18} ellipsize={Pango.EllipsizeMode.END}
                     />

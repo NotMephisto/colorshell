@@ -200,24 +200,26 @@ tooltip > box {
   }
 }
 
-menu {
+popover {
   padding: 4px;
   background: wal.$background;
   border-radius: 14px;
-                               
-  & separator {
-    margin: 0 4px;
-    color: wal.$background;
-  }
-                               
-  & menuitem {
-    padding: 8px 16px;
-    border-radius: 10px;
-    font-size: 12px;
-    font-weight: 600;
-                               
-    &:hover, &:focus {
-      background: wal.$color1;
+  & contents {
+    & * {
+      padding: 2px 4px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+                                 
+      &:hover, &:focus {
+        background: wal.$color1;
+      }
+    }
+
+    & separator {
+      all: unset;
+      margin: 0 4px;
+      color: wal.$background;
     }
   }
 }

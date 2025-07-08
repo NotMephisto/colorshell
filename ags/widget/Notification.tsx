@@ -40,7 +40,7 @@ export function NotificationWidget({ notification, actionClicked, holdOnHover, s
 
     const conns: Map<GObject.Object, Array<number>> = new Map();
 
-    return <Gtk.Box hexpand={true} vexpand={true} class={`notification ${
+    return <Gtk.Box hexpand={false} vexpand={false} class={`notification ${
           Notifications.getDefault().getUrgencyString(notification.urgency)
       }`} orientation={Gtk.Orientation.VERTICAL} spacing={5}
       $={(self) => {
@@ -102,11 +102,14 @@ export function NotificationWidget({ notification, actionClicked, holdOnHover, s
                 <Gtk.Label class={"summary"} useMarkup={true} xalign={0}
                   ellipsize={Pango.EllipsizeMode.END} label={
                       notification.summary.replace(/[&]/g, "&amp;")
-                } />
+                  }
+                />
 
                 <Gtk.Label class={"body"} useMarkup={true} xalign={0} wrap={true} 
-                  wrapMode={Pango.WrapMode.WORD_CHAR} singleLineMode={false}
-                  label={notification.body.replace(/[&]/g, "&amp;")} />
+                  wrapMode={Pango.WrapMode.WORD_CHAR} label={
+                      notification.body.replace(/[&]/g, "&amp;")
+                  }
+                />
             </Gtk.Box>
         </Gtk.Box>
 

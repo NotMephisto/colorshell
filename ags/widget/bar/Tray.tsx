@@ -19,7 +19,7 @@ function popoverFromModel(model: Gio.MenuModel, actionGroup: Gio.ActionGroup | n
 export const Tray = () => {
     const items = createBinding(astalTray, "items").as(items => items.filter(item => item?.gicon));
 
-    return <Gtk.Box class={"tray"} visible={variableToBoolean(items)}>
+    return <Gtk.Box class={"tray"} visible={variableToBoolean(items)} spacing={10}>
         <For each={items}>
             {(item: AstalTray.TrayItem) => <Gtk.Box class={"item"}>
 

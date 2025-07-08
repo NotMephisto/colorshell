@@ -78,11 +78,11 @@ App.start({
         runnerPlugins.map(plugin => Runner.addPlugin(plugin));
 
         console.log("Opening default windows");
-        /* Open openOnStart windows
+        // Open openOnStart windows
         defaultWindows.map(name => {
             if(Windows.getDefault().isVisible(name)) return;
             Windows.getDefault().open(name);
-        });*/
+        });
     }
 });
 

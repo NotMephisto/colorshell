@@ -1,8 +1,15 @@
-import App from "ags/gtk4/app"
-import AstalHyprland from "gi://AstalHyprland";
 import GObject, { getter, register, signal } from "ags/gobject";
 import { Astal } from "ags/gtk4";
+import { Bar } from "./window/Bar";
+
+import App from "ags/gtk4/app"
+import AstalHyprland from "gi://AstalHyprland";
+import { OSD } from "./window/OSD";
 import { ControlCenter } from "./window/ControlCenter";
+import { FloatingNotifications } from "./window/FloatingNotifications";
+import { CenterWindow } from "./window/CenterWindow";
+import { LogoutMenu } from "./window/LogoutMenu";
+import { AppsWindow } from "./window/AppsWindow";
 
 
 export { Windows };
@@ -22,13 +29,13 @@ class Windows extends GObject.Object {
     #windowConnections: Record<string, (Array<number> | Array<Array<number>>)> = {};
     #appConnections: Array<number> = [];
     #windows: Record<string, (() => (Astal.Window | Array<Astal.Window>))> = {
-        //"bar": this.createWindowForMonitors(Bar),
-        //"osd": this.createWindowForFocusedMonitor(OSD),
+        "bar": this.createWindowForMonitors(Bar),
+        "osd": this.createWindowForFocusedMonitor(OSD),
         "control-center": this.createWindowForFocusedMonitor(ControlCenter),
-        /*"center-window": this.createWindowForFocusedMonitor(CenterWindow),
+        "center-window": this.createWindowForFocusedMonitor(CenterWindow),
         "logout-menu": this.createWindowForFocusedMonitor(LogoutMenu),
         "floating-notifications": this.createWindowForFocusedMonitor(FloatingNotifications),
-        "apps-window": this.createWindowForFocusedMonitor(AppsWindow)*/
+        "apps-window": this.createWindowForFocusedMonitor(AppsWindow)
     };
 
     @signal(String) opened(_name: string) {}

@@ -6,6 +6,7 @@ import { omitObjectKeys, WidgetNodeType } from "../scripts/utils";
 
 
 type PopupWindowSpecificProps = {
+    $?: (self: Astal.Window) => void;
     children?: WidgetNodeType;
     onDestroy?: (self: Astal.Window) => void;
     /** Stylesheet for the background of the popup-window */
@@ -57,7 +58,7 @@ export function PopupWindow(props: PopupWindowProps): GObject.Object {
         "marginBottom"
     ]);
 
-    return <Astal.Window {...omittedProps}
+    return <Astal.Window {...omittedProps} visible
       namespace={props.namespace ?? "popup-window"} class={
           (props.class instanceof Accessor) ? 
               ((props.namespace instanceof Accessor) ?
@@ -110,6 +111,8 @@ export function PopupWindow(props: PopupWindowProps): GObject.Object {
 
           conns.set(self, self.connect("destroy", () => conns.forEach((id, obj) =>
               obj.disconnect(id))));
+
+          props.$?.(self);
       }}>
           <Gtk.Box
             halign={props.halign}

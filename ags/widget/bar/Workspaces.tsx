@@ -114,18 +114,18 @@ export const Workspaces = () => {
                                   `${lastClient.get_class()}: `
                               : ""
                           } ${lastClient.title}` : "" }`
-                      )} onClicked={ws.focus}>
+                      )} onClicked={() => ws.focus()}>
                         
                         
                         <With value={createBinding(ws, "lastClient")}>
                             {(lastClient: AstalHyprland.Client) => 
-                                <Gtk.Box class={"last-client"}>
+                                <Gtk.Box class={"last-client"} hexpand>
                                     <Gtk.Revealer transitionDuration={200} revealChild={showId}
                                       transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT}
-                                      hexpand={true}>
+                                      hexpand>
 
                                         <Gtk.Label label={createBinding(ws, "id").as(String)}
-                                          class={"id"} />
+                                          class={"id"} hexpand />
                                     </Gtk.Revealer>
                                     {lastClient && <Gtk.Image class={"last-client-icon"} iconName={
                                       createBinding(lastClient, "initialClass").as(initialClass =>
