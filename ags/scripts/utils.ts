@@ -92,6 +92,12 @@ export function deleteFile(path: string): void {
     execAsync([ "rm", "-r", path ]);
 }
 
+export function playSystemBell(): void {
+    execAsync("canberra-gtk-play -i bell").catch((e: Error) => {
+        console.error(`Couldn't play system bell. Stderr: ${e.message}\n${e.stack}`);
+    });
+}
+
 export function isInstalled(commandName: string): boolean {
     const proc = Gio.Subprocess.new(["bash", "-c", `command -v ${commandName}`],
         Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);

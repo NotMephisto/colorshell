@@ -28,7 +28,7 @@ export type ConfigEntries = Partial<{
     }>;
 
     clock: Partial<{
-        /** use the same formats as gnu's `date` command */
+        /** use the same format as gnu's `date` command */
         date_format: string;
     }>;
 
@@ -41,6 +41,10 @@ export type ConfigEntries = Partial<{
     night_light: Partial<{
         /** whether to save night light values to disk */
         save_on_shutdown: boolean;
+    }>;
+
+    misc: Partial<{
+        play_bell_on_volume_change: boolean;
     }>;
 }>;
 
@@ -79,6 +83,10 @@ class Config extends GObject.Object {
 
         clock: {
             date_format: "%A %d, %H:%M"
+        },
+
+        misc: {
+            play_bell_on_volume_change: true
         }
     };
 

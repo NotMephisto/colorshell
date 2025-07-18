@@ -6,6 +6,8 @@ import { Runner } from "../runner/Runner";
 import { showWorkspaceNumber } from "../widget/bar/Workspaces";
 
 import AstalIO from "gi://AstalIO";
+import { playSystemBell } from "./utils";
+import { Config } from "./config";
 
 
 let wsTimeout: (AstalIO.Time|undefined);
@@ -113,30 +115,33 @@ function handleVolumeArgs(args: Array<string>) {
         case "set":
             command[0] === "sink" ? 
                 Wireplumber.getDefault().setSinkVolume(Number.parseInt(args[2]))
-            :
-                Wireplumber.getDefault().setSourceVolume(Number.parseInt(args[2]))
+            : Wireplumber.getDefault().setSourceVolume(Number.parseInt(args[2]))
             return `Done! Set ${command[0]} volume to ${args[2]}`;
 
         case "mute":
             command[0] === "sink" ? 
                 Wireplumber.getDefault().toggleMuteSink()
-            :
-                Wireplumber.getDefault().toggleMuteSource()
+            : Wireplumber.getDefault().toggleMuteSource()
+
             return `Done toggling mute!`;
 
         case "increase":
             command[0] === "sink" ?
                 Wireplumber.getDefault().increaseSinkVolume(Number.parseInt(args[2]))
-            : 
-                Wireplumber.getDefault().increaseSourceVolume(Number.parseInt(args[2]))
+            : Wireplumber.getDefault().increaseSourceVolume(Number.parseInt(args[2]))
+
+            Config.getDefault().getProperty("misc.play_bell_on_volume_change", "boolean") === true &&
+                playSystemBell();
 
             return `Done increasing volume by ${args[2]}`;
 
         case "decrease":
             command[0] === "sink" ?
                 Wireplumber.getDefault().decreaseSinkVolume(Number.parseInt(args[2]))
-            : 
-                Wireplumber.getDefault().decreaseSourceVolume(Number.parseInt(args[2]))
+            : Wireplumber.getDefault().decreaseSourceVolume(Number.parseInt(args[2]))
+
+            Config.getDefault().getProperty("misc.play_bell_on_volume_change", "boolean") === true &&
+                playSystemBell();
 
             return `Done decreasing volume to ${args[2]}`;
     }
