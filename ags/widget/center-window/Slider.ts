@@ -80,7 +80,7 @@ export function progressBar(player: AstalMpris.Player): Gtk.Widget {
                 if (pulseAnimationId !== null) return;
 
                 if (player.playbackStatus === AstalMpris.PlaybackStatus.PLAYING) {
-                    pulseAnimationId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, Math.round(1000 / Wallpaper.getDefault().getRefreshRate()), () => {
+                    pulseAnimationId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 16, () => { // 16 is milliseconds per frame (~60fps). If you what get more fps, then use this formula: Math.round(1000 / refreshRate)
                             pulseValue = Math.sin((Date.now() / 1000) * Math.PI);
                             self.queue_draw();
                             return GLib.SOURCE_CONTINUE;
