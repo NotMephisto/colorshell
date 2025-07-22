@@ -39,16 +39,12 @@ export function progressBar(player: AstalMpris.Player): Gtk.Widget {
             const updateDragPosition = (x: number) => {
                 const width = self.get_allocated_width();
                 const length = player.get_length()
-                console.log('Width', width, 'x', x, 'Len', length);
                 if (width === 0) return;
                 
                 const newProgress = Math.max(0, Math.min(x / width, 1));
-
-                console.log('New Progress', newProgress);
                 
                 if (dragProgress !== newProgress) {
                     dragProgress = newProgress;
-                    //self.queue_draw();
                 }
             };
             
@@ -72,7 +68,6 @@ export function progressBar(player: AstalMpris.Player): Gtk.Widget {
                     const finalPosition = dragProgress * player.get_length();
                     player.set_position(finalPosition)
                     timeout(70, () => isDragging = false);
-                    console.log('Final Position', finalPosition, '\nLen', player.get_length(), '\nPosition', player.get_position());
                 };
             });
             
