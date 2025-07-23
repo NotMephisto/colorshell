@@ -1,16 +1,18 @@
-import { bind, timeout, Time, GLib } from 'astal';
+import { timeout, GLib } from 'astal';
 import { Gtk, Gdk, Widget } from 'astal/gtk3';
-import { AstalPlayers } from '../../scripts/player';
 import AstalMpris from "gi://AstalMpris";
 import { Wallpaper } from '../../scripts/wallpaper';
-
-let dragTimer: (Time|null) = null;
-
-let isDragging = false;
-let dragProgress: number | null = null;
             
 let pulseAnimationId: number | null = null;
 let pulseValue = 0;
+
+export interface SliderOptions {
+    getValue(): number;
+    getMaxValue(): number;
+    setValue(value: number): void;
+    realtimeChangeValue(): boolean;
+    getPlaybackStatus?(): AstalMpris.PlaybackStatus;
+}
 
 function drawRoundedRectangle(cr, x, y, width, height, radius) {
     radius = Math.min(radius, height / 2, width / 2);
@@ -23,7 +25,10 @@ function drawRoundedRectangle(cr, x, y, width, height, radius) {
     cr.closePath();
 }
 
-export function progressBar(player: AstalMpris.Player): Gtk.Widget {
+export function createUnifiedSlider(model: SliderOptions): Gtk.Widget {
+    let isDragging = false;
+    let dragProgress: number | null = null;
+
     return new Widget.DrawingArea({
         className: "progress-drawing-area",
         hexpand: true,
@@ -38,21 +43,15 @@ export function progressBar(player: AstalMpris.Player): Gtk.Widget {
 
             const updateDragPosition = (x: number) => {
                 const width = self.get_allocated_width();
-                const length = player.get_length()
                 if (width === 0) return;
-                
-                const newProgress = Math.max(0, Math.min(x / width, 1));
-                
-                if (dragProgress !== newProgress) {
-                    dragProgress = newProgress;
-                }
+                dragProgress = Math.max(0, Math.min(x / width, 1));
+                console.log('DragProgress', dragProgress);
             };
-            
-            self.connect('button-press-event', (_, event) => {
-                if (player.length > GLib.MAXINT64 / 10000000) return;
-                const [success, x] = event.get_coords();
 
+            self.connect('button-press-event', (_, event) => {
+                if (model.getMaxValue() > GLib.MAXINT64 / 10000000) return;
                 isDragging = true;
+                const [, x] = event.get_coords();
                 updateDragPosition(x);
             });
 
@@ -60,33 +59,38 @@ export function progressBar(player: AstalMpris.Player): Gtk.Widget {
                 if (isDragging) {
                     const [, x] = event.get_coords();
                     updateDragPosition(x);
+
+                    if (model.realtimeChangeValue() && dragProgress !== null) model.setValue(dragProgress * model.getMaxValue());
                 }
             });
 
             self.connect('button-release-event', () => {
-                if (isDragging && dragProgress !== null && player.get_length() > 0) {
-                    const finalPosition = dragProgress * player.get_length();
-                    player.set_position(finalPosition)
-                    timeout(70, () => isDragging = false);
-                };
-            });
-            
-            self.connect('draw', (self) => {
-                if (pulseAnimationId !== null) return;
+                if (isDragging && dragProgress !== null) {
+                    const maxValue = model.getMaxValue();
+                    if (maxValue > 0) {
+                        console.log('Set Value', dragProgress * maxValue);
+                        model.setValue(dragProgress * maxValue);
+                    }
 
-                if (player.playbackStatus === AstalMpris.PlaybackStatus.PLAYING) {
-                    pulseAnimationId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 16, () => { // 16 is milliseconds per frame (~60fps). If you what get more fps, then use this formula: Math.round(1000 / refreshRate)
-                            pulseValue = Math.sin((Date.now() / 1000) * Math.PI);
-                            self.queue_draw();
-                            return GLib.SOURCE_CONTINUE;
-                        }
-                    );
+                    isDragging = model.getPlaybackStatus ? timeout(40, () => { isDragging = false }) : false;
                 }
             });
 
-            // self.connect('draw', bind(self, (self, cr) => {
-            //     console.log("Draw", self, typeof self);
-            // }))
+            self.connect('draw', (self) => {
+                self.queue_draw();
+
+                const playbackStatus = model.getPlaybackStatus ? model.getPlaybackStatus() : null;
+
+                if (playbackStatus === AstalMpris.PlaybackStatus.PLAYING) {
+                    if (pulseAnimationId === null) {
+                        const fpm = Math.round(1000 / Wallpaper.getDefault().getRefreshRate());
+                        pulseAnimationId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, fpm, () => {
+                            pulseValue = Math.sin((Date.now() / 1000) * Math.PI);
+                            return GLib.SOURCE_CONTINUE;
+                        });
+                    }
+                }
+            });
 
             self.connect("destroy", () => {
                 if (pulseAnimationId !== null) {
@@ -95,18 +99,21 @@ export function progressBar(player: AstalMpris.Player): Gtk.Widget {
                 }
             });
         },
-        
+
         onDraw: (self, cr) => {
             const styleContext = self.get_style_context();
-
             const width = self.get_allocated_width();
             const height = self.get_allocated_height();
-            const position = player.get_position();
-            const length = player.get_length();
-            
-            const playerProgress = length > 0 ? position / length : 0;
-            const displayProgress = (isDragging && dragProgress !== null) ? dragProgress : 
-                (length > (GLib.MAXINT64 / 10000000) ? length : playerProgress);
+
+            const position = model.getValue();
+            const length = model.getMaxValue();
+
+            const currentProgress = length > 0 ? position / length : 0;
+            const displayProgress = (isDragging && dragProgress !== null)
+                ? dragProgress 
+                : (model.getMaxValue() > (GLib.MAXINT64 / 10000000) 
+                    ? model.getMaxValue() 
+                    : currentProgress);
 
             const barHeight = 6;
             const baseHandleRadius = 7;
@@ -114,36 +121,30 @@ export function progressBar(player: AstalMpris.Player): Gtk.Widget {
             const animatedHandleRadius = baseHandleRadius + (pulseValue > 0 ? pulseValue * handlePulseAmount : 0);
             const centerY = height / 2;
             const barRadius = barHeight / 2;
-            const rgba = new Gdk.RGBA();
 
-            const bg = styleContext.get_property('background-color', Gtk.StateFlags.NORMAL);
             const fg = styleContext.get_property('color', Gtk.StateFlags.NORMAL);
-
             const handleX = Math.max(animatedHandleRadius, Math.min(width * displayProgress, width - animatedHandleRadius));
 
-            // Background
-            rgba.parse('rgba(100, 100, 100, 0.4)');
-            cr.setSourceRGBA(rgba.red, rgba.green, rgba.blue, rgba.alpha);
+            // 1. Background
+            cr.setSourceRGBA(fg.red, fg.green, fg.blue, 0.3);
             drawRoundedRectangle(cr, 0, centerY - barHeight / 2, width, barHeight, barRadius);
             cr.fill();
 
-            // Progress
-            cr.save(); 
-
+            // 2. Progress
+            cr.save();
             cr.rectangle(0, 0, width * displayProgress, height);
-            cr.clip();
 
+            cr.clip();
             cr.setSourceRGBA(fg.red, fg.green, fg.blue, fg.alpha);
             drawRoundedRectangle(cr, 0, centerY - barHeight / 2, width, barHeight, barRadius);
             cr.fill();
 
             cr.restore();
 
-            // Handle
-            //rgba.parse('#ffffff');
+            // 3. Dot-Handle
             cr.setSourceRGBA(fg.red, fg.green, fg.blue, fg.alpha);
             cr.arc(handleX, centerY, animatedHandleRadius, 0, 2 * Math.PI);
             cr.fill();
-        },
+        }
     });
 }
