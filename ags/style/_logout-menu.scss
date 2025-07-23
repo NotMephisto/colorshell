@@ -20,8 +20,8 @@
     margin: 0 150px;
 
     & > button {
-      & icon {
-        font-size: 128px;
+      & image {
+        -gtk-icon-size: 128px;
       }
 
       &:focus {

@@ -7,18 +7,16 @@
   background: colors.$bg-translucent;
   border-radius: 24px;
   padding: 12px;
-  box-shadow: 0 0 6px colors.$bg-translucent;
 
   & .big-media {
-    padding: 6px;
-
-    & > box > .image {
+    margin-top: 9px;
+    & .image {
       background-size: cover;
       background-position: center center;
       border-radius: 10px;
     }
 
-    & > .info {
+    & .info {
       padding: {
         top: 4px;
         bottom: 6px;
@@ -37,7 +35,8 @@
     }
 
     & slider {
-      background: transparent;
+      all: unset;
+      opacity: 0;
       min-height: .6em;
     }
 
@@ -54,8 +53,10 @@
     & .bottom {
       & .controls {
         margin-top: 9px;
+
         & button {
           padding: 7px;
+
           & label {
             font-size: 9px;
           }
@@ -85,46 +86,39 @@
     }
   }
 
-  & .calendar-box {
-    & calendar {
-      $border-radius: 14px;
-      font-weight: 600;
-      padding-bottom: 2px;
+  & calendar.view {
+    $border-radius: 14px;
+    font-weight: 600;
+    background: colors.$bg-primary;
+    border-radius: $border-radius;
 
-      &.view {
-        background: colors.$bg-primary;
-        border-radius: $border-radius;
+    & header {
+      background: colors.$bg-secondary;
+      padding: 6px;
+      border-top-left-radius: $border-radius;
+      border-top-right-radius: $border-radius;
+    }
+
+    & grid {
+      margin: 4px;
+
+      label.day-number {
+        min-height: 22px;
       }
+    }
 
-      &.header {
-        background: colors.$bg-secondary;
-        border-top-left-radius: $border-radius;
-        border-top-right-radius: $border-radius;
-        padding: 4px;
+    & button {
+      transition: 80ms linear;
+      border-radius: 6px;
+
+      &:hover {
+        background-color: colors.$bg-tertiary;
       }
+    }
 
-      &.button {
-        transition: 80ms linear;
-        border-radius: 6px;
-
-        &:hover {
-          background-color: colors.$bg-tertiary;
-        }
-      }
-
-      &:selected {
-        background: colors.$bg-secondary;
-        border-radius: 6px;
-      }
-
-      &.highlight {
-        background: transparent;
-        box-shadow: 0 2px 0 -1px rgba(colors.$bg-secondary, .5);
-      }
-
-      &:focus {
-        outline: 1px white;
-      }
+    & label:selected {
+      background: colors.$bg-secondary;
+      border-radius: 6px;
     }
   }
 }

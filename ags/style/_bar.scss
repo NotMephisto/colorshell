@@ -59,6 +59,7 @@
         min-width: 32px;
 
         & label.id {
+          opacity: 0;
           color: colors.$fg-light;
           margin-right: 0;
         }
@@ -103,8 +104,8 @@
     }
   }
 
-  .clock.open > button {
-    background-color: colors.$bg-primary;
+  .clock.open {
+    background: colors.$bg-primary;
   }
 
   .media {
