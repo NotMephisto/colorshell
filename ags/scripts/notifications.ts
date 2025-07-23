@@ -4,8 +4,11 @@ import { execAsync } from "ags/process";
 
 import GObject, { getter, property, register, signal } from "ags/gobject";
 import AstalNotifd from "gi://AstalNotifd";
-import Gio from "gi://Gio?version=2.0";
 import AstalIO from "gi://AstalIO";
+import { onCleanup } from "ags";
+import Gio from "gi://Gio?version=2.0";
+import GLib from "gi://GLib?version=2.0";
+import { readFile } from "ags/file";
 
 
 export interface HistoryNotification {
@@ -95,11 +98,12 @@ class Notifications extends GObject.Object {
             })
         );
 
-        this.run_dispose = () => {
-            super.run_dispose();
-            this.#connections.map((id: number) => 
+        this.retrieveHistoryFromFile();
+
+        onCleanup(() => {
+            this.#connections.map(id => 
                 AstalNotifd.get_default().disconnect(id));
-        };
+        });
     }
 
     public static getDefault(): Notifications {
@@ -109,23 +113,59 @@ class Notifications extends GObject.Object {
         return this.instance;
     }
 
+    private retrieveHistoryFromFile(): void {
+        const historyFile = Gio.File.new_for_path(`${GLib.get_user_state_dir()}/astal/notifd/notifications.json`);
+        if(!historyFile.query_exists(null)) return;
+
+        let content: string;
+        console.log("Notifications: History file found! Trying to retrieve history from JSON");
+
+        try {
+            content = readFile(historyFile.get_path()!);
+        } catch(e: any) {
+            console.error(`Notifications: An error occurred while trying to read the history file. Stderr:\n${
+                (e as Error).message}\n${(e as Error).stack}`);
+
+            return;
+        }
+
+        try {
+            const historyJSON = JSON.parse(content);
+
+            (historyJSON["notifications"] as Array<AstalNotifd.Notification>).reverse()
+                .forEach(n => this.addHistory(n));
+        } catch(e: any) {
+            if(e instanceof SyntaxError) {
+                console.error(`Notifications: Couldn't parse history JSON because of a SyntaxError:\n${e.message
+                }\n${e.stack}`);
+
+                return;
+            }
+
+            console.error(`Notifications: An error occurred while parsing the history JSON file. Stderr:\n${
+                e.message}\n${e.stack}`);
+
+            return;
+        }
+    }
+
     public async sendNotification(props: {
-                urgency?: AstalNotifd.Urgency;
-                appName?: string;
-                image?: string;
-                summary: string;
-                body?: string;
-                replaceId?: number;
-                actions?: Array<{
-                    id?: (string|number);
-                    text: string;
-                    onAction?: () => void
-                }>
-            }): Promise<{
-                    id?: (string|number);
-                    text: string;
-                    onAction?: () => void
-                }|null|void> {
+        urgency?: AstalNotifd.Urgency;
+        appName?: string;
+        image?: string;
+        summary: string;
+        body?: string;
+        replaceId?: number;
+        actions?: Array<{
+            id?: (string|number);
+            text: string;
+            onAction?: () => void
+        }>
+    }): Promise<{
+        id?: (string|number);
+        text: string;
+        onAction?: () => void
+    }|null|void> {
 
         return await execAsync([
             "notify-send", 
@@ -155,7 +195,7 @@ class Notifications extends GObject.Object {
 
                 return action ?? undefined;
             }
-        }).catch((err: Gio.IOErrorEnum) => {
+        }).catch((err: Error) => {
             console.error(`Notifications: Couldn't send notification! Is the daemon running? Stderr:\n${
                 err.message ? `${err.message}\n` : ""}Stack: ${err.stack}`);
         });
@@ -185,11 +225,11 @@ class Notifications extends GObject.Object {
 
         this.#history.unshift({
             id: notif.id,
-            appName: notif.appName,
+            appName: notif.app_name,
             body: notif.body,
             summary: notif.summary,
             urgency: notif.urgency,
-            appIcon: notif.appIcon,
+            appIcon: notif.app_icon,
             time: notif.time,
             image: notif.image ? notif.image : undefined
         } as HistoryNotification);
@@ -236,10 +276,9 @@ class Notifications extends GObject.Object {
 
     public removeNotification(notif: (AstalNotifd.Notification|number)): void {
         const notificationId = (notif instanceof AstalNotifd.Notification) ? notif.id : notif;
-        this.#notificationsOnHold.has(notificationId) && 
-            this.#notificationsOnHold.delete(notificationId);
+        this.#notificationsOnHold.delete(notificationId);
 
-        this.#notifications = this.#notifications.filter((item: AstalNotifd.Notification) =>
+        this.#notifications = this.#notifications.filter((item) =>
             item.id !== notificationId);
 
         AstalNotifd.get_default().get_notification(notificationId)?.dismiss();

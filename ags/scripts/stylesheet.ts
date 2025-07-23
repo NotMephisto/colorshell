@@ -13,10 +13,7 @@ export class Stylesheet {
     private static instance: Stylesheet;
     #watchDelay: (AstalIO.Time|undefined);
     #outputPath = Gio.File.new_for_path(`${GLib.get_user_state_dir()}/ags/style`);
-    #styles = [
-        "./style",
-        "./style.scss"
-    ];
+    #styles = [ "./style", "./style.scss" ];
 
     public async compileSass(): Promise<void> {
         console.log("Stylesheet: Compiling Sass");
@@ -30,7 +27,7 @@ export class Stylesheet {
 
         const content = readFile(cssFilePath);
 
-        if(content) {
+        if(content?.trim()) {
             App.reset_css();
             App.apply_css(content);
 
@@ -43,10 +40,12 @@ export class Stylesheet {
     }
 
     public async compileApply(): Promise<void> {
-        await this.compileSass().catch((err: Gio.IOErrorEnum) => 
-            console.error(`Stylesheet: An Error occurred and Sass couldn't be compiled. Stderr:\n${err.message ? 
-                `\t${err.message}\n` : ""}${err.stack}\n`)
-        ).then(() => this.reapply(this.#outputPath.get_path()! + "/style.css"));
+        await this.compileSass().then(() => 
+            this.reapply(this.#outputPath.get_path()! + "/style.css")
+        ).catch((err: Error) => 
+            console.error(`Stylesheet: An error occurred and Sass couldn't be compiled. Stderr:\n${
+                err.message}\n${err.stack}`)
+        );
     }
 
     public static getDefault(): Stylesheet {
@@ -77,13 +76,10 @@ export class Stylesheet {
             )
         )
 
-        monitorFile(
-            `${GLib.get_user_cache_dir()}/wal/colors.scss`,
-            (file: string) => {
-                execAsync(`bash -c "cp -f ${file} ./style/_wal.scss"`).catch(r => {
-                    console.error(`Stylesheet: Failed to copy pywal stylesheet to style dir. Stderr: ${r}`);
-                });
-            }
-        );
+        monitorFile(`${GLib.get_user_cache_dir()}/wal/colors.scss`, (file: string) => {
+            execAsync(`bash -c "cp -f ${file} ./style/_wal.scss"`).catch(r => {
+                console.error(`Stylesheet: Failed to copy pywal stylesheet to style dir. Stderr: ${r}`);
+            });
+        });
     }
 }

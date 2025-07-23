@@ -61,6 +61,15 @@ export function getIconByAppName(appName: string): (string|undefined) {
        return appName.toLowerCase();
    
     const nameReverseDNS = appName.split('.');
+    const lastItem = nameReverseDNS[nameReverseDNS.length - 1];
+    const lastPretty = `${lastItem.charAt(0).toUpperCase()}${lastItem.substring(1, lastItem.length)}`;
+
+    const uppercaseRDNS = nameReverseDNS.slice(0, nameReverseDNS.length - 1)
+        .concat(lastPretty).join('.');
+
+    if(lookupIcon(uppercaseRDNS))
+        return uppercaseRDNS;
+
     if(lookupIcon(nameReverseDNS[nameReverseDNS.length - 1]))
        return nameReverseDNS[nameReverseDNS.length - 1];
 
