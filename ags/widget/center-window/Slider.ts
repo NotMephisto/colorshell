@@ -113,22 +113,26 @@ export function createUnifiedSlider(model: SliderOptions): Gtk.Widget {
                     ? model.getMaxValue() 
                     : currentProgress);
 
+            // Bar
             const barHeight = 6;
+
+            // Dot
             const baseHandleRadius = 7;
             const handlePulseAmount = 1.5;
             const animatedHandleRadius = baseHandleRadius + (pulseValue > 0 ? pulseValue * handlePulseAmount : 0);
             const centerY = height / 2;
             const barRadius = barHeight / 2;
-
-            const fg = styleContext.get_property('color', Gtk.StateFlags.NORMAL);
             const handleX = Math.max(animatedHandleRadius, Math.min(width * displayProgress, width - animatedHandleRadius));
+
+            // Color 
+            const fg = styleContext.get_property('color', Gtk.StateFlags.NORMAL);
                     
-            // 1. Background
+            // Background
             cr.setSourceRGBA(fg.red, fg.green, fg.blue, 0.3);
             drawRoundedRectangle(cr, 0, centerY - barHeight / 2, width, barHeight, barRadius);
             cr.fill();
 
-            // 2. Progress
+            // Progress
             cr.save();
             cr.rectangle(0, 0, width * displayProgress, height);
 
@@ -139,7 +143,7 @@ export function createUnifiedSlider(model: SliderOptions): Gtk.Widget {
 
             cr.restore();
 
-            // 3. Dot-Handle
+            // Dot-Handle
             cr.setSourceRGBA(fg.red, fg.green, fg.blue, fg.alpha);
             cr.arc(handleX, centerY, animatedHandleRadius, 0, 2 * Math.PI);
             cr.fill();
