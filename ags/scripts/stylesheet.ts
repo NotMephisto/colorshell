@@ -104,16 +104,15 @@ export class Stylesheet extends GObject.Object {
     #outputPath = Gio.File.new_for_path(`${GLib.get_user_state_dir()}/ags/style`);
     #styles = ["./style", "./style.scss"];
 
-    //------ Custom parameters ------//
+    //------
 
     #contrast = 0.0;
     #isDark = false; // could choose based on real dark mode setting
 
-    //------------------------------//
+    //------
 
     constructor() {
         super();
-
         (async () => {
         if (!this.#outputPath.query_exists(null)) {
             this.#outputPath.make_directory_with_parents(null);
@@ -217,10 +216,10 @@ export class Stylesheet extends GObject.Object {
      * @returns Returm a scheme for further processing or use.
      */
 
-    public generateScheme(sourceColor: Hct | Argb, schemeType: Variant = Variant.CONTENT, dark?: boolean, contrastLevel?: number): Scheme {
+    public generateScheme(sourceColor: Hct | Argb, schemeType: Variant = Variant.CONTENT, dark: boolean, contrastLevel?: number): Scheme {
         const hct = typeof sourceColor === "number" ? Hct.fromInt(sourceColor) : sourceColor;
         const SchemeClass = schemeMap[schemeType] ?? SchemeContent;
-        return new SchemeClass(hct, dark ?? this.#isDark, contrastLevel ?? this.#contrast);
+        return new SchemeClass(hct, dark, contrastLevel ?? this.#contrast);
     }
 
     public getScheme(sourceColor: Hct | Argb, schemeType: Variant | undefined, contrast?: number): [Scheme, Scheme] {
@@ -229,98 +228,70 @@ export class Stylesheet extends GObject.Object {
         return [lightScheme, darkScheme];
     }
 
-
-    /**To get a processed palette from a color source
-     * 
-     * @param sourceColor Set source color for getting a dynamic scheme palette
-     * @param schemeType Choosing the desired option
-     * @param contrast Set desire contrast value: 1.0 - highest, 0.5 - high, -0.5 - low, -1.0 - lowest
-     * @returns Returns the processed palette from the color source
-     */
-
-    public getDynamicSchemePalette(sourceColor: Hct | null, schemeType: Variant = Variant.CONTENT, dark?: boolean, contrast?: number): BaselinePalette | null {
-        if (!sourceColor) return null;
-
-        //const isDark = Wallpaper.getDefault().mode
-
-        const scheme = this.getSchemePalette(sourceColor, schemeType);
-        const dynamicScheme = new DynamicScheme({
-            sourceColorArgb: sourceColor.toInt(),
-            variant: schemeType,
-            isDark: dark ?? this.#isDark,
-            contrastLevel: contrast ?? this.#contrast,
-            specVersion: '2025',
-            primaryPalette: TonalPalette.fromInt(scheme?.primary),
-            secondaryPalette: TonalPalette.fromInt(scheme?.secondary),
-            tertiaryPalette: TonalPalette.fromInt(scheme?.tertiary),
-            neutralPalette: TonalPalette.fromInt(scheme?.surface),
-            neutralVariantPalette: TonalPalette.fromInt(scheme?.surface_variant)
-        });
-
-        return {
-            primary: dynamicScheme.primary,
-            primary_fixed: dynamicScheme.primaryFixed,
-            primary_fixed_dim: dynamicScheme.primaryFixedDim,
-            on_primary: dynamicScheme.onPrimary,
-            on_primary_fixed: dynamicScheme.onPrimaryFixed,
-            on_primary_fixed_variant: dynamicScheme.onPrimaryFixedVariant,
-            primary_container: dynamicScheme.primaryContainer,
-            on_primary_container: dynamicScheme.onPrimaryContainer,
-            inverse_primary: dynamicScheme.inversePrimary,
-            secondary: dynamicScheme.secondary,
-            secondary_fixed: dynamicScheme.secondaryFixed,
-            secondary_fixed_dim: dynamicScheme.secondaryFixedDim,
-            on_secondary: dynamicScheme.onSecondary,
-            on_secondary_fixed: dynamicScheme.onSecondaryFixed,
-            on_secondary_fixed_variant: dynamicScheme.onSecondaryFixedVariant,
-            secondary_container: dynamicScheme.secondaryContainer,
-            on_secondary_container: dynamicScheme.onSecondaryContainer,
-            tertiary: dynamicScheme.tertiary,
-            tertiary_fixed: dynamicScheme.tertiaryFixed,
-            tertiary_fixed_dim: dynamicScheme.tertiaryFixedDim,
-            on_tertiary: dynamicScheme.onTertiary,
-            on_tertiary_fixed: dynamicScheme.onTertiaryFixed,
-            on_tertiary_fixed_variant: dynamicScheme.onTertiaryFixedVariant,
-            tertiary_container: dynamicScheme.tertiaryContainer,
-            on_tertiary_container: dynamicScheme.onTertiaryContainer,
-            error: dynamicScheme.error,
-            on_error: dynamicScheme.onError,
-            error_container: dynamicScheme.errorContainer,
-            on_error_container: dynamicScheme.onErrorContainer,
-            background: dynamicScheme.background,
-            on_background: dynamicScheme.onBackground,
-            surface: dynamicScheme.surface,
-            on_surface: dynamicScheme.onSurface,
-            surface_variant: dynamicScheme.surfaceVariant,
-            on_surface_variant: dynamicScheme.onSurfaceVariant,
-            outline: dynamicScheme.outline,
-            outline_variant: dynamicScheme.outlineVariant,
-            shadow: dynamicScheme.shadow,
-            scrim: dynamicScheme.scrim,
-            inverse_surface: dynamicScheme.inverseSurface,
-            inverse_on_surface: dynamicScheme.inverseOnSurface,
-            surface_dim: dynamicScheme.surfaceDim,
-            surface_bright: dynamicScheme.surfaceBright,
-            surface_container_lowest: dynamicScheme.surfaceContainerLowest,
-            surface_container_low: dynamicScheme.surfaceContainerLow,
-            surface_container: dynamicScheme.surfaceContainer,
-            surface_container_high: dynamicScheme.surfaceContainerHigh,
-            surface_container_highest: dynamicScheme.surfaceContainerHighest
-        };
-    }
-
     /**To get a palette from a color source
      * 
      * @param sourceColor Set source color for getting a scheme palette
      * @param schemeType Choosing the desired option
      * @param contrast Set desire contrast value: 1.0 - highest, 0.5 - high, -0.5 - low, -1.0 - lowest
-     * @returns Returns the raw palette from the color source
+     * @returns Returns a palette from the color source
      */
 
     public getSchemePalette(sourceColor: Hct | null, schemeType: Variant = Variant.CONTENT, dark?: boolean, contrast?: number): BaselinePalette | null {
         if (!sourceColor) return null; 
         const [lightScheme, darkScheme] = this.getScheme(sourceColor, schemeType, contrast ?? this.#contrast);
-        return (dark ?? this.#isDark) ? darkScheme : lightScheme;
+
+        const scheme = (dark ?? this.#isDark) ? darkScheme : lightScheme;
+
+        return {
+            primary: scheme.primary,
+            primary_fixed: scheme.primaryFixed,
+            primary_fixed_dim: scheme.primaryFixedDim,
+            on_primary: scheme.onPrimary,
+            on_primary_fixed: scheme.onPrimaryFixed,
+            on_primary_fixed_variant: scheme.onPrimaryFixedVariant,
+            primary_container: scheme.primaryContainer,
+            on_primary_container: scheme.onPrimaryContainer,
+            inverse_primary: scheme.inversePrimary,
+            secondary: scheme.secondary,
+            secondary_fixed: scheme.secondaryFixed,
+            secondary_fixed_dim: scheme.secondaryFixedDim,
+            on_secondary: scheme.onSecondary,
+            on_secondary_fixed: scheme.onSecondaryFixed,
+            on_secondary_fixed_variant: scheme.onSecondaryFixedVariant,
+            secondary_container: scheme.secondaryContainer,
+            on_secondary_container: scheme.onSecondaryContainer,
+            tertiary: scheme.tertiary,
+            tertiary_fixed: scheme.tertiaryFixed,
+            tertiary_fixed_dim: scheme.tertiaryFixedDim,
+            on_tertiary: scheme.onTertiary,
+            on_tertiary_fixed: scheme.onTertiaryFixed,
+            on_tertiary_fixed_variant: scheme.onTertiaryFixedVariant,
+            tertiary_container: scheme.tertiaryContainer,
+            on_tertiary_container: scheme.onTertiaryContainer,
+            error: scheme.error,
+            on_error: scheme.onError,
+            error_container: scheme.errorContainer,
+            on_error_container: scheme.onErrorContainer,
+            background: scheme.background,
+            on_background: scheme.onBackground,
+            surface: scheme.surface,
+            on_surface: scheme.onSurface,
+            surface_variant: scheme.surfaceVariant,
+            on_surface_variant: scheme.onSurfaceVariant,
+            outline: scheme.outline,
+            outline_variant: scheme.outlineVariant,
+            shadow: scheme.shadow,
+            scrim: scheme.scrim,
+            inverse_surface: scheme.inverseSurface,
+            inverse_on_surface: scheme.inverseOnSurface,
+            surface_dim: scheme.surfaceDim,
+            surface_bright: scheme.surfaceBright,
+            surface_container_lowest: scheme.surfaceContainerLowest,
+            surface_container_low: scheme.surfaceContainerLow,
+            surface_container: scheme.surfaceContainer,
+            surface_container_high: scheme.surfaceContainerHigh,
+            surface_container_highest: scheme.surfaceContainerHighest
+        };
     }
 
     //--------------------------------
