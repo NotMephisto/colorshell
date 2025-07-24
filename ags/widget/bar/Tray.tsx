@@ -1,10 +1,10 @@
 import { createBinding, createComputed, For, With } from "ags";
 import { Gdk, Gtk } from "ags/gtk4";
+import { variableToBoolean } from "../../scripts/utils";
 
+import GObject from "gi://GObject?version=2.0";
 import AstalTray from "gi://AstalTray"
 import Gio from "gi://Gio?version=2.0";
-import { variableToBoolean } from "../../scripts/utils";
-import GObject from "gi://GObject?version=2.0";
 
 
 const astalTray = AstalTray.get_default();
@@ -22,7 +22,6 @@ export const Tray = () => {
     return <Gtk.Box class={"tray"} visible={variableToBoolean(items)} spacing={10}>
         <For each={items}>
             {(item: AstalTray.TrayItem) => <Gtk.Box class={"item"}>
-
                 <With value={createComputed([
                       createBinding(item, "actionGroup"),
                       createBinding(item, "menuModel")
@@ -30,12 +29,14 @@ export const Tray = () => {
                     {([actionGroup, menuModel]: [Gio.ActionGroup, Gio.MenuModel]) => {
                       const popover = popoverFromModel(menuModel, actionGroup);
 
-                      return <Gtk.MenuButton class={"item-button"} tooltipMarkup={
-                        createBinding(item, "tooltipMarkup")} tooltipText={
-                        createBinding(item, "tooltipText")} popover={popover}
-                        $={(self) => {
+                      return <Gtk.MenuButton class={"item"} tooltipMarkup={
+                          createBinding(item, "tooltipMarkup")
+                        } tooltipText={
+                          createBinding(item, "tooltipText")
+                        } $={(self) => {
                             const conns: Map<GObject.Object, number> = new Map();
                             const gestureClick = Gtk.GestureClick.new();
+                            gestureClick.set_button(0);
 
                             self.add_controller(gestureClick);
 
@@ -43,13 +44,20 @@ export const Tray = () => {
                                 if(gesture.get_current_button() === Gdk.BUTTON_PRIMARY) {
                                     item.activate(x, y);
                                     return;
-                                } else if(gesture.get_current_button() === Gdk.BUTTON_SECONDARY) {
+                                } 
+
+                                if(gesture.get_current_button() === Gdk.BUTTON_SECONDARY) {
                                     item.about_to_show();
+                                    self.set_popover(popover);
+                                    const conn = self.popover!.connect("closed", (ppover) => {
+                                        self.set_popover(null);
+                                        ppover.disconnect(conn);
+                                    });
+
                                     self.popup();
                                 }
                             }))
                         }}>
-
                           <Gtk.Image gicon={createBinding(item, "gicon")} pixelSize={16} />
                       </Gtk.MenuButton>
                     }}
