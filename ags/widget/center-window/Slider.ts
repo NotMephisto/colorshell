@@ -11,17 +11,17 @@ export interface SliderOptions {
     getMaxValue(): number;
     setValue(value: number): void;
     realtimeChangeValue(): boolean;
+    //getColor(): string;
     getPlaybackStatus?(): AstalMpris.PlaybackStatus;
 }
 
 function drawRoundedRectangle(cr, x, y, width, height, radius) {
     radius = Math.min(radius, height / 2, width / 2);
-
     cr.moveTo(x + radius, y);
-    cr.arc(x + width - radius, y + radius, radius, 1.5 * Math.PI, 2 * Math.PI); // Top right
-    cr.arc(x + width - radius, y + height - radius, radius, 0, 0.5 * Math.PI); // Bottom right
-    cr.arc(x + radius, y + height - radius, radius, 0.5 * Math.PI, Math.PI); // Bottom left
-    cr.arc(x + radius, y + radius, radius, Math.PI, 1.5 * Math.PI); // Top left
+    cr.arc(x + width - radius, y + radius, radius, 1.5 * Math.PI, 2 * Math.PI);
+    cr.arc(x + width - radius, y + height - radius, radius, 0, 0.5 * Math.PI);
+    cr.arc(x + radius, y + height - radius, radius, 0.5 * Math.PI, Math.PI);
+    cr.arc(x + radius, y + radius, radius, Math.PI, 1.5 * Math.PI);
     cr.closePath();
 }
 
@@ -81,7 +81,7 @@ export function createUnifiedSlider(model: SliderOptions): Gtk.Widget {
 
                 if (playbackStatus === AstalMpris.PlaybackStatus.PLAYING) {
                     if (pulseAnimationId === null) {
-                        const fpm = Math.round(1000 / Wallpaper.getDefault().getRefreshRate());
+                        const fpm = 16; // 16 is Miliseconds Per Frame (~60). If you want set more than 60 fps, then use this formula: Math.round(1000 / Wallpaper.getDefault().getRefreshRate())
                         pulseAnimationId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, fpm, () => {
                             pulseValue = Math.sin((Date.now() / 1000) * Math.PI);
                             return GLib.SOURCE_CONTINUE;
@@ -112,21 +112,32 @@ export function createUnifiedSlider(model: SliderOptions): Gtk.Widget {
                 : (model.getMaxValue() > (GLib.MAXINT64 / 10000000) 
                     ? model.getMaxValue() 
                     : currentProgress);
-
+                
             // Bar
-            const barHeight = 6;
-
-            // Dot
-            const baseHandleRadius = 7;
-            const handlePulseAmount = 1.5;
-            const animatedHandleRadius = baseHandleRadius + (pulseValue > 0 ? pulseValue * handlePulseAmount : 0);
+            const barHeight = 10;
             const centerY = height / 2;
             const barRadius = barHeight / 2;
-            const handleX = Math.max(animatedHandleRadius, Math.min(width * displayProgress, width - animatedHandleRadius));
+
+            // Base parameters
+            const baseHandleRadius = 7;
+
+            // Dot
+            const handlePulseAmount = 1.5;
+            const animatedHandleRadius = baseHandleRadius + (pulseValue > 0 ? pulseValue * handlePulseAmount : 0);
+            const dotHandleX = Math.max(animatedHandleRadius, Math.min(width * displayProgress, width - animatedHandleRadius));
+
+            // Strip/Rectangle
+            const rectangleHandleHeight = 20;
+            const rectangleHandleWidth = 10;
+            const rectangleHandleX = Math.max(0, Math.min(width * displayProgress - (rectangleHandleWidth / 2), width - rectangleHandleWidth));
 
             // Color 
             const fg = styleContext.get_property('color', Gtk.StateFlags.NORMAL);
-                    
+
+            //const color = new Gdk.RGBA();
+
+            //color.parse(model.getColor());
+
             // Background
             cr.setSourceRGBA(fg.red, fg.green, fg.blue, 0.3);
             drawRoundedRectangle(cr, 0, centerY - barHeight / 2, width, barHeight, barRadius);
@@ -137,15 +148,22 @@ export function createUnifiedSlider(model: SliderOptions): Gtk.Widget {
             cr.rectangle(0, 0, width * displayProgress, height);
 
             cr.clip();
+
             cr.setSourceRGBA(fg.red, fg.green, fg.blue, fg.alpha);
+            
             drawRoundedRectangle(cr, 0, centerY - barHeight / 2, width, barHeight, barRadius);
             cr.fill();
 
             cr.restore();
 
-            // Dot-Handle
+            // Handle
             cr.setSourceRGBA(fg.red, fg.green, fg.blue, fg.alpha);
-            cr.arc(handleX, centerY, animatedHandleRadius, 0, 2 * Math.PI);
+
+            // Dot
+            //cr.arc(dotHandleX, centerY, animatedHandleRadius, 0, 2 * Math.PI);
+            
+            // Strip/Rectangle
+            drawRoundedRectangle(cr, rectangleHandleX, centerY - rectangleHandleHeight / 2, rectangleHandleWidth, rectangleHandleHeight, barRadius);
             cr.fill();
         }
     });
