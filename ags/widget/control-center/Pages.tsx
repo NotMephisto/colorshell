@@ -1,9 +1,11 @@
 import { register } from "ags/gobject";
 import { Gtk } from "ags/gtk4";
 import { Page } from "./pages/Page";
-import AstalIO from "gi://AstalIO";
 import { timeout } from "ags/time";
 import { variableToBoolean } from "../../scripts/utils";
+
+import AstalIO from "gi://AstalIO";
+import { createRoot } from "ags";
 
 
 export { Pages };
@@ -68,13 +70,13 @@ class Pages extends Gtk.Box {
     }
 
     open(newPage: Page, onOpened?: () => void) {
-        const pageWidget = <Gtk.Revealer
+        const pageWidget = createRoot(() => <Gtk.Revealer
           transitionDuration={this.#transDuration}
           transitionType={this.#transType}
           revealChild={false}>
 
             {newPage as unknown as Gtk.Widget}
-        </Gtk.Revealer> as Gtk.Revealer;
+        </Gtk.Revealer> as Gtk.Revealer);
 
         this.prepend(pageWidget);
 

@@ -3,15 +3,18 @@ import { Wireplumber } from "../../scripts/volume";
 import { Pages } from "./Pages";
 import { PageSound } from "./pages/Sound";
 import { PageMicrophone } from "./pages/Microphone";
-import { createBinding, With } from "ags";
+import { createBinding, createRoot, With } from "ags";
+
 import AstalWp from "gi://AstalWp";
 
 
+export let slidersPages: Pages|undefined;
+
 export function Sliders() {
-    const slidersPages = <Pages /> as Pages;
+    slidersPages = createRoot(() => new Pages())!;
 
     return <Gtk.Box class={"sliders"} orientation={Gtk.Orientation.VERTICAL} 
-      hexpand={true} spacing={10}>
+      hexpand spacing={10} onDestroy={() => slidersPages = undefined}>
 
         <With value={createBinding(Wireplumber.getWireplumber(), "defaultSpeaker")}>
             {(sink: AstalWp.Endpoint) => <Gtk.Box class={"sink speaker"} spacing={3}>
@@ -30,7 +33,7 @@ export function Sliders() {
                   onChangeValue={(_, _scrollType, value) => sink.set_volume(value / 100)} />
 
                 <Gtk.Button class={"more"} iconName={"go-next-symbolic"} onClicked={(_) => 
-                    slidersPages.toggle(PageSound())} />
+                    slidersPages!.toggle(PageSound())} />
             </Gtk.Box>}
         </With>
         <With value={createBinding(Wireplumber.getWireplumber(), "defaultMicrophone")}>
@@ -50,7 +53,7 @@ export function Sliders() {
                   onChangeValue={(_, _scrollType, value) => source.set_volume(value / 100)} />
 
                 <Gtk.Button class={"more"} iconName={"go-next-symbolic"} onClicked={(_) => 
-                    slidersPages.toggle(PageMicrophone())} />
+                    slidersPages!.toggle(PageMicrophone())} />
             </Gtk.Box>}
         </With>
         {slidersPages}

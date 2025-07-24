@@ -9,7 +9,7 @@ import AstalNotifd from "gi://AstalNotifd?version=0.1";
 export const NotifHistory = () => 
     <Gtk.Box orientation={Gtk.Orientation.VERTICAL} 
       class={createBinding(Notifications.getDefault(), "history").as(history => 
-          `history ${history.length < 1 ? "hide" : ""}`)}>
+          `notif-history ${history.length < 1 ? "hide" : ""}`)} vexpand={false}>
 
         <Gtk.ScrolledWindow class={"history-scrollable"} hscrollbarPolicy={Gtk.PolicyType.NEVER}
           vscrollbarPolicy={Gtk.PolicyType.AUTOMATIC} propagateNaturalHeight={true}
@@ -35,8 +35,15 @@ export const NotifHistory = () =>
             </Gtk.Box>
         </Gtk.ScrolledWindow>
 
-        <Gtk.Box hexpand={true} class={"button-row"} halign={Gtk.Align.END}>
-            <Gtk.Button class={"clear-all"} iconName={"edit-clear-all-symbolic"}
-              label={tr("clear")} onClicked={Notifications.getDefault().clearHistory} />
+        <Gtk.Box class={"button-row"} hexpand>
+            <Gtk.Button class={"clear-all"} halign={Gtk.Align.END}
+              onClicked={() => Notifications.getDefault().clearHistory()}>
+
+                <Gtk.Box hexpand>
+                    <Gtk.Image class={"icon"} iconName={"edit-clear-all-symbolic"} 
+                      css={"margin-right: 6px;"}  />
+                    <Gtk.Label label={tr("clear")} />
+                </Gtk.Box>
+            </Gtk.Button>
         </Gtk.Box>
     </Gtk.Box> as Gtk.Box;
