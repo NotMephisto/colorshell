@@ -3,18 +3,18 @@ import { Wireplumber } from "../../scripts/volume";
 import { Notifications } from "../../scripts/notifications";
 import { Windows } from "../../windows";
 import { Recording } from "../../scripts/recording";
-import { Accessor, createBinding, createComputed } from "ags";
+import { Accessor, createBinding, createComputed, With } from "ags";
 import { time, variableToBoolean } from "../../scripts/utils";
 
+import GObject from "ags/gobject";
 import AstalBluetooth from "gi://AstalBluetooth";
 import AstalNetwork from "gi://AstalNetwork";
 import AstalWp from "gi://AstalWp";
-import GObject from "gi://GObject?version=2.0";
 
 
 export const Status = () => 
     <Gtk.Button class={createBinding(Windows.getDefault(), "openWindows").as((openWins) => 
-        Object.hasOwn(openWins, "control-center") ? "open status" : "status")}
+        openWins.includes("control-center") ? "open status" : "status")}
       onClicked={() => Windows.getDefault().toggle("control-center")}>
 
         <Gtk.Box>
@@ -22,16 +22,14 @@ export const Status = () =>
                 <VolumeStatus class="sink" endpoint={Wireplumber.getDefault().getDefaultSink()}
                   icon={createBinding(Wireplumber.getDefault().getDefaultSink(), "volumeIcon").as(icon => 
                       !Wireplumber.getDefault().isMutedSink() && 
-                          Wireplumber.getDefault().getSinkVolume() > 0 ? 
-                              icon
+                          Wireplumber.getDefault().getSinkVolume() > 0 ? icon
                           : "audio-volume-muted-symbolic")
                   } />
 
                 <VolumeStatus class="source" endpoint={Wireplumber.getDefault().getDefaultSource()}
                   icon={createBinding(Wireplumber.getDefault().getDefaultSource(), "volumeIcon").as(icon => 
                       !Wireplumber.getDefault().isMutedSource() && 
-                          Wireplumber.getDefault().getSourceVolume() > 0 ? 
-                              icon
+                          Wireplumber.getDefault().getSourceVolume() > 0 ? icon
                           : "audio-volume-muted-symbolic")
                   } />
             </Gtk.Box>
@@ -67,13 +65,16 @@ export const Status = () =>
 function VolumeStatus(props: { class?: string, endpoint: AstalWp.Endpoint, icon?: (string|Accessor<string>) }) {
     return <Gtk.Box spacing={2} class={props.class} $={(self) => {
           const conns: Map<GObject.Object, number> = new Map();
-          const controllerScroll = Gtk.EventControllerScroll.new(
-              Gtk.EventControllerScrollFlags.VERTICAL);
+          const controllerScroll = Gtk.EventControllerScroll.new(Gtk.EventControllerScrollFlags.VERTICAL 
+              | Gtk.EventControllerScrollFlags.KINETIC);
 
           conns.set(controllerScroll, controllerScroll.connect("scroll", (_, _dx, dy) => {
-              (dy > 0) ?
+              console.log`Scrolled! dx: ${_dx}; dy: ${dy}`;
+              dy > 0 ?
                   Wireplumber.getDefault().decreaseEndpointVolume(props.endpoint, 5)
               : Wireplumber.getDefault().increaseEndpointVolume(props.endpoint, 5);
+
+              return true;
           }));
 
           conns.set(self, self.connect("destroy", () => conns.forEach((id, obj) =>
@@ -99,21 +100,31 @@ function StatusIcons() {
               ) : "bluetooth-disabled-symbolic"
           })} class={"bluetooth state"} visible={
               createBinding(AstalBluetooth.get_default(), "adapter").as(Boolean)
-          } 
+          }
         />
 
-        <Gtk.Image iconName={createBinding(AstalNetwork.get_default(), "primary").as(primary => {
-              switch(primary) {
-                  case AstalNetwork.Primary.WIRED: return AstalNetwork.get_default().wired.get_icon_name();
+        <Gtk.Box visible={createBinding(AstalNetwork.get_default(), "primary").as(primary =>
+              primary !== AstalNetwork.Primary.UNKNOWN)}>
 
-                  case AstalNetwork.Primary.WIFI: return AstalNetwork.get_default().wifi.get_icon_name();
-              }
+            <With value={createBinding(AstalNetwork.get_default(), "primary")}>
+                {(primary: AstalNetwork.Primary) => {
+                    let device: AstalNetwork.Wifi|AstalNetwork.Wired;
+                    switch(primary) {
+                        case AstalNetwork.Primary.WIRED:
+                            device = AstalNetwork.get_default().wired;
+                        break;
+                        case AstalNetwork.Primary.WIFI: 
+                            device = AstalNetwork.get_default().wifi;
+                        break;
 
-              return "network-no-route-symbolic";
-          })} class={"network state"}
-          visible={createBinding(AstalNetwork.get_default(), "primary").as(primary =>
-              primary !== AstalNetwork.Primary.UNKNOWN)}
-        />
+                        default: 
+                            return <Gtk.Image iconName={"network-no-route-symbolic"} />;
+                    }
+
+                    return <Gtk.Image iconName={createBinding(device, "iconName")} />;
+                }}
+            </With>
+        </Gtk.Box>
 
         <Gtk.Box>
             <Gtk.Image class={"bell state"} iconName={createBinding(
