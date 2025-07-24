@@ -2,32 +2,40 @@ import { Astal, Gtk } from "ags/gtk4";
 import { createBinding, For } from "ags";
 import { Notifications } from "../scripts/notifications";
 import { NotificationWidget } from "../widget/Notification";
-import { variableToBoolean } from "../scripts/utils";
-import AstalNotifd from "gi://AstalNotifd?version=0.1";
 
+import AstalNotifd from "gi://AstalNotifd?version=0.1";
+import Adw from "gi://Adw?version=1";
+
+const size = 450;
 
 export const FloatingNotifications = (mon: number) => 
     <Astal.Window namespace={"floating-notifications"} monitor={mon} layer={Astal.Layer.OVERLAY}
-      anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT} widthRequest={450} 
-      exclusivity={Astal.Exclusivity.NORMAL}>
+      anchor={Astal.WindowAnchor.TOP | Astal.WindowAnchor.RIGHT} exclusivity={Astal.Exclusivity.NORMAL}
+      resizable={false} widthRequest={450}>
 
-        <Gtk.Box class={"floating-notifications-container"} 
-          orientation={Gtk.Orientation.VERTICAL} spacing={12}
-          visible={variableToBoolean(createBinding(Notifications.getDefault(), "notifications"))}>
+        <Gtk.Box class={"floating-notifications-container"} spacing={12}
+          orientation={Gtk.Orientation.VERTICAL}>
 
             <For each={createBinding(Notifications.getDefault(), "notifications")}>
                 {(notif: AstalNotifd.Notification) => 
-                    <Gtk.Box class={"float-notification"}>
-                        <NotificationWidget notification={notif} showTime={false}
-                          actionClose={() => Notifications.getDefault().removeNotification(notif)}
-                          holdOnHover={true} actionClicked={() => {
-                              const viewAction = notif.actions.filter(action => 
-                                  action.label.toLowerCase() === "view")?.[0];
+                    <Adw.Clamp maximumSize={size}>
+                        <Gtk.Box class={"float-notification"} widthRequest={size} vexpand={false}>
 
-                              viewAction && notif.invoke(viewAction.id);
-                          }}
-                        />
-                    </Gtk.Box>
+                            {/* 
+                                Why is holdOnHover disabled: the shell for some reason crashes 
+                                when removing the notification on hover-lost 💔
+                            */}
+                            <NotificationWidget notification={notif} showTime={false}
+                              actionClose={() => Notifications.getDefault().removeNotification(notif)}
+                              holdOnHover={false} actionClicked={() => {
+                                  const viewAction = notif.actions.filter(action => 
+                                      action.label.toLowerCase() === "view")?.[0];
+
+                                  viewAction && notif.invoke(viewAction.id);
+                              }}
+                            />
+                        </Gtk.Box>
+                    </Adw.Clamp>
                 }
             </For>
         </Gtk.Box>

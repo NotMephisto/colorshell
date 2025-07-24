@@ -8,6 +8,7 @@ import { Apps } from "../widget/bar/Apps";
 import { Clock } from "../widget/bar/Clock";
 import { Status } from "../widget/bar/Status";
 
+
 export const Bar = (mon: number) => {
     const widgetSpacing = 4;
     return <Astal.Window namespace={"top-bar"} layer={Astal.Layer.TOP}

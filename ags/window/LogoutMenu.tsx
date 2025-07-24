@@ -10,6 +10,7 @@ import AstalNotifd from "gi://AstalNotifd";
 import Gio from "gi://Gio?version=2.0";
 import GObject from "gi://GObject?version=2.0";
 import { time } from "../scripts/utils";
+import { onCleanup } from "ags";
 
 
 const { TOP, LEFT, RIGHT, BOTTOM } = Astal.WindowAnchor;
@@ -24,10 +25,10 @@ export const LogoutMenu = (mon: number) =>
           self.add_controller(controllerKey);
           conns.set(controllerKey, controllerKey.connect("key-released", (_, keyval) => {
               if(keyval === Gdk.KEY_Escape)
-                  self.close();
+                  self.destroy();
           }));
-          conns.set(self, self.connect("destroy", () => conns.forEach((id, obj) =>
-              obj.disconnect(id))));
+
+          onCleanup(() => conns.forEach((id, obj) => obj.disconnect(id)));
       }}>
 
         <Gtk.Box class={"logout-menu"} orientation={Gtk.Orientation.VERTICAL} 
@@ -43,16 +44,19 @@ export const LogoutMenu = (mon: number) =>
                       return true;
                   }
               }));
+
+              onCleanup(() => conns.forEach((id, obj) => obj.disconnect(id)));
           }}>
             
             <Gtk.Box class={"top"} hexpand={true} vexpand={false} 
-              orientation={Gtk.Orientation.VERTICAL}>
+              orientation={Gtk.Orientation.VERTICAL} valign={Gtk.Align.START}>
 
                 <Gtk.Label class={"time"} label={time(t => t.format("%H:%M")!)} />
                 <Gtk.Label class={"date"} label={time(d => d.format("%A, %B %d %Y")!)} />
             </Gtk.Box>
 
-            <Gtk.Box class={"button-row"} homogeneous={true} heightRequest={360}>
+            <Gtk.Box class={"button-row"} homogeneous={true} heightRequest={360} valign={Gtk.Align.CENTER}
+              vexpand>
                 <Gtk.Button class={"poweroff"} iconName={"system-shutdown-symbolic"}
                   onClicked={() => AskPopup(poweroffAsk)} onActivate={() => 
                       AskPopup(poweroffAsk)}

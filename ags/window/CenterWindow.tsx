@@ -7,8 +7,8 @@ import { time } from "../scripts/utils";
 import { player } from "../widget/bar/Media";
 
 export const CenterWindow = (mon: number) => 
-    <PopupWindow namespace={"center-window"} marginTop={10} halign={Gtk.Align.CENTER} 
-      valign={Gtk.Align.START} monitor={mon}>
+    <PopupWindow namespace={"center-window"} marginTop={10} monitor={mon}
+      halign={Gtk.Align.CENTER} valign={Gtk.Align.START}>
       
         <Gtk.Box class={"center-window-container"} spacing={6}>
             <Gtk.Box class={"left"} orientation={Gtk.Orientation.VERTICAL}>
