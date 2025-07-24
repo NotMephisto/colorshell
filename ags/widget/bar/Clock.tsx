@@ -6,7 +6,7 @@ import { Config } from "../../scripts/config";
 
 export const Clock = () => 
     <Gtk.Button class={createBinding(Windows.getDefault(), "openWindows").as((wins) =>
-        `clock ${Object.hasOwn(wins, "center-window") ? "open" : ""}`)}
+        `clock ${wins.includes("center-window") ? "open" : ""}`)}
         $={(self) => {
             const conns: Array<number> = [
                 self.connect("clicked", (_) => Windows.getDefault().toggle("center-window")),

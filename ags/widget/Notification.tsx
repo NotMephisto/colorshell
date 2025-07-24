@@ -2,11 +2,14 @@ import { Gdk, Gtk } from "ags/gtk4";
 import { Separator } from "./Separator";
 import { HistoryNotification, Notifications } from "../scripts/notifications";
 import { getAppIcon, getSymbolicIcon } from "../scripts/apps";
+import { onCleanup } from "ags";
 
 import AstalNotifd from "gi://AstalNotifd";
 import Pango from "gi://Pango?version=1.0";
 import GLib from "gi://GLib?version=2.0";
 import GObject from "gi://GObject?version=2.0";
+import { escapeUnintendedMarkup, pathToURI } from "../scripts/utils";
+
 
 function getNotificationImage(notif: AstalNotifd.Notification|HistoryNotification): (string|undefined) {
     const img = notif.image || notif.appIcon;
@@ -14,16 +17,7 @@ function getNotificationImage(notif: AstalNotifd.Notification|HistoryNotificatio
     if(!img || !img.includes('/')) 
         return undefined;
 
-    switch(true) {
-        case /^[/]/.test(img): 
-            return `file://${img}`;
-
-        case /^[~]/.test(img):
-        case /^file:\/\/[~]/i.test(img):
-            return `file://${GLib.get_home_dir()}/${img.replace(/^(file\:\/\/|[~]|file\:\/\[~])/i, "")}`;
-    }
-
-    return img;
+    return pathToURI(img);
 }
 
 export function NotificationWidget({ notification, actionClicked, holdOnHover, showTime, actionClose }: {
@@ -40,6 +34,9 @@ export function NotificationWidget({ notification, actionClicked, holdOnHover, s
 
     const conns: Map<GObject.Object, Array<number>> = new Map();
 
+    onCleanup(() => 
+        conns.forEach((ids, obj) => ids.forEach(id => obj.disconnect(id))));
+
     return <Gtk.Box hexpand class={`notification ${
           Notifications.getDefault().getUrgencyString(notification.urgency)
       }`} orientation={Gtk.Orientation.VERTICAL} spacing={5}
@@ -54,7 +51,7 @@ export function NotificationWidget({ notification, actionClicked, holdOnHover, s
               eventControllerMotion.connect("enter", () => 
                   holdOnHover && Notifications.getDefault().holdNotification(notification.id)),
               eventControllerMotion.connect("leave", () => 
-                  holdOnHover && Notifications.getDefault().removeNotification(notification.id))
+                  holdOnHover && notification && Notifications.getDefault().removeNotification(notification.id))
           ]);
 
           conns.set(gestureClick, [
@@ -63,12 +60,10 @@ export function NotificationWidget({ notification, actionClicked, holdOnHover, s
                       actionClicked?.(notification);
               })
           ]);
-      }} onDestroy={(_) => {
-          conns.forEach((ids, obj) => ids.forEach(id => obj.disconnect(id)));
       }}>
 
         <Gtk.Box class={"top"} hexpand>
-            <Gtk.Image css={"font-size: 16px;"} $={(self) => {
+            <Gtk.Image class="app-icon" $={(self) => {
                   const icon = getSymbolicIcon(notification.appIcon ?? notification.appName) ?? 
                       getSymbolicIcon(notification.appName) ?? getAppIcon(notification.appName);
 
@@ -86,32 +81,31 @@ export function NotificationWidget({ notification, actionClicked, holdOnHover, s
               label={GLib.DateTime.new_from_unix_local(notification.time).format("%H:%M") ?? ""} />
 
             <Gtk.Button halign={Gtk.Align.END} iconName={"window-close-symbolic"} 
-              class={"close icon"}/>
+              class={"close"} onClicked={() => actionClose?.(notification)}/>
         </Gtk.Box>
         <Separator alpha={.1} orientation={Gtk.Orientation.VERTICAL} />
-        <Gtk.Box class={"content"} $={(self) => {
-            const image = getNotificationImage(notification);
-            
-            image &&
-                self.prepend(Gtk.Picture.new_for_filename(image));
-          }}>
-
+        <Gtk.Box class={"content"}>
+            {getNotificationImage(notification) && 
+                <Gtk.Box class={"image"} hexpand={false} vexpand={false}
+                  css={`background-image: url("${getNotificationImage(notification)}");`} 
+                />
+            }
             <Gtk.Box class={"text"} orientation={Gtk.Orientation.VERTICAL}
               vexpand={true}>
 
-                <Gtk.Label class={"summary"} useMarkup={true} hexpand={false} xalign={0}
-                  vexpand ellipsize={Pango.EllipsizeMode.END} label={
-                      notification.summary.replace(/[&]/g, "&amp;")}
+                <Gtk.Label class={"summary"} useMarkup={true} hexpand xalign={0}
+                  vexpand={false} ellipsize={Pango.EllipsizeMode.END} label={
+                      escapeUnintendedMarkup(notification.summary)}
                 />
 
-                <Gtk.Label class={"body"} useMarkup={true} xalign={0} wrap={true} hexpand={false}
-                  vexpand wrapMode={Pango.WrapMode.WORD_CHAR} label={
-                      notification.body.replace(/[&]/g, "&amp;")}
+                <Gtk.Label class={"body"} useMarkup={true} xalign={0} wrap={true} hexpand
+                  vexpand wrapMode={Pango.WrapMode.WORD_CHAR} valign={Gtk.Align.START} label={
+                      escapeUnintendedMarkup(notification.body)}
                 />
             </Gtk.Box>
         </Gtk.Box>
 
-        <Gtk.Box class={"action button-row"} hexpand={true} visible={
+        <Gtk.Box class={"actions button-row"} hexpand={true} visible={
             (notification instanceof AstalNotifd.Notification) &&
                 (notification.actions.filter(action => action.label.toLowerCase() !== "view").length > 0)
         }>

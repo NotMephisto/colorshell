@@ -23,14 +23,9 @@ export type AskPopupProps = {
 export function AskPopup(props: AskPopupProps): Astal.Window {
     let accepted: boolean = false;
 
-    return <CustomDialog
-      namespace={"ask-popup"}
-      widthRequest={400}
-      heightRequest={250}
-      title={props.title ?? tr("ask_popup.title")}
-      text={props.text}
-      onFinish={() => !accepted && props.onCancel?.()}
-      options={[
+    return <CustomDialog namespace={"ask-popup"} widthRequest={400} heightRequest={250}
+      title={props.title ?? tr("ask_popup.title")} text={props.text} 
+      onFinish={() => !accepted && props.onCancel?.()} options={[
         { text: props.cancelText ?? tr("cancel") },
         {
             text: props.acceptText ?? tr("accept"),
