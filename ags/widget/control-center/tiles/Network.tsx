@@ -82,4 +82,4 @@ export const TileNetwork = () => <Gtk.Box>
             />
         }}
     </With>
-</Gtk.Box> as Gtk.Box;
+</Gtk.Box>;

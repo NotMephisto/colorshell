@@ -29,4 +29,4 @@ export const TileRecording = () =>
       onToggledOn={() => Recording.getDefault().startRecording()}
       toggleState={createBinding(Recording.getDefault(), "recording")}
       iconSize={16}
-    /> as Gtk.Widget;
+    />;

@@ -1,9 +1,10 @@
-import { Gdk, Gtk } from "ags/gtk4";
+import { Gtk } from "ags/gtk4";
 import { tr } from "../../../i18n/intl";
-import { Accessor, createComputed, createState } from "ags";
-import GObject from "gi://GObject?version=2.0";
-import Pango from "gi://Pango?version=1.0";
+import { Accessor, createComputed, createState, onCleanup } from "ags";
 import { variableToBoolean } from "../../../scripts/utils";
+
+import Pango from "gi://Pango?version=1.0";
+
 
 export type TileProps = {
     class?: string | Accessor<string>;
@@ -14,7 +15,7 @@ export type TileProps = {
     description?: string | Accessor<string>;
     toggleState?: boolean | Accessor<boolean>;
     enableOnClickMore?: boolean | Accessor<boolean>;
-    onDestroy?: () => void;
+    onDestroy?: (self: Gtk.Box) => void;
     onToggledOn: () => void;
     onToggledOff: () => void;
     onClickMore?: () => void;
@@ -32,7 +33,9 @@ export function Tile(props: TileProps): Gtk.Widget {
             setToggled((props.toggleState as Accessor<boolean>).get() ?? false))
     );
 
-    return <Gtk.Box class={
+    onCleanup(() => subs.forEach(s => s()));
+
+    return <Gtk.Box hexpand visible={props.visible} onDestroy={props.onDestroy} class={
         (props.class instanceof Accessor) ?
           createComputed([props.class, toggled], (clss, isToggled) => 
               `tile ${clss} ${isToggled ? "toggled" : ""} ${
@@ -44,29 +47,16 @@ export function Tile(props: TileProps): Gtk.Widget {
                 props.onClickMore ? "has-more" : ""
             }`
         )
-    } hexpand={true} visible={props.visible} onDestroy={(_) => {
-        subs.forEach(sub => sub());
-        props.onDestroy?.();
-    }}>
+    }>
+        <Gtk.Button class={"toggle-button"} onClicked={() => {
+            if(toggled.get()) {
+                setToggled(false);
+                props.onToggledOff?.();
+                return;
+            }
 
-        <Gtk.Button class={"toggle-button"} $={(self) => {
-            const gestureClick = Gtk.GestureClick.new();
-            const conns: Map<GObject.Object, number> = new Map();
-
-            self.add_controller(gestureClick);
-
-            conns.set(gestureClick, gestureClick.connect("released", (gesture) => {
-                if(gesture.get_current_button() === Gdk.BUTTON_PRIMARY) {
-                    if(toggled.get()) {
-                        setToggled(false);
-                        props.onToggledOff?.();
-                        return;
-                    }
-
-                    setToggled(true);
-                    props.onToggledOn?.();
-                }
-            }));
+            setToggled(true);
+            props.onToggledOn?.();
         }}>
 
             <Gtk.Box class={"content"} hexpand={true} vexpand={true}>
