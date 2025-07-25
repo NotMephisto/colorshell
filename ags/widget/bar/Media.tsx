@@ -1,7 +1,6 @@
 import { createBinding, createState, onCleanup, With } from "ags";
 import { execAsync } from "ags/process";
 import { Gtk } from "ags/gtk4";
-import { getSymbolicIcon } from "../../scripts/apps";
 import { Separator } from "../Separator";
 import { Windows } from "../../windows";
 import { Clipboard } from "../../scripts/clipboard";
@@ -9,6 +8,7 @@ import { Clipboard } from "../../scripts/clipboard";
 import GObject from "ags/gobject";
 import AstalMpris from "gi://AstalMpris";
 import Pango from "gi://Pango?version=1.0";
+import { getPlayerIconFromBusName } from "../../scripts/utils";
 
 
 export const dummyPlayer = AstalMpris.Player.new("colorshellDummy");
@@ -107,12 +107,8 @@ export const Media = () => {
         <Gtk.Box spacing={4} visible={player(pl => pl.available)}>
             <With value={player(pl => pl.available)}>
                 {(available: boolean) => available && <Gtk.Box>
-                    <Gtk.Image class={"player-icon"} iconName={createBinding(player.get(), "busName").as((busName) => {
-                          const splitName = busName.split('.').filter(str => str !== "" && !str.toLowerCase().includes('instance'));
-                          return getSymbolicIcon(splitName[splitName.length - 1]) ?
-                              getSymbolicIcon(splitName[splitName.length - 1])!
-                          : "folder-music-symbolic";
-                      })} 
+                    <Gtk.Image class={"player-icon"} iconName={
+                        createBinding(player.get(), "busName").as(getPlayerIconFromBusName)} 
                     />
                     <Gtk.Label class={"title"} label={createBinding(player.get(), "title").as(title =>
                         title ?? "No Title")} maxWidthChars={20} ellipsize={Pango.EllipsizeMode.END}

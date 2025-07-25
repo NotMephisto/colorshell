@@ -2,6 +2,7 @@ import { createPoll } from "ags/time";
 import { exec, execAsync } from "ags/process";
 import { Accessor, For, With } from "ags";
 import { Astal, Gtk } from "ags/gtk4";
+import { getSymbolicIcon } from "./apps";
 
 import GLib from "gi://GLib?version=2.0";
 import Gio from "gi://Gio?version=2.0";
@@ -22,6 +23,15 @@ export function getHyprlandInstanceSig(): (string|null) {
 
 export function getHyprlandVersion(): string {
     return exec(`${GLib.getenv("HYPRLAND_CMD") ?? "Hyprland"} --version | head -n1`).split(" ")[1];
+}
+
+export function getPlayerIconFromBusName(busName: string): string {
+    const splitName = busName.split('.').filter(str => str !== "" && 
+        !str.toLowerCase().includes('instance'));
+
+    return getSymbolicIcon(splitName[splitName.length - 1]) ?
+        getSymbolicIcon(splitName[splitName.length - 1])!
+    : "folder-music-symbolic";
 }
 
 export function escapeUnintendedMarkup(input: string): string {
