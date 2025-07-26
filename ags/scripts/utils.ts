@@ -35,7 +35,10 @@ export function getPlayerIconFromBusName(busName: string): string {
 }
 
 export function escapeUnintendedMarkup(input: string): string {
-    return input.replace(/(?<!<[^>]*)[<>&"]/g, (s) => {
+    return input.replace(/<[^>]*>|[<>&"]/g, (s) => {
+        if(s.startsWith('<') && s.endsWith('>'))
+            return s;
+
         switch(s) {
             case "<": return "&lt;";
             case ">": return "&gt;";
@@ -43,32 +46,25 @@ export function escapeUnintendedMarkup(input: string): string {
             case "\"": return "&quot;";
         }
 
-        return `\\${s}`;
+        return s;
     });
 }
 
 export function getChildren(widget: Gtk.Widget): Array<Gtk.Widget> {
-    const firstChild = widget.get_first_child();
-    if(!firstChild) 
-        return [];
+    const firstChild = widget.get_first_child(), 
+        children: Array<Gtk.Widget> = [];
+    if(!firstChild) return [];
 
-    const children: Array<Gtk.Widget> = [ firstChild ];
-
-    let child: Gtk.Widget = firstChild.get_next_sibling()!;
-    if(!child) 
-        return children;
-
-    do {
-        child = (child ?? children[0]).get_next_sibling()!;
-        if(!child) return children;
-
-        children.unshift(child);
-    } while(child != null);
+    let currentChild = firstChild.get_next_sibling();
+    while(currentChild != null) {
+        children.push(currentChild);
+        currentChild = currentChild.get_next_sibling();
+    }
 
     return children;
 }
 
-export function omitObjectKeys<ObjT = object>(obj: ObjT, keys: keyof ObjT|Array<keyof ObjT>): ObjT {
+export function omitObjectKeys<ObjT = object>(obj: ObjT, keys: keyof ObjT|Array<keyof ObjT>): object {
     const finalObject = { ...obj };
 
     for(const objKey of Object.keys(finalObject as object)) {
@@ -77,12 +73,28 @@ export function omitObjectKeys<ObjT = object>(obj: ObjT, keys: keyof ObjT|Array<
                 delete finalObject[keys as keyof typeof finalObject];
                 break;
             }
+
             continue;
         }
 
         for(const omitKey of keys) {
             if(objKey === omitKey) {
                 delete finalObject[objKey as keyof typeof finalObject];
+                break;
+            }
+        }
+    }
+
+    return finalObject as object;
+}
+
+export function pickObjectKeys<ObjT = object>(obj: ObjT, keys: Array<keyof ObjT>): object {
+    const finalObject = {} as Record<keyof ObjT, any>;
+
+    for(const key of keys) {
+        for(const objKey of Object.keys(obj as object)) {
+            if(key === objKey) {
+                finalObject[key as keyof ObjT] = obj[objKey as keyof ObjT];
                 break;
             }
         }
