@@ -21,12 +21,13 @@ export const LogoutMenu = (mon: number) =>
           const controllerKey = Gtk.EventControllerKey.new();
 
           self.add_controller(controllerKey);
+
           conns.set(controllerKey, controllerKey.connect("key-released", (_, keyval) => {
               if(keyval === Gdk.KEY_Escape)
-                  self.destroy();
+                  self.close();
           }));
 
-          conns.set(self, self.connect("destroy", () => conns.forEach((id, obj) =>
+          conns.set(self, self.connect("close-request", () => conns.forEach((id, obj) =>
               obj.disconnect(id))));
       }}>
 
