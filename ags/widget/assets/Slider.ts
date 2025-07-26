@@ -88,8 +88,9 @@ export function createUnifiedSlider(model: SliderOptions): Gtk.Widget {
 
                     self.connect('realize', () => {
                         if (drawLoopId === null) {
-                            const fpm = Math.round(1000 / Wallpaper.getDefault().getRefreshRate());
-                            drawLoopId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, fpm, () => {
+                            // 16 ms is about 60 fps, so if you want get more fps, use this formula: Math.round(1000 / RefreshRate)
+                            const FrameToMilliseconds = 16; // 60 fps
+                            drawLoopId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, FrameToMilliseconds, () => {
                                 if (self.get_window()?.is_visible()) {
                                     self.queue_draw();
                                 }
