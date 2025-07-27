@@ -1,13 +1,12 @@
 import { timeout, GLib } from 'astal';
 import { Gtk, Gdk, Widget } from 'astal/gtk3';
 import AstalMpris from "gi://AstalMpris";
-import { Wallpaper } from '../scripts/wallpaper';
 
 let pauseProgress = 1; // 0 = full wave, 1 = full straight
 
 export enum typeSliders {
-    MATERIAL_EXPRESSIVE,
-    CHUNKY_MODERN
+    MATERIAL_EXPRESSIVE_WAVE, //For players
+    MATERIAL_EXPRESSIVE_SLIDER 
 }
 
 export interface SliderOptions {
@@ -20,21 +19,57 @@ export interface SliderOptions {
     getPlaybackStatus?(): AstalMpris.PlaybackStatus;
 }
 
-function drawRoundedRectangle(cr, x, y, width, height, radius) {
+function drawRoundedRectangleCustom(cr, x, y, width, height, radius, corners = {
+    topLeft: true,
+    topRight: true,
+    bottomRight: true,
+    bottomLeft: true
+}) {
     radius = Math.min(radius, height / 2, width / 2);
-    cr.moveTo(x + radius, y);
-    cr.arc(x + width - radius, y + radius, radius, 1.5 * Math.PI, 2 * Math.PI);
-    cr.arc(x + width - radius, y + height - radius, radius, 0, 0.5 * Math.PI);
-    cr.arc(x + radius, y + height - radius, radius, 0.5 * Math.PI, Math.PI);
-    cr.arc(x + radius, y + radius, radius, Math.PI, 1.5 * Math.PI);
+    
+    cr.moveTo(x + (corners.topLeft ? radius : 0), y);
+    
+    // Top rigth
+    if (corners.topRight) {
+        cr.arc(x + width - radius, y + radius, radius, 1.5 * Math.PI, 2 * Math.PI);
+    } else {
+        cr.lineTo(x + width, y);
+        cr.lineTo(x + width, y + radius);
+    }
+    
+    // Bottom rigth
+    if (corners.bottomRight) {
+        cr.arc(x + width - radius, y + height - radius, radius, 0, 0.5 * Math.PI);
+    } else {
+        cr.lineTo(x + width, y + height);
+        cr.lineTo(x + width - radius, y + height);
+    }
+    
+    // Bottom left
+    if (corners.bottomLeft) {
+        cr.arc(x + radius, y + height - radius, radius, 0.5 * Math.PI, Math.PI);
+    } else {
+        cr.lineTo(x, y + height);
+        cr.lineTo(x, y + height - radius);
+    }
+    
+    // Top left
+    if (corners.topLeft) {
+        cr.arc(x + radius, y + radius, radius, Math.PI, 1.5 * Math.PI);
+    } else {
+        cr.lineTo(x, y);
+        cr.lineTo(x + radius, y);
+    }
+    
     cr.closePath();
 }
+
 
 export function createUnifiedSlider(model: SliderOptions): Gtk.Widget {
     let isDragging = false;
     let dragProgress: number | null = null;
 
-    const isPlayingStream = model.getMaxValue() < GLib.MAXINT64 / 10000000 ? false : true;
+    const isStreamPlaying = model.getMaxValue() >= GLib.MAXINT64 / 10000000;
 
     return new Widget.EventBox({
         children: [
@@ -57,7 +92,7 @@ export function createUnifiedSlider(model: SliderOptions): Gtk.Widget {
                     };
 
                     self.connect('button-press-event', (_, event) => {
-                        if (isPlayingStream) return;
+                        if (isStreamPlaying) return;
                         isDragging = true;
                         const [, x] = event.get_coords();
                         updateDragPosition(x);
@@ -79,7 +114,7 @@ export function createUnifiedSlider(model: SliderOptions): Gtk.Widget {
                                 model.setValue(dragProgress * maxValue);
                             }
 
-                            isDragging = model.getPlaybackStatus ? timeout(30, () => { isDragging = false }) : false;
+                            isDragging = model.getPlaybackStatus ? timeout(40, () => { isDragging = false }) : false;
                         }
                     });
 
@@ -89,7 +124,7 @@ export function createUnifiedSlider(model: SliderOptions): Gtk.Widget {
                     self.connect('realize', () => {
                         if (drawLoopId === null) {
                             // 16 ms is about 60 fps, so if you want get more fps, use this formula: Math.round(1000 / RefreshRate)
-                            const FrameToMilliseconds = 16; // 60 fps
+                            const FrameToMilliseconds = 16; // ~60 fps
                             drawLoopId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, FrameToMilliseconds, () => {
                                 if (self.get_window()?.is_visible()) {
                                     self.queue_draw();
@@ -100,7 +135,7 @@ export function createUnifiedSlider(model: SliderOptions): Gtk.Widget {
                     });
 
                     self.connect('draw', (self) => {
-                        if (model.typeSlider() === typeSliders.MATERIAL_EXPRESSIVE) {
+                        if (model.typeSlider() === typeSliders.MATERIAL_EXPRESSIVE_WAVE) {
                             const playbackStatus = model.getPlaybackStatus ? model.getPlaybackStatus() : null;
 
                             if (playbackStatus === AstalMpris.PlaybackStatus.PLAYING) {
@@ -134,7 +169,7 @@ export function createUnifiedSlider(model: SliderOptions): Gtk.Widget {
                     const currentProgress = length > 0 ? position / length : 0;
                     const displayProgress = (isDragging && dragProgress !== null)
                         ? dragProgress
-                        : (!isPlayingStream
+                        : (!isStreamPlaying
                             ? currentProgress
                             : 1 //Max
                         );
@@ -147,46 +182,86 @@ export function createUnifiedSlider(model: SliderOptions): Gtk.Widget {
                     if (colorStr) color.parse(colorStr);
 
                     switch (styleType) {
-                        case typeSliders.CHUNKY_MODERN: {
-
+                        case typeSliders.MATERIAL_EXPRESSIVE_SLIDER: {
                             const barHeight = 15;
-                            const centerY = height / 2;
                             const barRadius = Math.max(5, barHeight / 2);
-
+                            const centerY = height / 2;
                             const progressX = width * displayProgress;
-                            
-                            const rectangleHandleWidth = 10;
-                            const rectangleHandleHeight = Math.max(barHeight + rectangleHandleWidth, Math.min(height - barHeight, barHeight + (barHeight / 2)));
-                            const rectangleHandleX = Math.max(0, Math.min(progressX - (rectangleHandleWidth / 2), width - rectangleHandleWidth));
-                            
+
+                            const handleWidth = 5;
+                            const handleHeight = Math.max(barHeight + handleWidth, Math.min(height - barHeight, barHeight + barHeight / 2));
+                            const handleX = Math.max(0, Math.min(progressX - handleWidth / 2, width - handleWidth));
+
                             const handleOffset = 5;
-                            const activeEndX = rectangleHandleX - handleOffset;
-                            const inactiveStartX = rectangleHandleX + rectangleHandleWidth + handleOffset;
-                            
+                            const activeEndX = handleX - handleOffset;
+                            const inactiveStartX = handleX + handleWidth + handleOffset;
+
+                            // Active line
                             if (displayProgress > 0 && activeEndX > 0) {
-                                colorStr ? cr.setSourceRGBA(color.red, color.green, color.blue, color.alpha) : cr.setSourceRGBA(fg.red, fg.green, fg.blue, fg.alpha);
-                                drawRoundedRectangle(cr, 0, centerY - barHeight / 2, Math.max(0, activeEndX), barHeight, barRadius);
+                                const colorToUse = colorStr ? color : fg;
+                                cr.setSourceRGBA(colorToUse.red, colorToUse.green, colorToUse.blue, colorToUse.alpha);
+                                drawRoundedRectangleCustom(
+                                    cr,
+                                    0, centerY - barHeight / 2,
+                                    Math.max(0, activeEndX), barHeight, barRadius,
+                                    { topLeft: true, topRight: false, bottomRight: false, bottomLeft: true }
+                                );
                                 cr.fill();
                             }
-                            
-                            if (displayProgress < 1 && inactiveStartX < width) {
-                                cr.setSourceRGBA(fg.red, fg.green, fg.blue, 0.3);
+
+                            // Unactive line
+                            const hasInactive = displayProgress < 1 && inactiveStartX < width;
+                            if (hasInactive) {
                                 const inactiveWidth = width - inactiveStartX;
                                 if (inactiveWidth > 0) {
-                                    drawRoundedRectangle(cr, inactiveStartX, centerY - barHeight / 2, inactiveWidth, barHeight, barRadius);
+                                    cr.setSourceRGBA(fg.red, fg.green, fg.blue, 0.3);
+                                    drawRoundedRectangleCustom(
+                                        cr,
+                                        inactiveStartX, centerY - barHeight / 2,
+                                        inactiveWidth, barHeight, barRadius,
+                                        { topLeft: false, topRight: true, bottomRight: true, bottomLeft: false }
+                                    );
                                     cr.fill();
                                 }
                             }
-                            
+
+                            // Handle
                             cr.setSourceRGBA(fg.red, fg.green, fg.blue, fg.alpha);
-                            drawRoundedRectangle(cr, rectangleHandleX, centerY - rectangleHandleHeight / 2, rectangleHandleWidth, rectangleHandleHeight, barRadius);
+                            drawRoundedRectangleCustom(
+                                cr,
+                                handleX, centerY - handleHeight / 2,
+                                handleWidth, handleHeight, barRadius
+                            );
                             cr.fill();
+
+                            // Max Value Dot
+                            if (hasInactive) {
+                                const dotRadius = barHeight / 6;
+                                const dotX = width - barHeight / 2;
+                                const colorToUse = colorStr ? color : fg;
+
+                                cr.save();
+                                drawRoundedRectangleCustom(
+                                    cr,
+                                    inactiveStartX, centerY - barHeight / 2,
+                                    width - inactiveStartX, barHeight, barRadius,
+                                    { topLeft: false, topRight: true, bottomRight: true, bottomLeft: false }
+                                );
+                                cr.clip();
+
+                                cr.setSourceRGBA(colorToUse.red, colorToUse.green, colorToUse.blue, colorToUse.alpha);
+                                cr.newPath();
+                                cr.arc(dotX, centerY, dotRadius, 0, 2 * Math.PI);
+                                cr.fill();
+                                cr.restore();
+                            }
+
                             break;
                         }
-                        case typeSliders.MATERIAL_EXPRESSIVE: {
+                        case typeSliders.MATERIAL_EXPRESSIVE_WAVE: {
                             const lineThickness = 6;
                             
-                            const baseWaveAmp = 2;
+                            const baseWaveAmp = 3;
                             const waveAmp = baseWaveAmp * (1 - pauseProgress);
                             const waveFreq = 0.15;
                             const time = Date.now() * 0.003;
@@ -198,7 +273,7 @@ export function createUnifiedSlider(model: SliderOptions): Gtk.Widget {
                             const centerY = height / 2;
                             const progressX = width * displayProgress;
                             const startX = lineThickness / 2;
-                            const activeEndX = Math.max(0, progressX - rectangleHandleWidth * 2);
+                            const activeEndX = Math.max(startX, progressX - rectangleHandleWidth * 2);
 
                             const radius = 10;
 
@@ -229,9 +304,9 @@ export function createUnifiedSlider(model: SliderOptions): Gtk.Widget {
                                 cr.stroke();
                             }
 
-                            if (!isPlayingStream) {
+                            if (!isStreamPlaying) {
                                 cr.setSourceRGBA(fg.red, fg.green, fg.blue, fg.alpha);
-                                drawRoundedRectangle(cr, rectangleHandleX, centerY - rectangleHandleHeight / 2, rectangleHandleWidth, rectangleHandleHeight, radius);
+                                drawRoundedRectangleCustom(cr, rectangleHandleX, centerY - rectangleHandleHeight / 2, rectangleHandleWidth, rectangleHandleHeight, radius);
                                 cr.fill();
                             }
                             break;
