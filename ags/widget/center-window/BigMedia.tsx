@@ -1,10 +1,9 @@
 import { timeout } from "ags/time";
-import { execAsync } from "ags/process";
 import { Astal, Gtk } from "ags/gtk4";
 import { Clipboard } from "../../scripts/clipboard";
-import { player, setPlayer } from "../bar/Media";
+import { getMediaUrl, player, setPlayer } from "../bar/Media";
 import { Accessor, createBinding, createConnection, For, With } from "ags";
-import { getPlayerIconFromBusName, pathToURI } from "../../scripts/utils";
+import { getPlayerIconFromBusName, pathToURI, variableToBoolean } from "../../scripts/utils";
 
 import AstalMpris from "gi://AstalMpris";
 import AstalIO from "gi://AstalIO";
@@ -96,14 +95,10 @@ export const BigMedia = () => {
                         <Gtk.Box class={"controls button-row"} $type="center">
                             <Gtk.Button class={"link"} iconName={"edit-paste-symbolic"}
                               tooltipText={"Copy link to clipboard"}
+			      visible={variableToBoolean(getMediaUrl(player))}
                               onClicked={() => {
-                                  execAsync(`playerctl --player=${
-                                      player.busName.replace(/^org\.mpris\.MediaPlayer2\./i, "")
-                                  } metadata xesam:url`).then(link => {
-                                      Clipboard.getDefault().copyAsync(link);
-                                  }).catch((e: Error) => {
-                                      console.error(`Media: couldn't copy media link. Stderr: \n${e.message}\n${e.stack}`);
-                                  });
+                                  const url = getMediaUrl(player).get();
+                                  url && Clipboard.getDefault().copyAsync(url);
                               }}
                             />
                             <Gtk.Button class={"shuffle"} visible={createBinding(player, "shuffleStatus").as(status =>
@@ -185,10 +180,10 @@ export function PlayerSelectButton({ player, reveal, halign = Gtk.Align.CENTER, 
                                 {(pl: AstalMpris.Player) => 
                                     <Gtk.Button class={"player"} onClicked={() => setPlayer(pl)}>
                                         <Gtk.Box>
-                                            <Gtk.Image iconName={createBinding(player, "busName").as(
+                                            <Gtk.Image iconName={createBinding(pl, "busName").as(
                                                 getPlayerIconFromBusName
                                             )} />
-                                            <Gtk.Label label={createBinding(player, "identity")} 
+                                            <Gtk.Label label={createBinding(pl, "identity")} 
                                               hexpand={false} class={"identity"} singleLineMode
                                               maxWidthChars={8}
                                             />
