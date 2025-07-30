@@ -30,9 +30,8 @@ export const OSD = (mon: number) => {
                   ellipsize={Pango.EllipsizeMode.END}
                 />
                 <Gtk.LevelBar class={"levelbar"} value={createBinding(
-                      Wireplumber.getDefault().getDefaultSink(), "volume").as((volume: number) => 
-                          Math.floor(volume * 100))} 
-                  maxValue={Wireplumber.getDefault().getMaxSinkVolume()}
+                      Wireplumber.getDefault().getDefaultSink(), "volume")} 
+                  maxValue={Wireplumber.getDefault().getMaxSinkVolume() / 100}
                 />
             </Gtk.Box>
         </Gtk.Box>

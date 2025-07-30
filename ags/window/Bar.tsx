@@ -1,5 +1,4 @@
 import { Astal, Gtk } from "ags/gtk4";
-
 import { Tray } from "../widget/bar/Tray";
 import { Workspaces } from "../widget/bar/Workspaces";
 import { FocusedClient } from "../widget/bar/FocusedClient";
