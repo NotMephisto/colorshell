@@ -14,8 +14,8 @@ export function getSystemLanguage(): string {
     const sysLanguage: (string|null|undefined) = GLib.getenv("LANG") || GLib.getenv("LANGUAGE");
 
     if(!sysLanguage) {
-        console.log(`[WARNING] Couldn't get system language, fallback to default ${languages[0]}`);
-        console.log("[TIP] Please set the LANG or LANGUAGE environment variable");
+        console.warn(`Intl: Couldn't get system language, fallback to default ${languages[0]}`);
+        console.log("Intl: Please set the LANG or LANGUAGE environment variable");
 
         return languages[0];
     }
@@ -31,8 +31,8 @@ export function setLanguage(lang: string): string {
         }
     });
 
-    throw new Error(`(i18n/intl) Couldn't set language: ${lang}`, {
-        cause: `Language ${lang} not found in languages of type ${typeof languages}`
+    throw new Error(`Intl: couldn't set language: ${lang}`, {
+        cause: `language ${lang} not found in languages of type ${typeof languages}`
     });
 }
 
