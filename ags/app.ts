@@ -22,66 +22,44 @@ import AstalNotifd from "gi://AstalNotifd";
 import GLib from "gi://GLib?version=2.0";
 
 
-type ConfigEntries = {
-    workspaces?: Partial<{
+const generalConfigDefaults = {
+    notifications: {
+        timeout_low: 4000,
+        timeout_normal: 6000,
+        timeout_critical: 0
+    },
+
+    night_light: {
+        /** whether to save night light values to disk */
+        save_on_shutdown: true
+    },
+
+    workspaces: {
+        /** breaks `enable_helper`, makes all workspaces show their respective ID 
+        * by default */
+        always_show_id: false,
         /** this is the function that shows the Workspace's IDs 
         * around the current workspace if one breaks the crescent order.
         * It basically helps keyboard navigation between workspaces.
         * ---
         * Example: 1(empty, current, shows ID), 2(empty, does not appear(makes 
         * the previous not to be in a crescent order)), 3(not empty, shows ID) */
-        enable_helper: boolean;
-        /** breaks `enable_helper`, makes all workspaces show their respective ID 
-        * by default */
-        always_show_id: boolean;
-    }>;
+        enable_helper: true
+    },
 
-    clock?: Partial<{
+    clock: {
         /** use the same format as gnu's `date` command */
-        date_format: string;
-    }>;
+        date_format: "%A %d, %H:%M"
+    },
 
-    notifications?: Partial<{
-        timeout_low: number;
-        timeout_normal: number;
-        timeout_critical: number;
-    }>;
-
-    night_light?: Partial<{
-        /** whether to save night light values to disk */
-        save_on_shutdown: boolean;
-    }>;
-
-    misc?: Partial<{
-        play_bell_on_volume_change: boolean;
-    }>;
+    misc: {
+        play_bell_on_volume_change: true
+    }
 };
 
-export const generalConfig = new Config<keyof ConfigEntries, ConfigEntries[keyof ConfigEntries]>(
-    `${GLib.get_user_config_dir()}/colorshell/config.json`, {
-        notifications: {
-            timeout_low: 4000,
-            timeout_normal: 6000,
-            timeout_critical: 0
-        },
-
-        night_light: {
-            save_on_shutdown: true
-        },
-
-        workspaces: {
-            always_show_id: false,
-            enable_helper: true
-        },
-
-        clock: {
-            date_format: "%A %d, %H:%M"
-        },
-
-        misc: {
-            play_bell_on_volume_change: true
-        }
-    }
+export const generalConfig = new Config<keyof typeof generalConfigDefaults, 
+    typeof generalConfigDefaults[keyof typeof generalConfigDefaults]>(
+        `${GLib.get_user_config_dir()}/colorshell/config.json`, generalConfigDefaults
 );
 
 export const appScope: Scope = new Scope(null);
