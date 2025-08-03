@@ -93,9 +93,9 @@ export function BigMedia(): Gtk.Widget {
                     className: "elapsed",
                     valign: Gtk.Align.START,
                     halign: Gtk.Align.START,
-                    label: bind(players.activePlayer, "position").as(p => {
-                        const pos = p ?? 0;
-                        const len = players.activePlayer.length ?? 0;
+                    label: bind(players, "activePlayer").as((p: AstalMpris.Player) => {
+                        const pos = p?.position ?? 0;
+                        const len = p?.length ?? 0;
                         return formatTime(pos > 0 && len > 0 ? pos : 0);
                     })
                 }),
