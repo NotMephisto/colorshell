@@ -2,7 +2,8 @@ import { Gtk } from "ags/gtk4";
 import { Windows } from "../../windows";
 import { createBinding } from "ags";
 import { time } from "../../scripts/utils";
-import { Config } from "../../scripts/config";
+import { generalConfig } from "../../app";
+
 
 export const Clock = () => 
     <Gtk.Button class={createBinding(Windows.getDefault(), "openWindows").as((wins) =>
@@ -14,7 +15,7 @@ export const Clock = () =>
             ];
         }}
         label={time((dt) => dt.format(
-            Config.getDefault().getProperty("clock.date_format", "string")) 
+            generalConfig.getProperty("clock.date_format", "string")) 
                 ?? "An error occurred"
         )}
     />;

@@ -12,99 +12,36 @@ import { Accessor } from "ags";
 
 
 export { Config };
-
-export type ConfigEntries = Partial<{
-    workspaces: Partial<{
-        /** this is the function that shows the Workspace's IDs 
-        * around the current workspace if one breaks the crescent order.
-        * It basically helps keyboard navigation between workspaces.
-        * ---
-        * Example: 1(empty, current, shows ID), 2(empty, does not appear(makes 
-        * the previous not to be in a crescent order)), 3(not empty, shows ID) */
-        enable_helper: boolean;
-        /** breaks `enable_helper`, makes all workspaces show their respective ID 
-        * by default */
-        always_show_id: boolean;
-    }>;
-
-    clock: Partial<{
-        /** use the same format as gnu's `date` command */
-        date_format: string;
-    }>;
-
-    notifications: Partial<{
-        timeout_low: number;
-        timeout_normal: number;
-        timeout_critical: number;
-    }>;
-
-    night_light: Partial<{
-        /** whether to save night light values to disk */
-        save_on_shutdown: boolean;
-    }>;
-
-    misc: Partial<{
-        play_bell_on_volume_change: boolean;
-    }>;
-}>;
-
 type ValueTypes = "string" | "boolean" | "object" | "number" | "undefined" | "any";
 
-interface ConfigSignals extends GObject.Object.SignalSignatures {
-    "notify::entries": (entries: ConfigEntries) => void;
-}
-
 @register({ GTypeName: "Config" })
-class Config extends GObject.Object {
-    private static instance: Config;
-
-    declare $signals: ConfigSignals;
-
-    private readonly defaultFile = Gio.File.new_for_path(
-        `${GLib.get_user_config_dir()}/colorshell/config.json`);
+class Config<K extends NonNullable<string|number|symbol>, V extends string|object|any> extends GObject.Object {
+    declare $signals: GObject.Object.SignalSignatures & {
+        "notify::entries": (entries: Record<K, V>) => void;
+    };
 
     /** unmodified object with default entries. User-values are stored 
     * in the `entries` field */
-    public readonly defaults: ConfigEntries = {
-        notifications: {
-            timeout_low: 4000,
-            timeout_normal: 6000,
-            timeout_critical: 0
-        },
-
-        night_light: {
-            save_on_shutdown: true
-        },
-
-        workspaces: {
-            always_show_id: false,
-            enable_helper: true
-        },
-
-        clock: {
-            date_format: "%A %d, %H:%M"
-        },
-
-        misc: {
-            play_bell_on_volume_change: true
-        }
-    };
+    public readonly defaults: Record<K, V>;
 
     @getter(Object)
-    public get entries() { return this.#entries; }
+    public get entries(): object { return this.#entries; }
 
     #file: Gio.File;
-    #entries: ConfigEntries = this.defaults;
+    #entries: Record<K, V>;
 
     private timeout: (AstalIO.Time|boolean|undefined);
     public get file() { return this.#file; };
 
-    constructor(filePath?: (Gio.File|string)) {
+    constructor(filePath: Gio.File|string, defaults?: Record<K, V>) {
         super();
+
+        this.defaults = (defaults ?? {}) as Record<K, V>;
+        this.#entries = { ...defaults } as Record<K, V>;
 
         this.#file = (typeof filePath === "string") ? 
             Gio.File.new_for_path(filePath)
-        : (filePath ?? this.defaultFile);
+        : filePath;
 
         if(!this.#file.query_exists(null)) {
             this.#file.make_directory_with_parents(null);
@@ -156,19 +93,12 @@ class Config extends GObject.Object {
         );
     }
 
-    public static getDefault(): Config {
-        if(!this.instance)
-            this.instance = new Config();
-
-        return this.instance;
-    }
-
     private async readFile(): Promise<void> {
         await readFileAsync(this.#file.get_path()!).then((content) => {
-            let config: (ConfigEntries|undefined);
+            let config: (Record<K, V>|undefined);
 
             try {
-                config = JSON.parse(content) as ConfigEntries;
+                config = JSON.parse(content) as Record<K, V>;
             } catch(e) {
                 Notifications.getDefault().sendNotification({
                     urgency: AstalNotifd.Urgency.NORMAL,
@@ -189,7 +119,7 @@ class Config extends GObject.Object {
                     return;
 
                 // TODO needs more work, like object-recursive(infinite depth) entry attributions
-                this.entries[k as keyof typeof this.entries] = config[k as keyof typeof config];
+                this.#entries[k as keyof Record<K, V>] = config[k as keyof typeof config];
             }
 
             this.notify("entries");
@@ -204,22 +134,22 @@ class Config extends GObject.Object {
         });
     }
 
-    public bindProperty(propertyPath: (keyof ConfigEntries|string), expectType?: ValueTypes): Accessor<any|undefined> {
-        return new Accessor<ConfigEntries>(() => this.getProperty(propertyPath, expectType), (callback: () => void) => {
+    public bindProperty(propertyPath: string, expectType?: ValueTypes): Accessor<any|undefined> {
+        return new Accessor<Record<K, V>>(() => this.getProperty(propertyPath, expectType), (callback: () => void) => {
             const id = this.connect("notify::entries", () => callback());
             return () => this.disconnect(id);
         });
     }
 
     public getProperty(path: string, expectType?: ValueTypes): (any|undefined) {
-        return this._getProperty(path, this.entries, expectType);
+        return this._getProperty(path, this.#entries, expectType);
     }
 
     public getPropertyDefault(path: string, expectType?: ValueTypes): (any|undefined) {
         return this._getProperty(path, this.defaults, expectType);
     }
 
-    private _getProperty(path: string, entries: ConfigEntries, expectType?: ValueTypes): (any|undefined) {
+    private _getProperty(path: string, entries: Record<K, V>, expectType?: ValueTypes): (any|undefined) {
         let property: any = entries;
         const pathArray = path.split('.').filter(str => str);
 

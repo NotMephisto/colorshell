@@ -1,14 +1,14 @@
 import { Astal, Gdk, Gtk } from "ags/gtk4";
 import { execAsync } from "ags/process";
+import { generalConfig } from "../app";
 import { AskPopup } from "../widget/AskPopup";
 import { Notifications } from "../scripts/notifications";
 import { NightLight } from "../scripts/nightlight";
-import { Config } from "../scripts/config";
 import { time } from "../scripts/utils";
 
+import GObject from "ags/gobject";
 import AstalNotifd from "gi://AstalNotifd";
 import Gio from "gi://Gio?version=2.0";
-import GObject from "gi://GObject?version=2.0";
 
 
 const { TOP, LEFT, RIGHT, BOTTOM } = Astal.WindowAnchor;
@@ -64,7 +64,7 @@ export const LogoutMenu = (mon: number) =>
                       title: "Power Off",
                       text: "Are you sure you want to power off? Unsaved work will be lost.",
                       onAccept: () => {
-                          Config.getDefault().getProperty("night_light.save_on_shutdown", "boolean") && 
+                          generalConfig.getProperty("night_light.save_on_shutdown", "boolean") && 
                               NightLight.getDefault().saveData();
 
                           execAsync("systemctl poweroff");
@@ -76,7 +76,7 @@ export const LogoutMenu = (mon: number) =>
                       title: "Reboot",
                       text: "Are you sure you want to Reboot? Unsaved work will be lost.",
                       onAccept: () => {
-                          Config.getDefault().getProperty("night_light.save_on_shutdown", "boolean") && 
+                          generalConfig.getProperty("night_light.save_on_shutdown", "boolean") && 
                               NightLight.getDefault().saveData();
 
                           execAsync("systemctl reboot");
@@ -95,7 +95,7 @@ export const LogoutMenu = (mon: number) =>
                       title: "Log out",
                       text: "Are you sure you want to log out? Your session will be ended.",
                       onAccept: () => {
-                          Config.getDefault().getProperty("night_light.save_on_shutdown", "boolean") && 
+                          generalConfig.getProperty("night_light.save_on_shutdown", "boolean") && 
                               NightLight.getDefault().saveData();
 
                           execAsync(`hyprctl dispatch exit`).catch((err: Gio.IOErrorEnum) => 

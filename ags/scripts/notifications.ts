@@ -1,14 +1,14 @@
-import { Config } from "./config";
 import { timeout } from "ags/time";
 import { execAsync } from "ags/process";
-
+import { readFile } from "ags/file";
+import { generalConfig } from "../app";
+import { onCleanup } from "ags";
 import GObject, { getter, property, register, signal } from "ags/gobject";
+
 import AstalNotifd from "gi://AstalNotifd";
 import AstalIO from "gi://AstalIO";
-import { onCleanup } from "ags";
 import Gio from "gi://Gio?version=2.0";
 import GLib from "gi://GLib?version=2.0";
-import { readFile } from "ags/file";
 
 
 export interface HistoryNotification {
@@ -53,7 +53,7 @@ class Notifications extends GObject.Object {
         this.#connections.push(
             AstalNotifd.get_default().connect("notified", (notifd, id) => {
                 const notification = notifd.get_notification(id);
-                const notifTimeout = Config.getDefault().getProperty(
+                const notifTimeout = generalConfig.getProperty(
                     `notifications.timeout_${this.getUrgencyString(notification.urgency).toLowerCase()}`, 
                     "number") as number;
 

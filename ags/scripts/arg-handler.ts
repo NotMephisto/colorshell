@@ -5,8 +5,8 @@ import { timeout } from "ags/time";
 import { Runner } from "../runner/Runner";
 import { showWorkspaceNumber } from "../widget/bar/Workspaces";
 import { playSystemBell } from "./utils";
-import { Config } from "./config";
 import { player, setPlayer } from "../widget/bar/Media";
+import { generalConfig } from "../app";
 
 import AstalIO from "gi://AstalIO";
 import GLib from "gi://GLib?version=2.0";
@@ -236,7 +236,7 @@ function handleVolumeArgs(args: Array<string>) {
                 Wireplumber.getDefault().increaseSinkVolume(Number.parseInt(args[2]))
             : Wireplumber.getDefault().increaseSourceVolume(Number.parseInt(args[2]))
 
-            Config.getDefault().getProperty("misc.play_bell_on_volume_change", "boolean") === true &&
+            generalConfig.getProperty("misc.play_bell_on_volume_change", "boolean") === true &&
                 playSystemBell();
 
             return `Done increasing volume by ${args[2]}`;
@@ -246,7 +246,7 @@ function handleVolumeArgs(args: Array<string>) {
                 Wireplumber.getDefault().decreaseSinkVolume(Number.parseInt(args[2]))
             : Wireplumber.getDefault().decreaseSourceVolume(Number.parseInt(args[2]))
 
-            Config.getDefault().getProperty("misc.play_bell_on_volume_change", "boolean") === true &&
+            generalConfig.getProperty("misc.play_bell_on_volume_change", "boolean") === true &&
                 playSystemBell();
 
             return `Done decreasing volume to ${args[2]}`;

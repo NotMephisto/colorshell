@@ -1,11 +1,13 @@
 import { Gtk } from "ags/gtk4";
 import AstalHyprland from "gi://AstalHyprland";
 import { getAppIcon, getSymbolicIcon } from "../../scripts/apps";
-import { Config } from "../../scripts/config";
 import { Separator } from "../Separator";
+import { generalConfig } from "../../app";
 import { createBinding, createComputed, createState, For, With } from "ags";
-import GObject from "gi://GObject?version=2.0";
 import { variableToBoolean } from "../../scripts/utils";
+
+import GObject from "ags/gobject";
+
 
 const [showNumbers, setShowNumbers] = createState(false);
 export const showWorkspaceNumber = (show: boolean) => 
@@ -83,8 +85,8 @@ export const Workspaces = () => {
             <For each={defaultWorkspaces}>
                 {(ws: AstalHyprland.Workspace, i) => {
                     const showId = createComputed([
-                        Config.getDefault().bindProperty("workspaces.always_show_id", "boolean").as(Boolean),
-                        Config.getDefault().bindProperty("workspaces.enable_helper", "boolean").as(Boolean),
+                        generalConfig.bindProperty("workspaces.always_show_id", "boolean").as(Boolean),
+                        generalConfig.bindProperty("workspaces.enable_helper", "boolean").as(Boolean),
                         showNumbers,
                         i
                     ], (alwaysShowIds, enableHelper, showIds, i) => {
