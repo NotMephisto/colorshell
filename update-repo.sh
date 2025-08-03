@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
-
 source ./utils.sh
 
 Check_current_dir() {
-    if ! [[ -f ./utils.sh ]]; then
+    if ! git remote -v 2> /dev/null; then
         Send_log warn "Looks like you're not in the repository directory! \
 Please run this script from the repo directory to avoid problems."
         Send_log "Exiting"
@@ -20,7 +19,7 @@ Clean_local() {
         fi
     done
 
-    Send_log "info" "Cleaning wallpapers..."
+    Send_log "Cleaning wallpapers..."
     rm -rf ./wallpapers
 
     Send_log "Done cleaning"
@@ -59,7 +58,7 @@ Update_remote() {
     if [[ -d $chosen ]] || [[ -f $chosen ]]; then
         git add $chosen
         Ask "Add more files/directories to queue?"
-        if [[ $answer =~ y ]]; then
+        if $answer == "y"; then
             Update_remote
             return
         fi
@@ -81,7 +80,7 @@ Update_remote() {
         Send_log "Done!"
         Ask "Push changes now? If not, you'll go back to the queue step"
 
-        if [[ $answer == y ]]; then
+        if $answer == "y"; then
             git push
             Send_log "Done pushing!"
             return
@@ -106,7 +105,7 @@ Send_log "Please run this script in it's current directory to avoid issues"
 Send_log "Tip: Press ^C([Ctrl] + [C]) to stop script at any time\n"
 
 Ask "Update local repository with host configurations?"
-if ! $answer == y; then
+if ! $answer == "y"; then
     Send_log "Exiting"
     exit 0
 fi
@@ -119,7 +118,7 @@ Update_local
 if command -v git; then
     Ask "Would you like to commit to remote? (You will be prompted for commits)"
 
-    if $answer =~ y; then
+    if $answer == "y"; then
         Update_remote
         echo "Looks like it's done! Have a great day!"
     else
