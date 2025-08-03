@@ -42,13 +42,13 @@ class AstalPlayers extends GObject.Object {
 
         const ids = [
             player.connect('notify::playback-status', handler),
-            player.connect('notify::cover-art', handler),
+            //player.connect('notify::cover-art', handler),
             player.connect('notify::identity', handler),
-            player.connect('notify::track-id', handler),
-            // player.connect('notify::title', handler), // Em... This is a stupid idea.
+            //player.connect('notify::track-id', handler),
+            // player.connect('notify::title', handler),
             // player.connect('notify::artist', handler),
-            //player.connect('notify::metadata', handler), // infinity call from Clapper 
-            //player.connect('notify::position', handler) // DO NOT DO THAT!
+            player.connect('notify::metadata', handler),
+            player.connect('notify::position', handler)
         ];
 
         this.#playerConnections.set(player, ids);
