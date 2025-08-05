@@ -1,12 +1,10 @@
 # colorshell
-<p>(previously retrozinndev/Hyprland-Dots)</p>
 
 > [!note]
 > My personal dotfiles are now on [retrozinndev/Hyprland-Dots](https://github.com/retrozinndev/Hyprland-Dots)
 
-My Hyprland Desktop Shell that I love to keep improving every day! 🤩 <br>
+This is the repository for the colorshell desktop shell, made for Hyprland with [TypeScript], [GTK4], [AGS], [Gnim], and some of the [Astal] libraries.
 
-This is the repository for my desktop shell, made with [GTK], [Astal] and [AGS] + [TypeScript]. <br>
 It really took me a lot of time to make this, so please star the repo if you like it! :star:
 
 ## 🌄 Screenshots
@@ -17,7 +15,9 @@ It really took me a lot of time to make this, so please star the repo if you lik
 
 ## 🎨 Colors
 All the shell colors are dynamically generated from your wallpaper! 
-This is possible by using [pywal16](fork of the archived [pywal](https://github.com/dylanaraps/pywal) project), a cli tool to generate color schemes on the fly.
+
+This is possible by using [pywal16], a fork of the archived [pywal](https://github.com/dylanaraps/pywal) project. 
+It's a cli tool to generate color schemes from an image.
 
 ## 🖼️ Wallpapers
 When you're at the [Installation](#%EF%B8%8F-installation) process, you can choose whether you want to install the wallpapers or not. <br>
@@ -29,11 +29,13 @@ Control Center and clicking in the image icon on top.
 ### ℹ️ Source
 None of the wallpapers available in this repo are made by me! You can find sources inside the [`WALLPAPERS.md`](/WALLPAPERS.md) file. (it took me a lot of time to make this sources list 😭)
 
-### ✔️ What's included in this shell
+## ✔️ What's included in this shell
+<details>
+  
 - Pretty Top-Bar
-  - Apps button(basically the "start menu", opens the full-screen app launcher)
-  - Workspace indicator(contains icon of last used application on each)
-  - Focused Client(Window) information(title, class and icon)
+  - Apps(basically the "start menu", opens the full-screen app launcher)
+  - Workspaces indicator
+  - Focused Client(window) information(title, class and icon)
   - Clock(with date)
   - Media(shows only when media is being played)
   - Tray(Applications running in the background)
@@ -60,9 +62,9 @@ None of the wallpapers available in this repo are made by me! You can find sourc
   - Wallpapers(`#`): Search and select to change wallpaper
   - Media(`:`): Control playing media
   - Search(`?`): Search something on the internet with your default browser
-- Gnome-like application list
 - Support for your multiple monitors
-- Dynamic support for [UWSM](https://github.com/Vladimir-csp/uwsm)(dinamically enabled if current session is using UWSM)
+- Dynamic support for [UWSM](https://github.com/Vladimir-csp/uwsm)(apps will use uwsm if current session is using it)
+</details>
 
 ## ⌨️ Binds
 You can see default bindings and usage information on the [Wiki/Usage] page!
@@ -102,8 +104,10 @@ This repo is licensed under the [MIT License], project is made and maintained by
 [nushell]: https://nushell.sh
 [kitty]: https://sw.kovidgoyal.net/kitty
 [ags]: https://aylur.github.io/ags
+[gnim]: https://aylur.github.io/gnim
 [astal]: https://aylur.github.io/astal
 [typescript]: https://typescriptlang.org
+[gtk4]: https://www.gtk.org
 [gtk]: https://www.gtk.org
 
 <!--  Web refs -->
