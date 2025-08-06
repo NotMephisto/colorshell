@@ -19,10 +19,11 @@ Clean_local() {
 }
 
 Update_local() {
+    mkdir -p $outdir
     for dir in ${config_dirs[@]}; do
         if [[ -d "$XDG_CONFIG_HOME/$dir" ]] || [[ -f "$XDG_CONFIG_HOME/$dir" ]]; then 
             Send_log "Copying ${dir^}"
-            mkdir -p $outdir/$dir
+            mkdir -p `dirname "$outdir/$dir"`
             cp -r $XDG_CONFIG_HOME/$dir $outdir/$dir
         else
             Send_log "warn" "Looks like the ${dir^} dir is in fault! Skipping..."
