@@ -15,7 +15,9 @@ Check_current_dir() {
 
 Clean_local() {
     Send_log "info" "Cleaning local config..."
-    rm -rf $outdir
+    for dir in ${config_dirs[@]}; do
+        rm -rf $outdir/$dir
+    done
 }
 
 Update_local() {
