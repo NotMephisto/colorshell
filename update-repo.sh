@@ -2,6 +2,8 @@
 
 source ./utils.sh
 
+outdir="./config"
+
 Check_current_dir() {
     if ! [[ -f ./utils.sh ]]; then
         Send_log warn "Looks like you're not in the repository directory!\nPlease run this script from the repo directory to avoid problems."
@@ -12,49 +14,28 @@ Check_current_dir() {
 }
 
 Clean_local() {
-    Send_log "info" "Cleaning current repo dotfiles..."
-    for dir in ${config_dirs[@]}; do
-        if [[ -d "./$dir" ]]; then
-            rm -rf ./$dir
-        fi
-    done
-
-    Send_log "info" "Cleaning wallpapers..."
-    rm -rf ./wallpapers
-
-    echo "Done cleaning."
+    Send_log "info" "Cleaning local config..."
+    rm -rf $outdir
 }
 
 Update_local() {
     for dir in ${config_dirs[@]}; do
         if [[ -d "$XDG_CONFIG_HOME/$dir" ]] || [[ -f "$XDG_CONFIG_HOME/$dir" ]]; then 
             Send_log "Copying ${dir^}"
-            cp -r $XDG_CONFIG_HOME/$dir ./$dir
+            mkdir -p $outdir/$dir
+            cp -r $XDG_CONFIG_HOME/$dir $outdir/$dir
         else
             Send_log "warn" "Looks like the ${dir^} dir is in fault! Skipping..."
         fi
     done
-
-    walls_dir=$WALLPAPERS
-
-    if [[ -z "$walls_dir" ]] || [[ ! -d "$walls_dir" ]]; then
-        walls_dir="$HOME/wallpapers"
-    fi
-
-    if [[ ! -z "$walls_dir" ]] && [[ -d "$walls_dir" ]]; then
-        Send_log "Copying wallpapers"
-        mkdir -p ./wallpapers
-        cp -rf $HOME/wallpapers/* ./wallpapers
-
-        return
-    fi
-
-    Send_log warn "Wallpapers dir could not be found in $HOME, skipping..."
 }
 
 Update_remote() {
-    echo "Git status:"
-    /bin/env git status
+    command -v git && \
+        git status \
+    || (echo "git not found! please install git before doing this" && \
+        exit 1)
+
     echo "Please type one of the dotfiles you want to push now(only one dir):"
     printf "directory/file: "
     read chosen_dir 

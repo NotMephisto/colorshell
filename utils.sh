@@ -20,7 +20,6 @@ config_dirs=(
     "hypr/hyprland.conf" 
     "hypr/hypridle.conf" 
     "kitty/kitty.conf" 
-    "ags" 
 )
 
 # -------------
