@@ -4,7 +4,7 @@
     "packageManager": "pnpm@10.12.1",
     "scripts": {
         "types": "sh ./scripts/types.sh",
-        "dev": "pnpm start",
+        "dev": "pnpm build && pnpm start",
         "start": "sh ./scripts/start.sh",
         "build": "sh ./scripts/build.sh",
         "sync-config": "sh scripts/update-repo.sh"
