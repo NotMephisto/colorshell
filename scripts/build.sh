@@ -1,10 +1,61 @@
 
 set -e
 
-outdir="${1:-./build}"
+output="./build"
 
-mkdir -p $outdir
+while getopts r:o:bdh args; do
+    case "$args" in
+        r) 
+            gresources_target=${OPTARG}
+            ;;
+        b) 
+            keep_gresource=true
+            ;;
+        o)
+            output=${OPTARG}
+            ;;
+        d)
+            is_devel=true
+            ;;
+        h)
+            echo "\
+colorshell's build script. 
 
-cp -rf node_modules src/
-ags bundle src/app.ts $outdir/colorshell
+Options: 
+  -r \$file: specify gresource's target path (default: \`\$output/resources.gresource\`)
+  -o \$path: specify the build's output directory (default: \`./build\`)
+  -b: only target gresource in the build, keeping the file in the output dir
+  -d: enable developer mode in the build
+  -h: show this help message"
+            exit 0
+            ;;
+    esac
+done
+
+if [[ -d "$output" ]] && [[ ! -z "$(ls -A -w1 $output)" ]]; then
+    echo "[info] cleaning previous build"
+    rm -rf $output/*
+else
+    mkdir -p $output
+fi
+
+# link node_modules to src, so ags(esbuild) knows there are modules to bundle
+echo "[info] linking modules"
+ln -s node_modules src/node_modules
+
+echo "[info] compiling gresource"
+gres_target=`[[ "$keep_gresource" ]] && echo -n "$output/resources.gresource" || \
+    echo -n "${gresources_target:-$output/resources.gresource}"`
+mkdir -p `dirname "$gres_target"`
+glib-compile-resources src/resources.gresource.xml \
+    --sourcedir ./src \
+    --target "$gres_target"
+
+echo "[info] bundling project"
+ags bundle src/app.ts $output/colorshell \
+    -r ./src \
+    -d "DEVEL=`[[ $is_devel ]] && echo -n true || echo -n false`" \
+    -d "GRESOURCES_FILE='${gresources_file:-$output/resources.gresource}'"
+
+echo "[info] cleaning"
 rm -rf src/node_modules
