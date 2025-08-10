@@ -14,8 +14,8 @@ import Gio from "gi://Gio?version=2.0";
 
 
 let wsTimeout: AstalIO.Time|undefined;
-const help = `Manage Astal Windows and do more stuff. From retrozinndev's colorshell, 
-made using Astal Libraries, AGS and Gnim by Aylur.
+const help = `Manage Astal Windows and do more stuff. From retrozinndev's colorshell, \
+made using GTK4, AGS, Gnim and Astal libraries by Aylur.
 
         Window Management:
           open [window]: opens the specified window.
@@ -35,6 +35,7 @@ made using Astal Libraries, AGS and Gnim by Aylur.
         Other options:
           runner [initial_text]: open the application runner, optionally add an initial search.
           peek-workspace-num [millis]: peek the workspace numbers on bar window.
+          v, version: display current colorshell version.
           h, help: shows this help message.
 
         2025 (c) retrozinndev's colorshell, licensed under the MIT License.
@@ -46,6 +47,12 @@ export function handleArguments(cmd: Gio.ApplicationCommandLine, args: Array<str
         case "help":
         case "h":
             cmd.print_literal(help);
+            return 0;
+
+        case "version":
+        case "v":
+            cmd.print_literal(`colorshell by retrozinndev, version ${COLORSHELL_VERSION
+                }${DEVEL ? "(devel)" : ""}\nhttps://github.com/retrozinndev/colorshell`);
             return 0;
 
         case "open":
