@@ -58,7 +58,7 @@ class PlayerWidget extends Gtk.Box {
 
         this.append(
             <Gtk.Revealer hexpand={false} revealChild={
-                createBinding(player, "artUrl").as(Boolean)
+                createBinding(player, "coverArt").as(Boolean)
             } transitionType={Gtk.RevealerTransitionType.SLIDE_LEFT} transitionDuration={300}>
 
                 <Gtk.Box class={"image"} css={createBinding(player, "artUrl").as((art) => 

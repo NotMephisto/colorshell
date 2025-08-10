@@ -1,7 +1,7 @@
 import { execAsync } from "ags/process";
 import { timeout } from "ags/time";
 import GObject, { register, getter } from "ags/gobject";
-import { monitorFile } from "ags/file";
+import { monitorFile, readFile } from "ags/file";
 
 import AstalIO from "gi://AstalIO";
 import Gio from "gi://Gio?version=2.0";
@@ -9,6 +9,35 @@ import GLib from "gi://GLib?version=2.0";
 
 
 export { Wallpaper };
+
+type WalData = {
+    checksum: string;
+    wallpaper: string;
+    alpha: number;
+    special: {
+        background: string;
+        foreground: string;
+        cursor: string;
+    };
+    colors: {
+        color0: string;
+        color1: string;
+        color2: string;
+        color3: string;
+        color4: string;
+        color5: string;
+        color6: string;
+        color7: string;
+        color8: string;
+        color9: string;
+        color10: string;
+        color11: string;
+        color12: string;
+        color13: string;
+        color14: string;
+        color15: string;
+    };
+};
 
 @register({ GTypeName: "Wallpaper" })
 class Wallpaper extends GObject.Object {
@@ -135,6 +164,11 @@ class Wallpaper extends GObject.Object {
                 console.error(`Wallpaper: an error occurred when trying to replace the hyprpaper file`);
             }
         );
+    }
+
+    public getData(): WalData {
+        const content = readFile(`${GLib.getenv("XDG_CACHE_HOME")}/wal/colors.json`);
+        return JSON.parse(content) as WalData;
     }
 
     public async getWallpaper(): Promise<string|undefined> {

@@ -7,7 +7,7 @@ import { FloatingNotifications } from "./window/FloatingNotifications";
 import { CenterWindow } from "./window/CenterWindow";
 import { LogoutMenu } from "./window/LogoutMenu";
 import { AppsWindow } from "./window/AppsWindow";
-import { createRoot, getScope, onCleanup, Scope } from "/usr/share/ags/js/gnim/src/jsx/scope";
+import { createRoot, getScope, onCleanup } from "ags";
 import { Shell } from "./app";
 import GObject, { getter, register, signal } from "ags/gobject";
 
@@ -182,7 +182,7 @@ class Windows extends GObject.Object {
      * @returns a function that when called, returns Array<Astal.Window>
      * @throws Error if there are no monitors connected
      */
-    public createWindowForMonitors(create: (mon: number, scope: Scope) => GObject.Object|Astal.Window): (() => Array<Astal.Window>) {
+    public createWindowForMonitors(create: (mon: number, scope: ReturnType<typeof getScope>) => GObject.Object|Astal.Window): (() => Array<Astal.Window>) {
         const monitors = AstalHyprland.get_default().get_monitors();
 
         if(monitors.length < 1) 
@@ -213,7 +213,7 @@ class Windows extends GObject.Object {
      * @returns a function that when called, returns a Astal.Window instance
      * @throws Error if no focused monitor is found
      */
-    public createWindowForFocusedMonitor(create: (mon: number, scope: Scope) => GObject.Object|Astal.Window): (() => Astal.Window) {
+    public createWindowForFocusedMonitor(create: (mon: number, scope: ReturnType<typeof getScope>) => GObject.Object|Astal.Window): (() => Astal.Window) {
         const focusedMonitor = this.getFocusedMonitorId();
 
         if(focusedMonitor == null) 

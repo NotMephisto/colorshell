@@ -3,14 +3,18 @@ import { Gtk } from "ags/gtk4";
 import { Separator } from "../Separator";
 import { Windows } from "../../windows";
 import { Clipboard } from "../../scripts/clipboard";
+import { decoder, getPlayerIconFromBusName, variableToBoolean } from "../../scripts/utils";
 
 import GObject from "ags/gobject";
 import AstalMpris from "gi://AstalMpris";
 import Pango from "gi://Pango?version=1.0";
-import { decoder, getPlayerIconFromBusName, variableToBoolean } from "../../scripts/utils";
 
 
-export const dummyPlayer = AstalMpris.Player.new("colorshellDummy");
+export const dummyPlayer = {
+    available: false,
+    busName: "dummy_player",
+    bus_name: "dummy_player"
+} as AstalMpris.Player;
 export let [player, setPlayer] = createState(dummyPlayer);
 
 export const Media = () => {

@@ -30,6 +30,7 @@ import AstalNotifd from "gi://AstalNotifd";
 import GLib from "gi://GLib?version=2.0";
 import Gio from "gi://Gio?version=2.0";
 import Adw from "gi://Adw?version=1";
+import GdkPixbuf from "gi://GdkPixbuf?version=2.0";
 
 
 const runnerPlugins: Array<Runner.Plugin> = [
@@ -41,7 +42,7 @@ const runnerPlugins: Array<Runner.Plugin> = [
     PluginClipboard
 ];
 
-const defaultWindows: Array<string> = [];
+const defaultWindows: Array<string> = [ "bar" ];
 
 Gtk.init();
 Adw.init();
@@ -57,6 +58,7 @@ export class Shell extends Gtk.Application {
     #stylesheet: Uint8Array|undefined;
     #styleProvider: Gtk.CssProvider;
     #gresource: Gio.Resource|null = null;
+    #icons: Record<string, Gio.BytesIcon> = {};
 
     get scope() { return this.#scope; }
 
@@ -64,12 +66,42 @@ export class Shell extends Gtk.Application {
         super({
             applicationId: "io.github.retrozinndev.colorshell",
             flags: Gio.ApplicationFlags.HANDLES_COMMAND_LINE,
-            version: "1.1.0",
+            version: COLORSHELL_VERSION ?? "0.0.0-unknown",
         });
 
         this.#styleProvider = Gtk.CssProvider.new();
         try {
-            this.#gresource = Gio.Resource.load(GRESOURCES_FILE);
+            // load gresource from build-defined value + support env variables
+            this.#gresource = Gio.Resource.load(GRESOURCES_FILE.split('/').filter(s => 
+                s !== ""
+            ).map(path => {
+                if(/^\$/.test(path)) {
+                    const env = GLib.getenv(path.replace(/^\$/, ""));
+
+                    if(env === null)
+                        throw new Error(`Couldn't get environment variable: ${path}`);
+
+                    return env;
+                }
+
+                return path;
+            }).join('/'));
+            Gio.resources_register(this.#gresource);
+
+            // add icons 
+            Gio.resources_enumerate_children(
+                "/io/github/retrozinndev/colorshell", 
+                Gio.ResourceLookupFlags.NONE
+            ).filter(name => 
+                /symbolic$/.test(name) || name.endsWith("svg")
+            ).map(name => 
+                `/io/github/retrozinndev/colorshell/${name}`
+            ).forEach(path => {
+                const name = path.split('/')[path.split('/').length - 1];
+                const iconBytes = Gio.resources_lookup_data(path, null);
+
+                this.#icons[name] = Gio.BytesIcon.new(iconBytes);
+            });
         } catch(_e) {
             const e = _e as Error;
             console.error(`Error: couldn't load gresource! Stderr: ${e.message}\n${e.stack}`);
@@ -89,6 +121,13 @@ export class Shell extends Gtk.Application {
             Gdk.Display.get_default()!,
             this.#styleProvider
         );
+    }
+
+    public getGIcon(name: string): Gio.BytesIcon {
+        if(!Object.hasOwn(this.#icons, name))
+            throw new Error(`Colorshell: No gicon found with name "${name}"`);
+
+        return this.#icons[name];
     }
 
     public applyStyle(stylesheet: string): void {
@@ -127,8 +166,9 @@ export class Shell extends Gtk.Application {
                 return 1;
             }
         } else {
-            if(args[1]) {
-                printerr("Error: colorshell not running. Try to clean-run before using arguments");
+            if(args.length > 0) {
+                cmd.printerr_literal("Error: colorshell not running. Try to clean-run before using arguments");
+                cmd.done();
                 return 1;
             }
             
@@ -151,7 +191,7 @@ export class Shell extends Gtk.Application {
             console.log(`Colorshell: initializing`);
             this.#scope = getScope();
 
-            Stylesheet.getDefault().compileApply();
+            Stylesheet.getDefault();
 
             // Init clipboard module
             Clipboard.getDefault();
