@@ -57,7 +57,8 @@ ags bundle src/app.ts $output/colorshell \
     -r ./src \
     -d "DEVEL=`[[ $is_devel ]] && echo -n true || echo -n false`" \
     -d "COLORSHELL_VERSION='`cat package.json | jq -r .version`'" \
-    -d "GRESOURCES_FILE='${gresources_file:-$output/resources.gresource}'"
+    -d "GRESOURCES_FILE='${gresources_target:-$output/resources.gresource}'" \
+|| rm -rf src/node_modules
 
 echo "[info] cleaning"
 rm -rf src/node_modules
