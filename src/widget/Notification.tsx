@@ -2,13 +2,13 @@ import { Gdk, Gtk } from "ags/gtk4";
 import { Separator } from "./Separator";
 import { HistoryNotification, Notifications } from "../scripts/notifications";
 import { getAppIcon, getSymbolicIcon } from "../scripts/apps";
+import { escapeUnintendedMarkup, pathToURI } from "../scripts/utils";
 import { onCleanup } from "ags";
 
+import GObject from "ags/gobject";
 import AstalNotifd from "gi://AstalNotifd";
 import Pango from "gi://Pango?version=1.0";
 import GLib from "gi://GLib?version=2.0";
-import GObject from "gi://GObject?version=2.0";
-import { escapeUnintendedMarkup, pathToURI } from "../scripts/utils";
 
 
 function getNotificationImage(notif: AstalNotifd.Notification|HistoryNotification): (string|undefined) {
@@ -31,6 +31,12 @@ export function NotificationWidget({ notification, actionClicked, holdOnHover, s
     notification = (typeof notification === "number") ? 
         AstalNotifd.get_default().get_notification(notification)
     : notification;
+
+    const actions: Array<AstalNotifd.Action>|undefined = (notification instanceof AstalNotifd.Notification) ? 
+        notification.actions?.filter(a => 
+            a.id.toLowerCase() !== "view" && a.label.toLowerCase() != "view"
+        )
+    : undefined;
 
     const conns: Map<GObject.Object, Array<number>> = new Map();
 
@@ -105,20 +111,18 @@ export function NotificationWidget({ notification, actionClicked, holdOnHover, s
             </Gtk.Box>
         </Gtk.Box>
 
-        <Gtk.Box class={"actions button-row"} hexpand={true} visible={
-            (notification instanceof AstalNotifd.Notification) &&
-                (notification.actions.filter(action => action.label.toLowerCase() !== "view").length > 0)
-        }>
-            {
-              (notification instanceof AstalNotifd.Notification) && 
-                notification.actions.filter(a => a.label.toLowerCase() !== "view").map(action =>
-                    <Gtk.Button class={"action"} label={action.label} 
-                      hexpand={true} onClicked={(_) => {
-                          notification.invoke(action.id);
-                          actionClose?.(notification);
-                      }}
-                    />)
-            }
-        </Gtk.Box>
+        {(notification instanceof AstalNotifd.Notification) && actions && actions.length > 0 &&
+            <Gtk.Box class={"actions button-row"} hexpand>
+                { 
+                    actions.map(action =>
+                        <Gtk.Button class={"action"} label={action.label} hexpand 
+                          onClicked={(_) => {
+                              notification.invoke(action.id);
+                              actionClose?.(notification);
+                          }}
+                        />)
+                }
+            </Gtk.Box>
+        }
     </Gtk.Box> as Gtk.Widget;
 }
