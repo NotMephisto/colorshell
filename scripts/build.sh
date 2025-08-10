@@ -20,8 +20,9 @@ while getopts r:o:bdh args; do
         h)
             echo "\
 colorshell's build script. 
+use \`build:release\` for release builds.
 
-Options: 
+options: 
   -r \$file: specify gresource's target path (default: \`\$output/resources.gresource\`)
   -o \$path: specify the build's output directory (default: \`./build\`)
   -b: only target gresource in the build, keeping the file in the output dir
@@ -55,6 +56,7 @@ echo "[info] bundling project"
 ags bundle src/app.ts $output/colorshell \
     -r ./src \
     -d "DEVEL=`[[ $is_devel ]] && echo -n true || echo -n false`" \
+    -d "COLORSHELL_VERSION='`cat package.json | jq -r .version`'" \
     -d "GRESOURCES_FILE='${gresources_file:-$output/resources.gresource}'"
 
 echo "[info] cleaning"
