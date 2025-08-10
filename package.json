@@ -1,13 +1,15 @@
 {
     "$schema": "https://www.schemastore.org/package.json",
     "name": "colorshell",
+    "version": "1.1.0",
     "packageManager": "pnpm@10.12.1",
     "scripts": {
         "types": "sh ./scripts/types.sh",
         "dev": "sh ./scripts/build.sh -d && sh ./scripts/start.sh",
         "start": "sh ./scripts/start.sh",
         "build": "sh ./scripts/build.sh",
-        "sync-config": "sh scripts/update-repo.sh"
+        "build:release": "sh ./scripts/release.sh",
+        "sync-config": "sh ./scripts/update-repo.sh"
     },
     "devDependencies": {
         "ags": "link:../../../../usr/share/ags/js"
