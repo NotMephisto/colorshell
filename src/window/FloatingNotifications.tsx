@@ -28,8 +28,10 @@ export const FloatingNotifications = (mon: number) =>
                             <NotificationWidget notification={notif} showTime={false}
                               actionClose={() => Notifications.getDefault().removeNotification(notif)}
                               holdOnHover={false} actionClicked={() => {
-                                  const viewAction = notif.actions.filter(action => 
-                                      action.label.toLowerCase() === "view")?.[0];
+                                  const viewAction = notif.actions.filter(a => 
+                                      a.id.toLowerCase() === "view" || 
+                                          a.label.toLowerCase() === "view"
+                                  )?.[0];
 
                                   viewAction && notif.invoke(viewAction.id);
                               }}

@@ -5,6 +5,7 @@ import { FocusedClient } from "../widget/bar/FocusedClient";
 import { Apps } from "../widget/bar/Apps";
 import { Clock } from "../widget/bar/Clock";
 import { Status } from "../widget/bar/Status";
+import { Media } from "../widget/bar/Media";
 
 
 export const Bar = (mon: number) => {
@@ -29,6 +30,7 @@ export const Bar = (mon: number) => {
                   $type="center">
 
                     <Clock />
+                    <Media />
                 </Gtk.Box>
                 <Gtk.Box class={"widgets-right"} homogeneous={false}
                   spacing={widgetSpacing} halign={Gtk.Align.END}

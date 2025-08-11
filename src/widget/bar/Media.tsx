@@ -1,27 +1,18 @@
-import { Accessor, createBinding, createConnection, createState, onCleanup, With } from "ags";
+import { Accessor, createBinding, createConnection, onCleanup, With } from "ags";
 import { Gtk } from "ags/gtk4";
 import { Separator } from "../Separator";
 import { Windows } from "../../windows";
 import { Clipboard } from "../../scripts/clipboard";
 import { decoder, getPlayerIconFromBusName, variableToBoolean } from "../../scripts/utils";
+import { player, setPlayer } from "../../scripts/media";
 
 import GObject from "ags/gobject";
 import AstalMpris from "gi://AstalMpris";
 import Pango from "gi://Pango?version=1.0";
 
 
-export const dummyPlayer = {
-    available: false,
-    busName: "dummy_player",
-    bus_name: "dummy_player"
-} as AstalMpris.Player;
-export let [player, setPlayer] = createState(dummyPlayer);
-
 export const Media = () => {
     const connections: Map<GObject.Object, Array<number>|number> = new Map();
-
-    if(AstalMpris.get_default().players[0])
-        setPlayer(AstalMpris.get_default().players[0]);
 
     onCleanup(() => connections.forEach((id, obj) => 
         Array.isArray(id) ? 
@@ -29,29 +20,13 @@ export const Media = () => {
         : obj.disconnect(id)
     ));
 
-    connections.set(AstalMpris.get_default(), [
-        AstalMpris.get_default().connect("player-added", (_, player) => 
-            player.available && setPlayer(player)),
-
-        AstalMpris.get_default().connect("player-closed", (_, closedPlayer) => {
-            const players = AstalMpris.get_default().players.filter(pl => pl?.available && 
-                pl.busName !== closedPlayer.busName);
-
-            if(players.length > 0) {
-                setPlayer(players[0]);
-                return;
-            } 
-            
-            setPlayer(dummyPlayer);
-        })
-    ]);
-
     return <Gtk.Box class={"media"} visible={player((pl) => pl.available)}
       $={(self) => {
           const gestureClick = Gtk.GestureClick.new(),
               controllerMotion = Gtk.EventControllerMotion.new(),
               controllerScroll = Gtk.EventControllerScroll.new(
-                  Gtk.EventControllerScrollFlags.VERTICAL);
+                  Gtk.EventControllerScrollFlags.VERTICAL
+              );
 
           self.add_controller(gestureClick);
           self.add_controller(controllerMotion);

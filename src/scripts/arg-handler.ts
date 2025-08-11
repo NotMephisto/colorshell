@@ -5,7 +5,7 @@ import { timeout } from "ags/time";
 import { Runner } from "../runner/Runner";
 import { showWorkspaceNumber } from "../widget/bar/Workspaces";
 import { playSystemBell } from "./utils";
-import { player, setPlayer } from "../widget/bar/Media";
+import { player, setPlayer } from "./media";
 import { generalConfig, Shell } from "../app";
 
 import AstalIO from "gi://AstalIO";

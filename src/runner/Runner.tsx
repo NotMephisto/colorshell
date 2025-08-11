@@ -7,6 +7,7 @@ import { timeout } from "ags/time";
 
 import AstalHyprland from "gi://AstalHyprland";
 import AstalIO from "gi://AstalIO";
+import { Shell } from "../app";
 
 
 export namespace Runner {
@@ -21,7 +22,7 @@ export type RunnerProps = {
     showResultsPlaceHolderOnStartup?: boolean;
 };
 
-type Result = ResultWidgetProps;
+export type Result = ResultWidgetProps;
 
 export interface Plugin {
     /** prefix to call the plugin. if undefined, will be triggered like applications plugin */
@@ -243,8 +244,9 @@ export function openRunner(props: RunnerProps, placeholders?: Array<Result>): As
             <PopupWindow namespace={"runner"} monitor={mon} widthRequest={props.width} 
               heightRequest={props.height} exclusivity={Astal.Exclusivity.IGNORE} halign={Gtk.Align.CENTER}
               marginTop={(AstalHyprland.get_default().get_monitor(mon)?.height / 2) - (props.height! / 2)}
-              valign={Gtk.Align.START} hexpand orientation={Gtk.Orientation.VERTICAL} 
-              $={() => {
+              valign={Gtk.Align.START} hexpand orientation={Gtk.Orientation.VERTICAL}
+              $={(self) => {
+                  self.set_application(Shell.getDefault());
                   plugins.forEach(plugin => 
                       plugin.init?.());
 

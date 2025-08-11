@@ -1,7 +1,8 @@
 import { timeout } from "ags/time";
 import { Astal, Gtk } from "ags/gtk4";
 import { Clipboard } from "../../scripts/clipboard";
-import { getMediaUrl, player, setPlayer } from "../bar/Media";
+import { getMediaUrl } from "../bar/Media";
+import { player, setPlayer } from "../../scripts/media";
 import { createBinding, For } from "ags";
 import { pathToURI, variableToBoolean } from "../../scripts/utils";
 

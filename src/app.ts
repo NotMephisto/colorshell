@@ -1,6 +1,8 @@
 // fix ags needing --gtk 4
 // import app from "ags/gtk4/app";
 
+// fix can't convert non-null pointer to JS value (thanks Aylur!)
+import "/usr/share/ags/js/src/overrides";
 import { 
     PluginApps, 
     PluginClipboard, 
@@ -9,7 +11,6 @@ import {
     PluginWallpapers, 
     PluginWebSearch
 } from "./runner/plugins";
-
 import { Wireplumber } from "./scripts/volume";
 import { handleArguments } from "./scripts/arg-handler";
 import { Runner } from "./runner/Runner";
@@ -24,13 +25,13 @@ import { createRoot, getScope } from "ags";
 import { triggerOSD } from "./window/OSD";
 import { programArgs, programInvocationName } from "system";
 import { encoder, decoder } from "./scripts/utils";
+import { initPlayer } from "./scripts/media";
 
 import GObject, { register } from "ags/gobject";
 import AstalNotifd from "gi://AstalNotifd";
 import GLib from "gi://GLib?version=2.0";
 import Gio from "gi://Gio?version=2.0";
 import Adw from "gi://Adw?version=1";
-import GdkPixbuf from "gi://GdkPixbuf?version=2.0";
 
 
 const runnerPlugins: Array<Runner.Plugin> = [
@@ -48,8 +49,8 @@ Gtk.init();
 Adw.init();
 GLib.unsetenv("LD_PRELOAD");
 
-@register({ GTypeName: "Shell" })
-export class Shell extends Gtk.Application {
+@register({ GTypeName: "Shell", Implements: [Gio.ActionGroup]})
+export class Shell extends Gtk.Application implements Gio.ActionMap {
     private static instance: Shell;
 
     #loop!: GLib.MainLoop;
@@ -77,7 +78,6 @@ export class Shell extends Gtk.Application {
             ).map(path => {
                 if(/^\$/.test(path)) {
                     const env = GLib.getenv(path.replace(/^\$/, ""));
-
                     if(env === null)
                         throw new Error(`Couldn't get environment variable: ${path}`);
 
@@ -106,6 +106,12 @@ export class Shell extends Gtk.Application {
             const e = _e as Error;
             console.error(`Error: couldn't load gresource! Stderr: ${e.message}\n${e.stack}`);
         }
+
+        // create action for gapplication to handle commands via dbus 
+        // (faster than running a remote instance to send arguments)
+        // TODO: implement support for argument parsing through dbus
+        const msgAction = Gio.SimpleAction.new("msg", null);
+        this.add_action(msgAction);
     }
 
     public static getDefault(): Shell {
@@ -186,10 +192,12 @@ export class Shell extends Gtk.Application {
     private main(): void {
         this.#loop = GLib.MainLoop.new(null, false);
 
-        this.#connections.set(this, this.connect("shutdown", () => this.#scope.dispose()));
-        createRoot(() => {
-            console.log(`Colorshell: initializing`);
+        createRoot((dispose) => {
+            console.log(`Colorshell: Initializing things`);
+            this.#connections.set(this, this.connect("shutdown", () => dispose()));
             this.#scope = getScope();
+
+            initPlayer();
 
             Stylesheet.getDefault();
 
@@ -276,4 +284,4 @@ export const generalConfig = new Config<keyof typeof generalConfigDefaults,
         `${GLib.get_user_config_dir()}/colorshell/config.json`, generalConfigDefaults
 );
 
-Shell.getDefault().runAsync([ programInvocationName, ...programArgs ]);
+Shell.getDefault().run([ programInvocationName, ...programArgs ]);

@@ -32,10 +32,11 @@ export function NotificationWidget({ notification, actionClicked, holdOnHover, s
         AstalNotifd.get_default().get_notification(notification)
     : notification;
 
-    const actions: Array<AstalNotifd.Action>|undefined = (notification instanceof AstalNotifd.Notification) ? 
-        notification.actions?.filter(a => 
-            a.id.toLowerCase() !== "view" && a.label.toLowerCase() != "view"
-        )
+    const actions: Array<AstalNotifd.Action>|undefined = ((notification instanceof AstalNotifd.Notification) &&
+        notification.actions && notification.actions.filter(a => Boolean(a)).length > 0) ? 
+            notification.actions?.filter(a => 
+                a?.id?.toLowerCase() !== "view" && a?.label?.toLowerCase() != "view"
+            )
     : undefined;
 
     const conns: Map<GObject.Object, Array<number>> = new Map();
