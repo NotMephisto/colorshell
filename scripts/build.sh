@@ -48,8 +48,8 @@ echo "[info] compiling gresource"
 gres_target=`[[ "$keep_gresource" ]] && echo -n "$output/resources.gresource" || \
     echo -n "${gresources_target:-$output/resources.gresource}"`
 mkdir -p `dirname "$gres_target"`
-glib-compile-resources src/resources.gresource.xml \
-    --sourcedir ./src \
+glib-compile-resources resources.gresource.xml \
+    --sourcedir ./resources \
     --target "$gres_target"
 
 echo "[info] bundling project"
