@@ -179,12 +179,12 @@ function getPluginResults(input: string, limit?: number): Array<Result> {
     : results;
 }
 
-function updateResultsList(listbox: Gtk.ListBox, input: string, placeholders?: Array<Result>) {
+function updateResultsList(listbox: Gtk.ListBox, input: string, limit?: number, placeholders?: Array<Result>) {
     const newResults: Array<Result> = [],
         scrolledWindow = listbox.parent.parent as Gtk.ScrolledWindow;
 
     listbox.remove_all();
-    getPluginResults(input).forEach((result) => {
+    getPluginResults(input, limit).forEach((result) => {
         listbox.insert(<ResultWidget {...result} /> as ResultWidget, -1);
         newResults.push(result);
     });
@@ -292,7 +292,7 @@ export function openRunner(props: RunnerProps, placeholders?: Array<Result>): As
                   $={(self) => gtkEntry = self} searchDelay={0} onSearchChanged={(self) => {
                       const listbox = ((self.get_next_sibling()! as Gtk.ScrolledWindow)
                         .get_child() as Gtk.Viewport).get_child() as Gtk.ListBox;
-                      updateResultsList(listbox, self.text, placeholders);
+                      updateResultsList(listbox, self.text, props.resultsLimit, placeholders);
 
                       listbox.get_row_at_index(0) && 
                           listbox.select_row(listbox.get_row_at_index(0));
