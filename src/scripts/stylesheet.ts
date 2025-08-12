@@ -1,8 +1,8 @@
-import { monitorFile, readFile } from "ags/file";
+import { monitorFile, readFile, writeFileAsync } from "ags/file";
 import { decoder } from "./utils";
+import { execAsync } from "ags/process";
 import { Wallpaper } from "./wallpaper";
 import { Shell } from "../app";
-import { exec } from "ags/process";
 
 import Gio from "gi://Gio?version=2.0";
 import GLib from "gi://GLib?version=2.0";
@@ -12,20 +12,15 @@ import GLib from "gi://GLib?version=2.0";
 export class Stylesheet {
     private static instance: Stylesheet;
     #outputPath = Gio.File.new_for_path(`${GLib.get_user_cache_dir()}/colorshell/style`);
-    #sassStyles!: {
-        colors: string;
-        general: string;
+    #stylesPaths: Array<string>;
+    readonly #sassStyles = {
+        modules: ["sass:color"].map(mod => `@use "${mod}";`).join('\n'),
+        colors: "",
+        mixins: "",
+        rules: ""
     };
-
     public get stylePath() { return this.#outputPath.get_path()!; }
 
-    public compileSass(): string {
-        console.log("Stylesheet: Compiling Sass");
-        exec(`echo '${this.#sassStyles.colors}\n${this.#sassStyles.general}' \
-            | sass --stdin --no-source-map -s "${this.stylePath}.css"`);
-
-        return readFile(`${this.stylePath}/style.css`);
-    }
 
     public static getDefault(): Stylesheet {
         if(!this.instance)
@@ -34,54 +29,36 @@ export class Stylesheet {
         return this.instance;
     }
 
+    private bundle(): string {
+        return `${this.#sassStyles.modules}\n\n${this.#sassStyles.colors
+            }\n${this.#sassStyles.mixins}\n${this.#sassStyles.rules}`.trim();
+    }
+
+    private async compile(): Promise<void> {
+        const sass = this.bundle();
+        await writeFileAsync(`${this.stylePath}/sass.scss`, sass).catch(_e => {
+            const e = _e as Error;
+            console.error(`Stylesheet: Couldn't write Sass to cache. Stderr: ${
+                e.message}\n${e.stack}`);
+        });
+        await execAsync(
+            `bash -c "sass ${this.stylePath}/sass.scss ${this.stylePath}/style.css"`
+        ).catch(_e => {
+            const e = _e as Error;
+            console.error(`Stylesheet: An error occurred on compile-time! Stderr: ${
+                e.message}\n${e.stack}`);
+        });
+    }
+
     public getStyleSheet(): string {
-        const stylesNames: Array<string> = Gio.resources_enumerate_children(
-            "/io/github/retrozinndev/colorshell",
-            Gio.ResourceLookupFlags.NONE
-        ).filter(name => 
-            name.startsWith("style")
-        ).map(name => 
-            `/io/github/retrozinndev/colorshell/${name}`
-        );
-
-        return stylesNames.map(path =>
-            Gio.resources_lookup_data(path, Gio.ResourceLookupFlags.NONE)
-        ).map(bytes => decoder.decode(bytes.get_data()!)).join('\n');
+        return readFile(`${this.stylePath}/style.css`);
     }
 
-    /*
-    private objectToStyleSheet(colors: object & Record<string, string>): string {
-        return Object.keys(colors).map(name => {
-            const isBg = name.toLowerCase().startsWith('bg') || name.toLowerCase() === "background",
-                color = colors[name as keyof typeof colors];
-
-            // this will transform the color name's casing, example: bgPrimary -> bg-primary
-            return `
-                .${this.kebabify(name)} {
-                    ${isBg ? `background: ${color}` : `color: ${color}`}
-                }
-            `.trim();
-        }).join('\n')
-    }
-
-    private kebabify(str: string) {
-        return str.replace(/[A-Z]/, (c) => `-${c.toLowerCase()}`);
-    }
-    */
-
-    public getColors(): string {
+    public getColorDefinitions(): string {
         const data = Wallpaper.getDefault().getData();
         const colors = {
-            bgPrimary: `color.adjust($color: ${data.colors.color1}, $lightness: -28%)`,
-            bgSecondary: `color.adjust($color: ${data.colors.color1}, $lightness: -16%)`,
-            bgTertiary: `color.adjust($color: ${data.colors.color1}, $lightness: -4%)`,
-            bgLight: data.special.foreground,
-            bgTranslucent: `rgba(color.adjust($color: ${data.colors.color1}, $lightness: -28%), .7)`,
-            bgTranslucentPrimary: `rgba(color.adjust($color: ${data.colors.color1}, $lightness: -28%), .7)`,
-            bgTranslucentSecondary: `rgba(color.adjust($color: ${data.colors.color1}, $lightness: -16%), .7)`,
-            fgPrimary: data.special.foreground,
-            fgLight: `color.adjust($color: ${data.colors.color1}, $lightness: -28%)`,
-            fgDisabled: `color.adjust($color: ${data.special.foreground}, $lightness: -11%)`
+            ...data.special,
+            ...data.colors
         };
 
         return Object.keys(colors).map(name =>
@@ -89,28 +66,82 @@ export class Stylesheet {
         ).join('\n');
     }
 
-    private updateColors(): void {
-        this.#sassStyles.colors = this.getColors();
-        Shell.getDefault().applyStyle(this.compileSass());
+    private organizeModuleImports(sass: string) {
+        return sass.replaceAll(
+            /[@](use|forward|import) ["'](.*)["']?[;]?\n/gi, 
+            (_, impType, imp) => {
+                imp = (imp as string).replace(/["';]/g, "");
+
+                // add sass modules on top
+                if(!this.#sassStyles.modules.includes(imp) && /^(sass|.*http|.*https)/.test(imp))
+                    this.#sassStyles.modules = this.#sassStyles.modules.concat(`\n@${impType} "${imp}";`);
+
+                return "";
+            }
+        ).replace(/(colors|mixins|wal)\./g, "");
+    }
+
+    public compileApply(): void {
+        this.compile().then(() => {
+            Shell.getDefault().resetStyle();
+            Shell.getDefault().applyStyle(this.getStyleSheet());
+        }).catch(_e => {
+            const e = _e as Error;
+            console.error(`Stylesheet: An error occurred at compile-time. Stderr: ${
+                e.message}\n${e.stack}`);
+        });
+    }
+
+    private getStyleData(path: string): string {
+        return decoder.decode(Gio.resources_lookup_data(path, null).get_data()!);
     }
 
     constructor() {
-        try {
-            !this.#outputPath.query_exists(null) && 
-                this.#outputPath.make_directory_with_parents(null);
-        } catch(_e) {
-            const e = _e as Error;
-            console.error(`Stylesheet: couldn't create output path. Stderr: ${e.message}\n${e.stack}`);
-        }
+        if(!this.#outputPath.query_exists(null)) 
+            this.#outputPath.make_directory_with_parents(null);
 
-        this.#sassStyles = {
-            colors: this.getColors(),
-            general: this.getStyleSheet().replace(/colors\.[$]/g, "\$")
-        };
-        Shell.getDefault().applyStyle(this.compileSass());
+        this.#stylesPaths = Gio.resources_enumerate_children(
+            "/io/github/retrozinndev/colorshell/styles", null
+        ).map(name => 
+            `/io/github/retrozinndev/colorshell/styles/${name}`
+        );
 
-        monitorFile(`${GLib.get_user_cache_dir()}/wal/colors.json`, () => {
-            this.updateColors();
+        // Rules won't change at runtime in a common build, 
+        // so no need to worry about this. 
+        // But in a development build, there should be support
+        // hot-reloading the gresource, this is a TODO
+        this.#stylesPaths.forEach(path => {
+            const name = path.split('/')[path.split('/').length - 1];
+
+            switch(name) {
+                case "colors":
+                    this.#sassStyles.colors = `${this.getColorDefinitions()}\n${
+                        this.organizeModuleImports(this.getStyleData(path))
+                    }`;
+                break;
+                case "mixins":
+                    this.#sassStyles.mixins = `${this.organizeModuleImports(
+                        this.getStyleData(path)
+                    )}`;
+                break;
+
+                default:
+                    this.#sassStyles.rules = `${this.#sassStyles.rules}\n${
+                        this.organizeModuleImports(this.getStyleData(path))
+                    }`;
+                break;
+            }
+        });
+
+        this.compileApply();
+
+        monitorFile(`${GLib.get_user_cache_dir()}/wal/colors`, () => {
+            this.#sassStyles.colors = `${this.getColorDefinitions()}\n${
+                this.organizeModuleImports(this.getStyleData(
+                    "/io/github/retrozinndev/colorshell/styles/colors"
+                ))
+            }`;
+            this.compileApply();
         });
     }
 }

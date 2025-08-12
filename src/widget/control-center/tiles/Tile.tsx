@@ -7,8 +7,24 @@ import GObject, { property, register, signal } from "ags/gobject";
 import Pango from "gi://Pango?version=1.0";
 
 
-export { Tile };
+export { Tile, TileProps };
 
+type TileProps = {
+    class?: string | Accessor<string>;
+    icon?: string | Accessor<string>;
+    visible?: boolean | Accessor<boolean>;
+    iconSize?: number | Accessor<number>;
+    title: string | Accessor<string>;
+    description?: string | Accessor<string>;
+    toggleState?: boolean | Accessor<boolean>;
+    enableOnClickMore?: boolean | Accessor<boolean>;
+    onUnmap?: () => void;
+    onToggledOn: () => void;
+    onToggledOff: () => void;
+    onClickMore?: () => void;
+};
+
+/* TODO: finish the tile class
 @register({ GTypeName: "Tile" })
 class Tile extends Gtk.Box {
     @signal(Boolean) toggled(_state: boolean) {}
@@ -119,8 +135,9 @@ class Tile extends Gtk.Box {
         return super.connect(signal, callback);
     }
 }
+*/
 
-export function TileFun(props: TileProps): Gtk.Widget {
+function Tile(props: TileProps): Gtk.Widget {
     const subs: Array<() => void> = [];
     const [toggled, setToggled] = createState(((props.toggleState instanceof Accessor) ? 
             props.toggleState.get()

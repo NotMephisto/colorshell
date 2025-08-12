@@ -31,7 +31,7 @@ export type WindowData = {
  * Also contains util functions to create dynamic windows, opening the window only on focused 
  * monitor, or all available monitors!
  */
-@register()
+@register({ GTypeName: "Windows" })
 class Windows extends GObject.Object {
     private static instance: (Windows | null);
 

@@ -7,7 +7,6 @@ import { timeout } from "ags/time";
 
 import AstalHyprland from "gi://AstalHyprland";
 import AstalIO from "gi://AstalIO";
-import { Shell } from "../app";
 
 
 export namespace Runner {
@@ -245,8 +244,7 @@ export function openRunner(props: RunnerProps, placeholders?: Array<Result>): As
               heightRequest={props.height} exclusivity={Astal.Exclusivity.IGNORE} halign={Gtk.Align.CENTER}
               marginTop={(AstalHyprland.get_default().get_monitor(mon)?.height / 2) - (props.height! / 2)}
               valign={Gtk.Align.START} hexpand orientation={Gtk.Orientation.VERTICAL}
-              $={(self) => {
-                  self.set_application(Shell.getDefault());
+              $={() => {
                   plugins.forEach(plugin => 
                       plugin.init?.());
 

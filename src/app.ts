@@ -2,7 +2,7 @@
 // import app from "ags/gtk4/app";
 
 // fix can't convert non-null pointer to JS value (thanks Aylur!)
-import "/usr/share/ags/js/src/overrides";
+import "ags/overrides";
 import { 
     PluginApps, 
     PluginClipboard, 
@@ -24,10 +24,10 @@ import { Gdk, Gtk } from "ags/gtk4";
 import { createRoot, getScope } from "ags";
 import { triggerOSD } from "./window/OSD";
 import { programArgs, programInvocationName } from "system";
-import { encoder, decoder } from "./scripts/utils";
+import { setConsoleLogDomain } from "console";
 import { initPlayer } from "./scripts/media";
-
 import GObject, { register } from "ags/gobject";
+
 import AstalNotifd from "gi://AstalNotifd";
 import GLib from "gi://GLib?version=2.0";
 import Gio from "gi://Gio?version=2.0";
@@ -50,16 +50,13 @@ Adw.init();
 GLib.unsetenv("LD_PRELOAD");
 
 @register({ GTypeName: "Shell", Implements: [Gio.ActionGroup]})
-export class Shell extends Gtk.Application implements Gio.ActionMap {
+export class Shell extends Adw.Application implements Gio.ActionMap {
     private static instance: Shell;
 
-    #loop!: GLib.MainLoop;
     #scope!: ReturnType<typeof getScope>;
     #connections = new Map<GObject.Object, Array<number> | number>();
-    #stylesheet: Uint8Array|undefined;
-    #styleProvider: Gtk.CssProvider;
+    #providers: Array<Gtk.CssProvider> = [];
     #gresource: Gio.Resource|null = null;
-    #icons: Record<string, Gio.BytesIcon> = {};
 
     get scope() { return this.#scope; }
 
@@ -70,7 +67,8 @@ export class Shell extends Gtk.Application implements Gio.ActionMap {
             version: COLORSHELL_VERSION ?? "0.0.0-unknown",
         });
 
-        this.#styleProvider = Gtk.CssProvider.new();
+        setConsoleLogDomain("colorshell");
+
         try {
             // load gresource from build-defined value + support env variables
             this.#gresource = Gio.Resource.load(GRESOURCES_FILE.split('/').filter(s => 
@@ -89,19 +87,8 @@ export class Shell extends Gtk.Application implements Gio.ActionMap {
             Gio.resources_register(this.#gresource);
 
             // add icons 
-            Gio.resources_enumerate_children(
-                "/io/github/retrozinndev/colorshell", 
-                Gio.ResourceLookupFlags.NONE
-            ).filter(name => 
-                /symbolic$/.test(name) || name.endsWith("svg")
-            ).map(name => 
-                `/io/github/retrozinndev/colorshell/${name}`
-            ).forEach(path => {
-                const name = path.split('/')[path.split('/').length - 1];
-                const iconBytes = Gio.resources_lookup_data(path, null);
-
-                this.#icons[name] = Gio.BytesIcon.new(iconBytes);
-            });
+            Gtk.IconTheme.get_for_display(Gdk.Display.get_default()!)
+                .add_resource_path("/io/github/retrozinndev/colorshell/icons")
         } catch(_e) {
             const e = _e as Error;
             console.error(`Error: couldn't load gresource! Stderr: ${e.message}\n${e.stack}`);
@@ -122,37 +109,48 @@ export class Shell extends Gtk.Application implements Gio.ActionMap {
     }
 
     public resetStyle(): void {
-        this.#stylesheet = undefined;
-        Gtk.StyleContext.remove_provider_for_display(
-            Gdk.Display.get_default()!,
-            this.#styleProvider
+        this.#providers.forEach(provider =>
+            Gtk.StyleContext.remove_provider_for_display(
+                Gdk.Display.get_default()!,
+                provider
+            )
         );
     }
 
-    public getGIcon(name: string): Gio.BytesIcon {
-        if(!Object.hasOwn(this.#icons, name))
-            throw new Error(`Colorshell: No gicon found with name "${name}"`);
+    public removeProvider(provider: Gtk.CssProvider): void {
+        if(!this.#providers.includes(provider)) {
+            console.warn("Colorshell: Couldn't find the provided GtkCssProvider to remove. Was it added before?");
+            return;
+        }
 
-        return this.#icons[name];
+        for(let i = 0; i < this.#providers.length; i++) {
+            const prov = this.#providers[i];
+            if(prov === provider) {
+                this.#providers.splice(i, 1);
+                Gtk.StyleContext.remove_provider_for_display(
+                    Gdk.Display.get_default()!,
+                    provider
+                );
+                break;
+            }
+        }
     }
 
     public applyStyle(stylesheet: string): void {
-        const previous = this.#stylesheet ? decoder.decode(this.#stylesheet) : undefined;
-        let final = "";
-
-        if(previous)
-            final = previous + "\n";
-
-        this.#stylesheet = encoder.encode(stylesheet);
-        final = final.concat(stylesheet);
-
-        this.#styleProvider.load_from_string(final);
-
-        Gtk.StyleContext.add_provider_for_display(
-            Gdk.Display.get_default()!,
-            this.#styleProvider,
-            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
-        );
+        try {
+            const provider = Gtk.CssProvider.new();
+            provider.load_from_string(stylesheet)
+            this.#providers.push(provider);
+            
+            Gtk.StyleContext.add_provider_for_display(
+                Gdk.Display.get_default()!,
+                provider,
+                Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+            );
+        } catch(e) {
+            console.error(`Colorshell: Couldn't apply style. Stderr: ${e}`);
+            return;
+        }
     }
 
     vfunc_command_line(cmd: Gio.ApplicationCommandLine): number {
@@ -186,26 +184,22 @@ export class Shell extends Gtk.Application implements Gio.ActionMap {
 
     vfunc_activate(): void {
         super.vfunc_activate();
+        this.hold();
         this.main();
     }
 
     private main(): void {
-        this.#loop = GLib.MainLoop.new(null, false);
-
         createRoot((dispose) => {
             console.log(`Colorshell: Initializing things`);
             this.#connections.set(this, this.connect("shutdown", () => dispose()));
             this.#scope = getScope();
 
             initPlayer();
-
-            Stylesheet.getDefault();
-
-            // Init clipboard module
             Clipboard.getDefault();
 
-            console.log("Initializing wallpaper handler");
+            console.log("Colorshell: Initializing wallpaper & Stylesheet handlers");
             Wallpaper.getDefault();
+            Stylesheet.getDefault();
 
             console.log("Adding runner plugins");
             runnerPlugins.forEach(plugin => Runner.addPlugin(plugin));
@@ -233,12 +227,10 @@ export class Shell extends Gtk.Application implements Gio.ActionMap {
                 ids.forEach(id => obj.disconnect(id))
             : obj.disconnect(ids));
         });
-
-        this.#loop.run();
     }
 
     quit(): void {
-        this.#loop.is_running() && this.#loop.quit();
+        this.release();
         super.quit();
     }
 }
@@ -284,4 +276,4 @@ export const generalConfig = new Config<keyof typeof generalConfigDefaults,
         `${GLib.get_user_config_dir()}/colorshell/config.json`, generalConfigDefaults
 );
 
-Shell.getDefault().run([ programInvocationName, ...programArgs ]);
+Shell.getDefault().runAsync([ programInvocationName, ...programArgs ]);

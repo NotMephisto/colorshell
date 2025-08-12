@@ -10,7 +10,6 @@ import GObject from "ags/gobject";
 import AstalBluetooth from "gi://AstalBluetooth";
 import AstalNetwork from "gi://AstalNetwork";
 import AstalWp from "gi://AstalWp";
-import { Shell } from "../../app";
 
 
 export const Status = () => 
@@ -134,7 +133,7 @@ function StatusIcons() {
                 : "preferences-system-notifications-symbolic")
               }
             />
-            <Gtk.Image gicon={Shell.getDefault().getGIcon("circle-filled-symbolic")} class={"notification-count"}
+            <Gtk.Image iconName={"circle-filled-symbolic"} class={"notification-count"}
               visible={variableToBoolean(createBinding(Notifications.getDefault(), "history"))}
             />
         </Gtk.Box>
