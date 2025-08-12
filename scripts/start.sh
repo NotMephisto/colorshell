@@ -20,9 +20,10 @@ function start() {
     exec "$file"
 }
 
-if [[ -f "$file" ]]; then
+if [[ -f $file ]]; then
     start
 else
-    pnpm build
-    start
+    echo "[error] can't start project: no executable found on default directory"
+    echo "[tip] specify the executable path: start \"\$path\""
+    exit 1
 fi
