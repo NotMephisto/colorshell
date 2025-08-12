@@ -1,6 +1,8 @@
 @use "./colors";
 
-.popup-window.runner * {
+.runner .popup-window-container {
+  all: unset;
+
   $radius: 24px;
 
   background: rgba($color: colors.$bg-primary, $alpha: .8);
@@ -32,7 +34,7 @@
   }
 
   & list {
-    & listboxrow > * {
+    & .result {
       padding: 10px;
       background: colors.$bg-primary;
       margin: 2px 0;

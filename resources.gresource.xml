@@ -3,19 +3,20 @@
     <!-- Sass -->
     <gresource prefix="/io/github/retrozinndev/colorshell/styles">
         <file alias="main">styles/main.scss</file>
+        <file alias="mixins">styles/_mixins.scss</file>
+        <file alias="colors">styles/_colors.scss</file>
         <file alias="apps-window">styles/_apps-window.scss</file>
         <file alias="bar">styles/_bar.scss</file>
         <file alias="center-window">styles/_center-window.scss</file>
         <file alias="control-center">styles/_control-center.scss</file>
         <file alias="float-notifications">styles/_float-notifications.scss</file>
         <file alias="logout-menu">styles/_logout-menu.scss</file>
-        <file alias="mixins">styles/_mixins.scss</file>
         <file alias="osd">styles/_osd.scss</file>
         <file alias="runner">styles/_runner.scss</file>
     </gresource>
 
     <!-- Icons -->
-    <gresource prefix="/io/github/retrozinndev/colorshell/icons/hicolor/scalable/actions">
+    <gresource prefix="/io/github/retrozinndev/colorshell/icons/scalable/actions">
         <file alias="applications-other-symbolic">icons/applications-other-symbolic.svg</file>
         <file alias="arrow-circular-top-right-symbolic">icons/arrow-circular-top-right-symbolic.svg</file>
         <file alias="circle-filled-symbolic">icons/circle-filled-symbolic.svg</file>
