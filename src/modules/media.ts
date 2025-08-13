@@ -24,8 +24,7 @@ export function initPlayer(): void {
         const connections = new Map<GObject.Object, Array<number>>();
         disposeFun = dispose;
 
-        if(AstalMpris.get_default().players)
-            setPlayer(AstalMpris.get_default().players[0]);
+        setPlayer(AstalMpris.get_default().players[0] ?? dummyPlayer);
 
         connections.set(AstalMpris.get_default(), [
             AstalMpris.get_default().connect("player-added", (_, player) => 
