@@ -35,6 +35,11 @@ export type WindowData = {
 class Windows extends GObject.Object {
     private static instance: (Windows | null);
 
+    declare $signals: GObject.Object.SignalSignatures & {
+        "window-open": (name: string) => void;
+        "window-closed": (name: string) => void;
+    };
+
     #scope!: ReturnType<typeof getScope>;
     #windows: Record<string, WindowData> = {
         "bar": { create: this.createWindowForMonitors(Bar) },
