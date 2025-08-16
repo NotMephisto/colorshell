@@ -10,7 +10,7 @@
         "clean": "sh ./scripts/clean.sh",
         "build": "sh ./scripts/build.sh",
         "build:release": "sh ./scripts/release.sh",
-        "sync-config": "sh ./scripts/update-repo.sh"
+        "sync-config": "sh ./scripts/sync-config.sh"
     },
     "devDependencies": {
         "ags": "link:../../../../usr/share/ags/js"
