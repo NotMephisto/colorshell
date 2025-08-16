@@ -31,7 +31,7 @@ Also, you can select any of the images inside `~/wallpapers` by pressing
 <kbd>SUPER</kbd> + <kbd>W</kbd> or by accessing the Control Center and clicking in the image 
 icon on top.
 
-## ✔️ What's included in this shell
+## ✨ Features
 <details>
   
 - Pretty Top-Bar
@@ -39,7 +39,10 @@ icon on top.
   - Workspaces indicator
   - Focused Client(window) information(title, class and icon)
   - Clock(with date)
-  - Media(shows only when media is being played)
+  - Media
+    - Change current player by scrolling on top of the widget or by opening the
+Center Window and scrolling the player
+    - Only available when there's media playing
   - Tray(Applications running in the background)
   - Status (volume information, bluetooth, network and notification status)
 - Control Center
@@ -81,6 +84,43 @@ Currently, there's support for the following languages:
 Don't see your language here? You can contribute and make translations too! <br>
 You can do so by forking this repository, translating the shell in your fork and then opening a pull request to this repository, simple as that!
 (I'll create a more detailed guide for that soon)
+
+## 🛠️ Development
+This project uses `pnpm` to manage packages and running scripts.
+To build the shell, run a development build or make a release build, you can use the project's integrated scripts.<br>
+The most complicated ones have a help flag, so you can learn from there.
+
+### Dependencies
+These are development-only dependencies(by package name on AUR):
+- `aylurs-gtk-shell-git`
+- `libastal-meta`
+  
+Plus, you also need the packages listed in [Wiki/Dependencies]!
+
+### Building
+In a common build, the shell's gresource(icons and sass) will be targeted to the build output directory by default.
+If you want to ship it, you likely want to use the `pnpm build:release` command.
+```zsh
+pnpm build -d # remove the -d flag if you don't want a development build
+```
+If you want to ship the build(or install it on your local machine), you'll likely prefer a release build:
+(the `build:release` command targets the gresource to `$XDG_DATA_HOME/colorshell/resources.gresource` by default)
+```zsh
+pnpm build:release
+```
+Don't forget to install the gresource to the actual target directory! Or else it'll not find the resource file and will fail
+to load custom assets.<br>
+Also, the environment variables are only actually used at runtime! It's passed as a literal string in the bash
+variable format, then when the shell runs, it understands that it's an environment variable and replaces it with it's value.
+
+### Testing/Running the project
+```zsh
+pnpm dev
+```
+or if you actually only want to run the current build instead of building again:
+```
+pnpm start
+```
 
 ## ⚙️ Installation
 See the Installation Guide on [Wiki/Installation].
