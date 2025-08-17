@@ -3,12 +3,13 @@
 trap "printf \"\nOk, quitting beacuse you entered an exit signal. (SIGINT).\n\"; exit 1" SIGINT
 trap "printf \"\nOh noo!! Some application just killed the script! (SIGTERM)\"; exit 2" SIGTERM
 
-BIN_HOME=`[[ -z "$BIN_HOME" ]] && echo -n "$HOME/.local/bin" || echo -n "$BIN_HOME"`
 XDG_DATA_HOME=`[[ -z "$XDG_DATA_HOME" ]] && echo -n "$HOME/.local/share" || echo -n "$XDG_DATA_HOME"`
 XDG_CACHE_HOME=`[[ -z "$XDG_CACHE_HOME" ]] && echo -n $HOME/.cache || echo -n $XDG_CACHE_HOME`
 XDG_CONFIG_HOME=`[[ -z "$XDG_CONFIG_HOME" ]] && echo -n "$HOME/.config" || echo -n "$XDG_CONFIG_HOME"`
+BIN_HOME=`[[ -z "$BIN_HOME" ]] && echo -n "$HOME/.local/bin" || echo -n "$BIN_HOME"`
+APPS_HOME=`[[ -z "$APPS_HOME" ]] && echo -n "$XDG_DATA_HOME/applications" || echo -n "$APPS_HOME"`
 
-skip_prompts=`[[ ! -z "$@" ]] && [[ "$@" =~ -y ]] && echo -n true`
+skip_prompts=`[[ "$1" == -y ]] && echo -n true`
 is_standalone=`(git remote -v > /dev/null 2>&1) || echo -n true`
 
 temp_dir="$XDG_CACHE_HOME/colorshell-installer"
@@ -21,6 +22,7 @@ if [[ "$is_standalone" ]]; then
     # testing only, change to commented value before merging (hope I don't forget lol)
     default_branch="gtk4-ags3" # `curl -s https://api.github.com/repos/retrozinndev/colorshell | jq -r .default_branch`
     # get utils script
+    echo "fetching utils script..."
     curl -s https://raw.githubusercontent.com/retrozinndev/colorshell/refs/heads/$default_branch/scripts/utils.sh > $temp_dir/utils.sh
     source $temp_dir/utils.sh
 else
@@ -46,22 +48,20 @@ echo "Welcome to the colorshell installation script!"
 # Warn user of possible issues
 Send_log warn "!! By running this script, you assume total responsability for any issues that may occur with your filesystem"
 
-if [[ -z "$skip_prompts" ]]; then 
+[[ -z "$skip_prompts" ]] && \
     Ask "Do you want to start the shell installation?"
-fi
 
+if [[ "$answer" == y ]] || [[ "$skip_prompts" ]]; then
+    if [[ "$is_standalone" ]]; then
+        Send_log "The installer noticed that you're calling the script remotely"
+        rm -rf $repo_directory 2> /dev/null
+        Send_log "Cloning repository in \`$repo_directory\`..."
+        git clone https://github.com/retrozinndev/colorshell.git "$repo_directory"
+    fi
 
-if [[ "$is_standalone" ]]; then
-    Send_log "The installer noticed that you're calling the installation remotely"
-    rm -rf $repo_directory 2> /dev/null
-    Send_log "Cloning repository in \`$repo_directory\`..."
-    git clone https://github.com/retrozinndev/colorshell.git "$repo_directory"
-fi
-
-if [[ "$answer" == "y" ]] || [[ "$skip_prompts" ]]; then
     Ask "Nice! Do you want to use the stable version instead of the unstable(latest commit)?"
 
-    if [[ -z "$skip_prompts" ]] && [[ "$answer" == "y" ]]; then
+    if [[ -z "$skip_prompts" ]] && [[ "$answer" == y ]]; then
         Send_log "fetching latest release from colorshell repository"
         latest_tag=`curl -s "$repo_api_url/releases" | jq -r '. | select(.[].prerelease == false) | .[0].tag_name'`
         
@@ -76,7 +76,7 @@ if [[ "$answer" == "y" ]] || [[ "$skip_prompts" ]]; then
     for dir in $(ls -A -w1 "$repo_directory/config"); do
         dest=$XDG_CONFIG_HOME/$dir
 
-        echo "-> Installing $dir in $dest"
+        Send_log "Installing $dir in $dest"
         mkdir -p `dirname "$dest"` # create parents
 
         cp -rf $repo_directory/config/$dir "$dest" # copy
@@ -95,6 +95,11 @@ if [[ "$answer" == "y" ]] || [[ "$skip_prompts" ]]; then
     # install gresource
     mkdir -p $XDG_DATA_HOME/colorshell
     cp -f ./build/release/resources.gresource $XDG_DATA_HOME/colorshell
+
+    # install desktop entry
+    mkdir -p $APPS_HOME
+    cp -f ./build/release/colorshell.desktop $APPS_HOME
+
     Send_log "Cleaning"
     pnpm clean
 
