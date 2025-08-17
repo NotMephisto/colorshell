@@ -30,7 +30,6 @@ Update_local() {
     done
 }
 
-Check_current_dir
 Print_header
 
 printf "\n"
@@ -39,13 +38,12 @@ echo "This script is intended to be used only by the repository owner"
 printf "\n"
 
 echo "Please run this script in it's current directory to avoid issues"
-echo "Tip: Press ^C([Ctrl] + [C]) to stop script at any time"
+echo "Tip: Press [Ctrl] + [C] to stop script at any time"
 
 printf "\n"
 
-echo -n "Update local repository with host configurations? [y/n] "
-read answer
-if ! [[ $answer =~ y ]]; then
+Ask "Update local repository with host configurations?"
+if [[ ! $answer == y ]]; then
     Send_log "Exiting"
     exit 1
 fi
@@ -55,7 +53,7 @@ printf "\n"
 Clean_local
 Update_local
 
-if command -v git > /dev/null 2>&1; then
+if command -v git > /dev/null; then
     git status
 fi
 
