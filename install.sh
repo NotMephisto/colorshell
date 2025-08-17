@@ -79,11 +79,7 @@ if [[ "$answer" == "y" ]] || [[ "$skip_prompts" ]]; then
         echo "-> Installing $dir in $dest"
         mkdir -p `dirname "$dest"` # create parents
 
-        if [[ -f "$repo_directory/$dir" ]]; then
-            cp -f $repo_directory/$dir "$dest" # copy actual file
-        else
-            cp -rf $repo_directory/$dir/* "$dest" # force-copy content
-        fi
+        cp -rf $repo_directory/config/$dir "$dest" # copy
     done
 
     Send_log "Building colorshell..."
