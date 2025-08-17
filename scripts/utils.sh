@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 # This script contains useful functions to be used 
 # in other scripts from colorshell.
 # ----------
@@ -56,13 +54,17 @@ function Print_header() {
 # Input answer is exported as $answer
 # -------------
 function Ask() {
-    read -n 1 -p "$1 [y/n] " r
+    read -n 1 -p "$@ [y/n] " answer
     printf '\n'
-    export answer=$r
+    if [[ ! $answer =~ [yn] ]]; then
+        Ask "$@" # restart if different from accepted chars
+    fi
+
+    export answer
 }
 
 # -------------
-# Ask a yes/no question to user
+# Ask the user to choose a number from the provided list
 # Input answer is exported as $answer
 # (this function is not done yet)
 # -------------

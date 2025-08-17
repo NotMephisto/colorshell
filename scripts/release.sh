@@ -49,9 +49,12 @@ if gdbus introspect --session \\
   --dest io.github.retrozinndev.colorshell \\
   --object-path /io/github/retrozinndev/colorshell > /dev/null 2>&1; then
 
-    echo \"\$@\" | socat - \"\${XDG_RUNTIME_DIR:-/run/user/\$(id -u)}/colorshell.sock\"
-    exit 0
-
+    if command -v socat; then
+        echo \"\$@\" | socat - \"\${XDG_RUNTIME_DIR:-/run/user/\$(id -u)}/colorshell.sock\"
+        exit 0
+    else
+        echo \"[warn] \`socat\` not installed, falling back to remote instance communication\"
+    fi
 fi
 `cat "${outdir:-./build/release}/colorshell" | sed -e 's/^#.*//'`" # remove shebang
 
@@ -61,5 +64,5 @@ fi
 
 echo "[info] making desktop entry"
 entry=`cat ./resources/colorshell.desktop`
-entry=${entry/\$COLORSHELL_BINARY/${bin_target:-\$HOME/.local/bin/colorshell}}
-echo -n "$entry" > ${outdir:-./build/release}/colorshell.desktop
+bin_target=${bin_target:-'$HOME/.local/bin/colorshell'}
+echo -n "${entry/'$COLORSHELL_BINARY'/${bin_target/'$'/'\\\$'}}" > ${outdir:-./build/release}/colorshell.desktop

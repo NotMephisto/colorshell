@@ -1,5 +1,3 @@
-#!/usr/bin/bash
-
 source ./scripts/utils.sh
 
 config_dirs=(
