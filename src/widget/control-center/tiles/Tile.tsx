@@ -1,30 +1,13 @@
 import { Gtk } from "ags/gtk4";
-import { tr } from "../../../i18n/intl";
-import { Accessor, createBinding, createComputed, createState, getScope, onCleanup } from "ags";
+import { createBinding } from "ags";
 import { omitObjectKeys, variableToBoolean } from "../../../modules/utils";
-import GObject, { property, register, signal } from "ags/gobject";
-
+import { property, register, signal } from "ags/gobject";
 import Pango from "gi://Pango?version=1.0";
 
 
-export { Tile, TileProps };
+export { Tile };
 
-type TileProps = {
-    class?: string | Accessor<string>;
-    icon?: string | Accessor<string>;
-    visible?: boolean | Accessor<boolean>;
-    iconSize?: number | Accessor<number>;
-    title: string | Accessor<string>;
-    description?: string | Accessor<string>;
-    toggleState?: boolean | Accessor<boolean>;
-    enableOnClickMore?: boolean | Accessor<boolean>;
-    onUnmap?: () => void;
-    onToggledOn: () => void;
-    onToggledOff: () => void;
-    onClickMore?: () => void;
-};
 
-/* TODO: finish the tile class
 @register({ GTypeName: "Tile" })
 class Tile extends Gtk.Box {
     @signal(Boolean) toggled(_state: boolean) {}
@@ -42,6 +25,8 @@ class Tile extends Gtk.Box {
     public enableOnClicked: boolean = true;
     @property(Boolean)
     public state: boolean = false;
+    @property(Boolean)
+    public hasArrow: boolean = false;
     
     declare $signals: Gtk.Box.SignalSignatures & {
         "toggled": (_state: boolean) => void;
@@ -53,25 +38,29 @@ class Tile extends Gtk.Box {
     public enable(): void {
         if(this.state) return;
 
+        this.state = true;
+        !this.has_css_class("enabled") &&
+            this.add_css_class("enabled");
         this.emit("toggled", true);
         this.emit("enabled");
-        this.state = true;
     }
 
     public disable(): void {
         if(!this.state) return;
 
+        this.state = false;
+        this.remove_css_class("enabled");
         this.emit("toggled", false);
         this.emit("disabled");
-        this.state = false;
     }
 
-    constructor(props: Omit<Gtk.Box.ConstructorProps, "orientation"> & {
+    constructor(props: Partial<Omit<Gtk.Box.ConstructorProps, "orientation">> & {
         icon: string;
         title: string;
         description?: string;
         state?: boolean;
         enableOnClicked?: boolean;
+        hasArrow?: boolean;
     }) {
         super(omitObjectKeys(props, [
             "icon",
@@ -80,9 +69,14 @@ class Tile extends Gtk.Box {
             "state",
             "enableOnClicked"
         ]));
-        
+
+        this.add_css_class("tile");
+
         this.icon = props.icon;
         this.title = props.title;
+
+        if(props.hasArrow != null)
+            this.hasArrow = props.hasArrow;
 
         if(props.description != null)
             this.description = props.description;
@@ -93,32 +87,52 @@ class Tile extends Gtk.Box {
         if(props.enableOnClicked != null)
             this.enableOnClicked = props.enableOnClicked;
 
-        const connections = new Map<GObject.Object, number>();
-        const gestureClick = Gtk.GestureClick.new();
-
-        this.add_controller(gestureClick);
-
-        connections.set(gestureClick, gestureClick.connect("released", () => {
-            this.emit("clicked");
-            if(this.enableOnClicked && !this.state)
-                this.enable();
-            return true;
-        }));
+        if(this.state)
+            this.add_css_class("enabled"); // fix no highlight with state = true on construct
 
         this.prepend(
-            <Gtk.Box hexpand={false} vexpand>
-                <Gtk.Image iconName={createBinding(this, "icon")} />
+            <Gtk.Box hexpand={false} vexpand class={"icon"}>
+                <Gtk.Image iconName={createBinding(this, "icon")} halign={Gtk.Align.CENTER} />
+                <Gtk.GestureClick onReleased={() => {
+                    this.state ? this.disable() : this.enable();
+                }} />
             </Gtk.Box> as Gtk.Box
         );
 
         this.append(
-            <Gtk.Box class={"content"} orientation={Gtk.Orientation.VERTICAL}>
-                <Gtk.Label class={"title"} label={createBinding(this, "title")} />
-                <Gtk.Label class={"description"} label={createBinding(this, "description")} />
+            <Gtk.Box class={"content"} orientation={Gtk.Orientation.VERTICAL} vexpand
+              valign={Gtk.Align.CENTER} hexpand>
+
+                <Gtk.Label class={"title"} label={createBinding(this, "title")} 
+                  xalign={0} ellipsize={Pango.EllipsizeMode.END} />
+                <Gtk.Label class={"description"} label={createBinding(this, "description")} 
+                  xalign={0} ellipsize={Pango.EllipsizeMode.END} visible={
+                      variableToBoolean(createBinding(this, "description"))
+                  } 
+                />
+
+                <Gtk.GestureClick onReleased={() => {
+                    this.emit("clicked");
+                    if(this.enableOnClicked && !this.state)
+                        this.enable();
+
+                    return true;
+                }} />
             </Gtk.Box> as Gtk.Box
         );
 
-        getScope()?.onCleanup(() => connections.forEach((id, obj) => obj.disconnect(id)));
+        if(this.hasArrow)
+            this.append(
+                <Gtk.Image class={"arrow"} iconName={"go-next-symbolic"}>
+                    <Gtk.GestureClick onReleased={() => {
+                        this.emit("clicked");
+                        if(this.enableOnClicked && !this.state)
+                            this.enable();
+
+                        return true;
+                    }} />
+                </Gtk.Image> as Gtk.Image
+            );
     }
 
     emit<Signal extends keyof typeof this.$signals>(
@@ -134,82 +148,4 @@ class Tile extends Gtk.Box {
     ): number {
         return super.connect(signal, callback);
     }
-}
-*/
-
-function Tile(props: TileProps): Gtk.Widget {
-    const subs: Array<() => void> = [];
-    const [toggled, setToggled] = createState(((props.toggleState instanceof Accessor) ? 
-            props.toggleState.get()
-        : props.toggleState) ?? false);
-
-
-    (props.toggleState instanceof Accessor) && subs.push(
-        props.toggleState.subscribe(() => 
-            setToggled((props.toggleState as Accessor<boolean>).get() ?? false))
-    );
-
-    onCleanup(() => subs.forEach(s => s()));
-
-    return <Gtk.Box hexpand visible={props.visible} onUnmap={props.onUnmap} 
-      canFocus focusable={false} class={
-        (props.class instanceof Accessor) ?
-          createComputed([props.class, toggled], (clss, isToggled) => 
-              `tile ${clss} ${isToggled ? "toggled" : ""} ${
-                  props.onClickMore ? "has-more" : ""
-              }`
-          )
-        : toggled.as(isToggled => 
-            `tile ${props.class ? props.class : ""} ${isToggled ? "toggled" : ""} ${
-                props.onClickMore ? "has-more" : ""
-            }`
-        )
-      }>
-        <Gtk.Button class={"toggle-button"} onClicked={() => {
-            if(toggled.get()) {
-                setToggled(false);
-                props.onToggledOff?.();
-                return;
-            }
-
-            setToggled(true);
-            props.onToggledOn?.();
-        }}>
-
-            <Gtk.Box class={"content"} hexpand={true} vexpand={true}>
-                {props.icon && <Gtk.Image class={"icon"} iconName={props.icon} css={
-                    (props.iconSize instanceof Accessor) ?
-                        props.iconSize.as(size => `font-size: ${size}px;`)
-                    : (props.iconSize ? 
-                       `font-size: ${props.iconSize ?? 16}px;`
-                      : undefined)
-                } />}
-
-                <Gtk.Box orientation={Gtk.Orientation.VERTICAL} class={"text"} vexpand={true} hexpand={true}
-                  valign={Gtk.Align.CENTER}>
-
-                    <Gtk.Label class={"title"} xalign={0} halign={Gtk.Align.START} ellipsize={Pango.EllipsizeMode.END}
-                      label={props.title} />
-
-                    {props.description && <Gtk.Label class={"description"} ellipsize={Pango.EllipsizeMode.END}
-                        visible={variableToBoolean(props.description)} xalign={0} label={
-                            (props.description instanceof Accessor) ?
-                                props.description.as(str => str ?? "")
-                            : (props.description ?? "")
-                        } halign={Gtk.Align.START}
-                    />}
-
-                </Gtk.Box>
-            </Gtk.Box>
-        </Gtk.Button>
-
-        <Gtk.Button class={"more icon"} iconName={"go-next-symbolic"} widthRequest={32} 
-          visible={Boolean(props.onClickMore)} halign={Gtk.Align.END} onClicked={() => {
-              ((props.enableOnClickMore instanceof Accessor) ?
-                  props.enableOnClickMore.get()
-              : props.enableOnClickMore) && props.onToggledOn?.();
-
-              props.onClickMore?.();
-          }} tooltipText={tr("control_center.tiles.more")} />
-    </Gtk.Box> as Gtk.Widget;
 }

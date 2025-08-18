@@ -24,8 +24,7 @@ export const TileRecording = () =>
       })}
       icon={"media-record-symbolic"}
       visible={isInstalled("wf-recorder")}
-      onToggledOff={() => Recording.getDefault().stopRecording()}
-      onToggledOn={() => Recording.getDefault().startRecording()}
-      toggleState={createBinding(Recording.getDefault(), "recording")}
-      iconSize={16}
+      onDisabled={() => Recording.getDefault().stopRecording()}
+      onEnabled={() => Recording.getDefault().startRecording()}
+      state={createBinding(Recording.getDefault(), "recording")}
     />;

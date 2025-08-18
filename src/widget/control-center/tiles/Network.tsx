@@ -29,11 +29,11 @@ export const TileNetwork = () => <Gtk.Box>
                                     return tr("connecting") + "...";
                             }
                         })()
-                    )} onToggledOn={() => wifi.set_enabled(true)}
-                    onToggledOff={() => wifi.set_enabled(false)}
-                    onClickMore={() => TilesPages?.toggle(PageNetwork)}
+                    )} onEnabled={() => wifi.set_enabled(true)}
+                    onDisabled={() => wifi.set_enabled(false)}
+                    hasArrow onClicked={() => TilesPages?.toggle(PageNetwork)}
                     icon={"network-wireless-signal-excellent-symbolic"}
-                    toggleState={createBinding(wifi, "enabled")}
+                    state={createBinding(wifi, "enabled")}
                 />
 
             } else if(primary === AstalNetwork.Primary.WIRED) {
@@ -48,9 +48,9 @@ export const TileNetwork = () => <Gtk.Box>
                                 return tr("connecting") + "...";
                         }
                     })}
-                    onToggledOn={() => execAsync("nmcli n on")}
-                    onToggledOff={() => execAsync("nmcli n off")}
-                    onClickMore={() => TilesPages?.toggle(PageNetwork)}
+                    hasArrow onEnabled={() => execAsync("nmcli n on")}
+                    onDisabled={() => execAsync("nmcli n off")}
+                    onClicked={() => TilesPages?.toggle(PageNetwork)}
                     icon={createBinding(wired, "internet").as((internet: AstalNetwork.Internet) => {
                         switch(internet) {
                             case AstalNetwork.Internet.CONNECTED: 
@@ -61,8 +61,7 @@ export const TileNetwork = () => <Gtk.Box>
 
                         return "network-wired-no-route-symbolic";
                     })}
-                    iconSize={16}
-                    toggleState={createBinding(wired, "internet").as((internet: AstalNetwork.Internet) => 
+                    state={createBinding(wired, "internet").as((internet: AstalNetwork.Internet) => 
                         internet === AstalNetwork.Internet.CONNECTING 
                             || internet === AstalNetwork.Internet.CONNECTED
                     )}
@@ -72,12 +71,11 @@ export const TileNetwork = () => <Gtk.Box>
             return <Tile
                 title={tr("control_center.tiles.network.network")}
                 description={tr("disconnected")}
-                onToggledOn={() => execAsync("nmcli n on")}
-                onToggledOff={() => execAsync("nmcli n off")}
-                onClickMore={() => TilesPages?.toggle(PageNetwork)}
+                onEnabled={() => execAsync("nmcli n on")}
+                onDisabled={() => execAsync("nmcli n off")}
+                hasArrow onClicked={() => TilesPages?.toggle(PageNetwork)}
                 icon={"network-wired-disconnected-symbolic"}
-                iconSize={16}
-                toggleState={createBinding(wired, "internet").as((internet: AstalNetwork.Internet) => 
+                state={createBinding(wired, "internet").as((internet: AstalNetwork.Internet) => 
                     internet === AstalNetwork.Internet.CONNECTING || internet === AstalNetwork.Internet.CONNECTED)}
             />
         }}

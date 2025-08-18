@@ -10,6 +10,7 @@ import { generalConfig, Shell } from "../app";
 
 import AstalIO from "gi://AstalIO";
 import AstalMpris from "gi://AstalMpris";
+import { Gtk } from "ags/gtk4";
 
 
 export type RemoteCaller = {
@@ -21,30 +22,33 @@ let wsTimeout: AstalIO.Time|undefined;
 const help = `Manage Astal Windows and do more stuff. From retrozinndev's colorshell, \
 made using GTK4, AGS, Gnim and Astal libraries by Aylur.
 
-        Window Management:
-          open [window]: opens the specified window.
-          close [window]: closes all instances of specified window.
-          toggle [window]: toggle-open/close the specified window.
-          windows: list shell windows and their respective status.
-          reload: quit this instance and start a new one.
-          reopen: restart all open-windows.
-          quit: exit the main instance of the shell.
+Window Management:
+  open [window]: opens the specified window.
+  close [window]: closes all instances of specified window.
+  toggle [window]: toggle-open/close the specified window.
+  windows: list shell windows and their respective status.
+  reload: quit this instance and start a new one.
+  reopen: restart all open-windows.
+  quit: exit the main instance of the shell.
 
-        Audio Controls:
-          volume: speaker and microphone volume controller, see "volume help".
+Audio Controls:
+  volume: speaker and microphone volume controller, see "volume help".
 
-        Media Controls:
-          media: manage colorshell's active player, see "media help".
-        
-        Other options:
-          runner [initial_text]: open the application runner, optionally add an initial search.
-          peek-workspace-num [millis]: peek the workspace numbers on bar window.
-          v, version: display current colorshell version.
-          h, help: shows this help message.
+Media Controls:
+  media: manage colorshell's active player, see "media help".
+${DEVEL ? `
+Development Tools:
+  dev: tools to help debugging colorshell
+` : ""}
+Other options:
+  runner [initial_text]: open the application runner, optionally add an initial search.
+  peek-workspace-num [millis]: peek the workspace numbers on bar window.
+  v, version: display current colorshell version.
+  h, help: shows this help message.
 
-        2025 (c) retrozinndev's colorshell, licensed under the MIT License.
-        https://github.com/retrozinndev/colorshell
-    `.split('\n').map(l => l.replace(/^ {8}/, "")).join('\n');
+2025 (c) retrozinndev's colorshell, licensed under the MIT License.
+https://github.com/retrozinndev/colorshell
+`.trim();
 
 export function handleArguments(cmd: RemoteCaller, args: Array<string>): number {
     switch(args[0]) {
@@ -58,6 +62,9 @@ export function handleArguments(cmd: RemoteCaller, args: Array<string>): number 
             cmd.print_literal(`colorshell by retrozinndev, version ${COLORSHELL_VERSION
                 }${DEVEL ? " (devel)" : ""}\nhttps://github.com/retrozinndev/colorshell`);
             return 0;
+
+        case "dev":
+            return handleDevArgs(cmd, args);
 
         case "open":
         case "close":
@@ -112,6 +119,28 @@ export function handleArguments(cmd: RemoteCaller, args: Array<string>): number 
     }
 
     cmd.printerr_literal("Error: command not found! try checking help");
+    return 1;
+}
+
+function handleDevArgs(cmd: RemoteCaller, args: Array<string>): number {
+    if(/h|help/.test(args[1])) {
+        cmd.print_literal(`
+Debugging tools for colorshell.
+
+Options:
+  inspector: open GTK's visual debugger
+`.trim());
+        return 0;
+    }
+
+    switch(args[1]) {
+        case "inspector":
+            cmd.print_literal("Opening inspector...");
+            Gtk.Window.set_interactive_debugging(true);
+            return 0;
+    }
+
+    cmd.printerr_literal("Error: command not found! try checking `dev help`");
     return 1;
 }
 

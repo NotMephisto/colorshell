@@ -16,10 +16,10 @@ export const TileNightLight = () =>
                 tr("control_center.tiles.night_light.default_desc") : `${temp}K`} ${
             gamma < NightLight.getDefault().maxGamma ? `(${gamma}%)` : ""}`
         )}
-        visible={isInstalled("hyprsunset")}
-        onToggledOff={() => NightLight.getDefault().identity = true}
-        onToggledOn={() => NightLight.getDefault().identity = false}
-        enableOnClickMore={true}
-        onClickMore={() => TilesPages?.toggle(PageNightLight)}
-        toggleState={createBinding(NightLight.getDefault(), "identity").as(identity => !identity)}
+        hasArrow visible={isInstalled("hyprsunset")}
+        onDisabled={() => NightLight.getDefault().identity = true}
+        onEnabled={() => NightLight.getDefault().identity = false}
+        enableOnClicked
+        onClicked={() => TilesPages?.toggle(PageNightLight)}
+        state={createBinding(NightLight.getDefault(), "identity").as(identity => !identity)}
     />

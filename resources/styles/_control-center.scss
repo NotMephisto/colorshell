@@ -199,78 +199,67 @@
 .tiles-container {
   @include mixins.reset-props;
 
-  & > flowbox {
-    & > flowboxchild .tile {
-      $radius: 18px;
+  & .tile {
+    $radius: 18px;
+    $padding: 4px;
 
-      &:not(.toggled) > .toggle-button,
-      &:not(.toggled) > button.more {
-        background: colors.$bg-primary;
+    background: rgba(colors.$bg-primary, .5);
+    border-radius: $radius;
+    padding: $padding;
+    min-height: 40px;
+
+    & .icon {
+      transition: 120ms ease-in;
+      border-radius: calc($radius - $padding);
+      padding: 8px 12px;
+      margin-right: 6px;
+      background: color.scale($color: colors.$bg-primary, $lightness: 10%);
+
+      & image {
+        -gtk-icon-size: 18px;
       }
 
-      &:not(.toggled) > .toggle-button:hover,
-      &:not(.toggled) > button.more:hover {
-        background: color.scale($color: colors.$bg-primary, $lightness: 10%);
+      &:hover {
+        background: color.scale($color: colors.$bg-primary, $lightness: 15%);
       }
 
-      &.toggled .toggle-button:hover,
-      &.toggled button.more:hover {
+      &:active {
+        border-radius: calc($radius - $padding - 2px);
+      }
+    }
+
+    & .content {
+      & .title {
+        font-weight: 600;
+        font-size: 15.1px;
+      }
+
+      & .description {
+        font-size: 12px;
+        color: colors.$fg-disabled;
+        font-weight: 400;
+      }
+    }
+
+    & .arrow {
+      -gtk-icon-size: 12px;
+      color: rgba(colors.$fg-disabled, .4);
+    }
+
+    &:hover {
+      background: color.scale($color: colors.$bg-primary, $lightness: 5%);
+    }
+
+    &.enabled .icon {
+      background: colors.$bg-secondary;
+      
+      &:hover {
         background: colors.$bg-tertiary;
       }
+    }
 
-      &.toggled > .toggle-button,
-      &.toggled > button.more {
-        background: colors.$bg-secondary;
-      }
-
-      &.has-more > .toggle-button, 
-      &.has-more > button.toggle-button:active {
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
-      }
-
-      & > button.toggle-button {
-        border-radius: $radius;
-
-        &:active {
-          border-radius: calc($radius - 4px);
-        }
-
-        & .content {
-          padding: 8px;
-
-          & > .icon {
-            margin-right: 6px;
-          }
-
-          & > .text {
-            & > .title {
-              font-weight: 600;
-              font-size: 15.1px;
-            }
-
-            & > .description {
-              font-size: 12px;
-              color: colors.$fg-disabled;
-              font-weight: 400;
-            }
-          }
-        }
-      }
-      
-      & > button.more {
-        border-top-right-radius: $radius;
-        border-bottom-right-radius: $radius;
-
-        &:active {
-          border-top-right-radius: calc($radius - 4px);
-          border-bottom-right-radius: calc($radius - 4px);
-        }
-
-        & label {
-          font-size: 16px;
-        }
-      }
+    &:active {
+      border-radius: calc($radius - 2px);
     }
   }
 }
