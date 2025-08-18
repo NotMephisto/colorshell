@@ -62,12 +62,16 @@ export const QuickActions = () =>
         <Gtk.Box halign={Gtk.Align.START} class={"left"} hexpand>
             {userFace.query_exists(null) && 
                 <Gtk.Box class={"user-face"} css={
-                  `background-image: url("${userFace.get_path()!}");`} 
+                  `background-image: url("file://${userFace.get_path()!}");`} 
                 />
             }
             <Gtk.Box orientation={Gtk.Orientation.VERTICAL}>
-                <Gtk.Label class={"hostname"} xalign={0} tooltipText={"Host name"}
-                  label={GLib.get_host_name()} />
+                <Gtk.Box class={"user-host"}>
+                    <Gtk.Label class={"user"} xalign={0} 
+                      label={GLib.get_user_name()} />
+                    <Gtk.Label class={"host"} xalign={0} yalign={.8}
+                      label={`@${GLib.get_host_name()}`} />
+                </Gtk.Box>
 
                 <Gtk.Box>
                     <Gtk.Image iconName={"hourglass-symbolic"} />

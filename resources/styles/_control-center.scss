@@ -30,9 +30,26 @@
   & .quickactions {
     margin-bottom: .8em;
 
-    & .hostname {
-      font-size: 15px;
-      font-weight: 600;
+    & .user-face {
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      min-height: 32px;
+      min-width: 34px;
+      margin-right: 6px;
+      border-radius: 50%;
+    }
+
+    & .user-host {
+      .user {
+        font-size: 15px;
+        font-weight: 600;
+      }
+      .host {
+        color: colors.$fg-disabled;
+        font-size: 10px;
+        font-weight: 500;
+      }
     }
 
     & > box:not(.button-row) image {
