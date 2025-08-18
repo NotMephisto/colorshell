@@ -8,10 +8,16 @@ This is the repository for the colorshell desktop shell, made for Hyprland with 
 It really took me a lot of time to make this, so please star the repo if you like it! :star:
 
 ## 🌄 Screenshots
-![Desktop](repo/shots/desktop.png)
-![Runner](repo/shots/runner.png)
-![Control Center & Center Window](repo/shots/center-window-control-center.png)
-![Kitty](repo/shots/kitty.png)
+<div align="center">
+    <img src="./repo/shots/desktop.png" alt="desktop" width="48%" />
+    <img src="./repo/shots/runner.png" alt="Runner" width="48%" />
+    <img src="./repo/shots/center-window-control-center.png" alt="Control Center & Center Window" width="48%" />
+    <img src="./repo/shots/kitty.png" alt="Kitty" width="48%" />
+
+    <p align="center">
+        more screenshots on [`repo/shots`](repo/shots)
+    </p>
+</div>
 
 ## 🎨 Colors
 All the shell colors are dynamically generated from your wallpaper! 
