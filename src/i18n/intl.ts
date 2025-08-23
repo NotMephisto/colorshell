@@ -13,10 +13,8 @@ let language: string = getSystemLanguage();
 export function getSystemLanguage(): string {
     const sysLanguage: (string|null|undefined) = GLib.getenv("LANG") || GLib.getenv("LANGUAGE");
 
-    if(!sysLanguage) {
-        console.warn(`Intl: Couldn't get system language, fallback to default ${languages[0]}`);
-        console.log("Intl: Please set the LANG or LANGUAGE environment variable");
-
+    if(!sysLanguage || languages[sysLanguage as keyof typeof languages] === undefined) {
+        console.warn(`Intl: Fallback to default \`${languages[0]}\``);
         return languages[0];
     }
 
