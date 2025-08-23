@@ -13,5 +13,5 @@ if ! [[ -f "$XDG_CONFIG_HOME/hypr/hyprpaper.conf" ]]; then
 fi
 
 wallpaper=`cat "$XDG_CONFIG_HOME/hypr/hyprpaper.conf" | grep '$wallpaper =' | sed -e 's/^$wallpaper = //'`
-[[ -d "$XDG_CACHE_HOME/wal" ]] && wal -R || wal -q -t --cols16 darken -i "$wallpaper"
+[[ -d "$XDG_CACHE_HOME/wal" ]] && wal -R || sh $XDG_CONFIG_HOME/hypr/scripts/change-wallpaper.sh "$wallpaper"
 
