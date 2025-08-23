@@ -1,7 +1,7 @@
 #!usr/bin/env bash
 
 # Prompts the user with dmenu(or dmenu-like app, see hypr/scripts/get-dmenu.sh) 
-# to choose an image file inside defined $WALLPAPERS_DIR. If the user selects 
+# to choose an image file inside defined $WALLPAPERS. If the user selects 
 # an entry, it automatically writes changes to the hyprpaper.conf file and 
 # hot-reloads if hyprpaper is running.
 # --------------
@@ -10,11 +10,7 @@
 # From https://github.com/retrozinndev/colorshell
 
 style="lighten" # lighten / darken
-dmenu=$(sh "$XDG_CONFIG_HOME/hypr/scripts/get-dmenu.sh")
-
-if [[ -z "$WALLPAPERS_DIR" ]]; then
-    WALLPAPERS_DIR="$HOME/wallpapers"
-fi
+WALLPAPERS=`[[ -z "$WALLPAPERS" ]] && echo -n "$HOME/wallpapers" || echo -n "$WALLPAPERS"`
 
 function Write_changes() {
     echo "[LOG] Writing to hyprpaper config file"
@@ -39,33 +35,30 @@ function Reload_pywal() {
     wal -t --cols16 $style -i "$wall"
 }
 
-if [[ -z "$dmenu" ]]; then
-    notify-send -u normal -a "Wallpaper" "Dmenu not found" "Couldn't find anyrun or wofi for dmenu! Try installing one of these two before selecting wallpaper!"
-    exit 1
-fi
-
-if [[ -z $(ls -A $WALLPAPERS_DIR) ]]; then
+if [[ -z $(ls -A -w1 $WALLPAPERS) ]]; then
     notify-send -u normal -a "Wallpaper" "Wallpapers not found" "Couldn't find any wallpaper inside \`~/wallpapers\`, try putting an image you like in there to choose it!"
     exit 1
 fi
 
-if [[ -z $1 ]]; then 
+if [[ -z $@ ]]; then 
     # Prompt wallpaper list
-    wall="$WALLPAPERS_DIR/$(ls $WALLPAPERS_DIR | $dmenu)"
+    selection=`ls -w1 "$WALLPAPERS" | wofi --show drun`
 
     # Check if input wallpaper is empty
-    if [[ $wall == "$WALLPAPERS_DIR/" ]]; then
+    if [[ -z $selection ]]; then
         echo "No wallpaper has been selected by user!"
         if [[ $RANDOM_WALLPAPER_WHEN_EMPTY == true ]]; then
-            wall="$WALLPAPERS_DIR/$(ls $WALLPAPERS_DIR | shuf -n 1)"
-            echo "Selected random from $WALLPAPERS_DIR: $wall"
+            wall="$WALLPAPERS/$(ls $WALLPAPERS | shuf -n 1)"
+            echo "Selected random from $WALLPAPERS: $wall"
         else
             echo "Skipping hyprpaper changes and exiting."
             exit 0
         fi
+    else
+        wall="$WALLPAPERS/$selection" # wofi if no wallpaper specified
     fi
 else
-    wall=$1
+    wall=$@
 fi
 
 Reload_pywal

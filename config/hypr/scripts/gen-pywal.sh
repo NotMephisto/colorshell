@@ -7,15 +7,11 @@
 # Made by retrozinndev (João Dias)
 # From https://github.com/retrozinndev/colorshell
 
-if ! [[ -f "$HOME/.config/hypr/hyprpaper.conf" ]]; then
-    notify-send -a "Wallpaper" "Couldn't load" "Wallpaper file not found! Please check for the wallpaper: $wallpaper."
+if ! [[ -f "$XDG_CONFIG_HOME/hypr/hyprpaper.conf" ]]; then
+    echo "[error] wallpaper file not found!"
     exit 1
 fi
 
-wallpaper="$(cat $HOME'/.config/hypr/hyprpaper.conf' | grep '$wallpaper =' | sed -e 's/^$wallpaper = //')"
+wallpaper=`cat "$XDG_CONFIG_HOME/hypr/hyprpaper.conf" | grep '$wallpaper =' | sed -e 's/^$wallpaper = //'`
+[[ -d "$XDG_CACHE_HOME/wal" ]] && wal -R || wal -q -t --cols16 darken -i "$wallpaper"
 
-if [[ -d "$HOME/.cache/wal" ]]; then
-    wal -R
-else
-    wal -q -t --cols16 darken -i "$wallpaper"
-fi

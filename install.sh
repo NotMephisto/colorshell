@@ -79,6 +79,9 @@ if [[ "$answer" == y ]] || [[ "$skip_prompts" ]]; then
         Send_log "Installing $dir in $dest"
         mkdir -p `dirname "$dest"` # create parents
 
+        [[ -d "$dest" ]] || [[ -f "$dest" ]] && \
+            rm -rf $dest
+
         cp -rf $repo_directory/config/$dir "$dest" # copy
     done
 
@@ -86,24 +89,25 @@ if [[ "$answer" == y ]] || [[ "$skip_prompts" ]]; then
     prev_wd=`pwd`
     cd "$repo_directory"
     pnpm build:release
+    cd "$prev_wd"
 
     Send_log "Installing colorshell"
     # install shell
     mkdir -p $BIN_HOME
-    cp -f ./build/release/colorshell $BIN_HOME
+    cp -f $repo_directory/build/release/colorshell $BIN_HOME
 
     # install gresource
     mkdir -p $XDG_DATA_HOME/colorshell
-    cp -f ./build/release/resources.gresource $XDG_DATA_HOME/colorshell
+    cp -f $repo_directory/build/release/resources.gresource $XDG_DATA_HOME/colorshell
 
     # install desktop entry
     mkdir -p $APPS_HOME
-    cp -f ./build/release/colorshell.desktop $APPS_HOME
+    cp -f $repo_directory/build/release/colorshell.desktop $APPS_HOME
 
-    Send_log "Cleaning"
-    pnpm clean
 
-    cd "$prev_wd"
+    Send_log "Adding default wallpaper in ~/wallpapers"
+    mkdir -p $HOME/wallpapers
+    cp -f $repo_directory/resources/wallpaper_default.jpg "$HOME/wallpapers/Default Hypr-chan.jpg"
 
     if [[ -z "$skip_prompts" ]]; then
         echo "Colorshell is installed! :D"

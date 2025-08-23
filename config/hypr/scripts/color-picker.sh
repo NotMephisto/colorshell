@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 function send_notification() {
-    notify-send -u normal -a "color-picker" "$1" "$2"
+    (notify-send -u normal -a "color-picker" "$1" "$2" > /dev/null 2>&1) || \
+        (echo "$1: $2")
 }
 
 # Check if hyprpicker is installed
