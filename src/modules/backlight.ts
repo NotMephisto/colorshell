@@ -19,8 +19,12 @@ class Backlight extends GObject.Object {
     #maxBrightness: number;
     #brightness: number;
     #available: boolean = true;
+    #monitor: Gio.FileMonitor;
 
     @signal(Number) brightnessChanged(_: number): void {};
+
+    @getter(String)
+    get name() { return this.#name; }
 
     @getter(String)
     get path() { return this.#path; }
@@ -28,6 +32,9 @@ class Backlight extends GObject.Object {
     @getter(GObject.Object as unknown as ParamSpec<Backlight>)
     get default() { return Backlight.default; }
 
+    @getter(Object as unknown as ParamSpec<Array<Backlight>>)
+    get backlights() { return Backlight.backlights; }
+    
     @getter(Boolean)
     get isDefault() { return this.path === this.default?.path; }
 
@@ -97,6 +104,7 @@ class Backlight extends GObject.Object {
         }
 
         Backlight._backlights = backlights;
+        backlights.forEach(bk => bk.notify("backlights"));
         return backlights;
     }
 
@@ -119,7 +127,7 @@ class Backlight extends GObject.Object {
         this.#brightness = Number.parseInt(readFile(`${this.#path}/brightness`))
 
 
-        monitorFile(`/sys/class/backlight/${name}/brightness`, () => {
+        this.#monitor = monitorFile(`/sys/class/backlight/${name}/brightness`, () => {
             this.#brightness = this.readBrightness();
             this.notify("brightness");
             this.emit("brightness-changed", this.brightness);
@@ -164,6 +172,10 @@ class Backlight extends GObject.Object {
         }
 
         return null;
+    }
+
+    vfunc_dispose(): void {
+        this.#monitor.cancel();
     }
 
     public emit<Signal extends keyof typeof this.$signals>(

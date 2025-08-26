@@ -61,6 +61,11 @@ export default {
                 temperature: "Temperatura",
                 gamma: "Gama"
             },
+            backlight: {
+                title: "Brilho",
+                description: "Controle o nível de brilho das suas telas",
+                refresh: "Recarregar"
+            },
             bluetooth: {
                 title: "Bluetooth",
                 description: "Gerencie dispositivos Bluetooth",

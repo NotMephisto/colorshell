@@ -7,6 +7,7 @@ import { createBinding, With } from "ags";
 import { Backlight } from "../../modules/backlight";
 
 import AstalWp from "gi://AstalWp";
+import { PageBacklight } from "./pages/Backlight";
 
 
 export let slidersPages: Pages|undefined;
@@ -65,6 +66,8 @@ export function Sliders() {
                                   Backlight.getDefault()!.brightness = value
                               }}
                             />
+                            <Gtk.Button class={"more"} iconName={"go-next-symbolic"} onClicked={() => 
+                                slidersPages?.toggle(PageBacklight)} />
                         </Gtk.Box>
                     }
                 </With>

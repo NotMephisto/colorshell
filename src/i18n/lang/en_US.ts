@@ -61,6 +61,11 @@ export default {
                 gamma: "Gamma",
                 temperature: "Temperature"
             },
+            backlight: {
+                title: "Backlight",
+                description: "Control the brightness of your screens",
+                refresh: "Refresh backlights"
+            },
             bluetooth: {
                 title: "Bluetooth",
                 description: "Manage Bluetooth devices",

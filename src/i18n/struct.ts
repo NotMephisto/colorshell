@@ -59,6 +59,11 @@ export type i18nStruct = {
                 title: string,
                 interface: string
             },
+            backlight: {
+                title: string,
+                description: string,
+                refresh: string
+            },
             bluetooth: {
                 title: string,
                 description: string,
