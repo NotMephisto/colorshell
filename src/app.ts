@@ -47,8 +47,6 @@ const runnerPlugins: Array<Runner.Plugin> = [
 
 const defaultWindows: Array<string> = [ "bar" ];
 
-Gtk.init();
-Adw.init();
 GLib.unsetenv("LD_PRELOAD");
 
 @register({ GTypeName: "Shell" })
@@ -59,8 +57,8 @@ export class Shell extends Adw.Application implements Gio.ActionMap {
     #connections = new Map<GObject.Object, Array<number> | number>();
     #providers: Array<Gtk.CssProvider> = [];
     #gresource: Gio.Resource|null = null;
-    #socketService: Gio.SocketService;
-    #socketFile: Gio.File;
+    #socketService!: Gio.SocketService;
+    #socketFile!: Gio.File;
 
     get scope() { return this.#scope; }
 
@@ -72,7 +70,100 @@ export class Shell extends Adw.Application implements Gio.ActionMap {
         });
 
         setConsoleLogDomain("colorshell");
+    }
 
+    public static getDefault(): Shell {
+        if(!this.instance)
+            this.instance = new Shell();
+
+        return this.instance;
+    }
+
+    public resetStyle(): void {
+        this.#providers.forEach(provider =>
+            Gtk.StyleContext.remove_provider_for_display(
+                Gdk.Display.get_default()!,
+                provider
+            )
+        );
+    }
+
+    public removeProvider(provider: Gtk.CssProvider): void {
+        if(!this.#providers.includes(provider)) {
+            console.warn("Colorshell: Couldn't find the provided GtkCssProvider to remove. Was it added before?");
+            return;
+        }
+
+        for(let i = 0; i < this.#providers.length; i++) {
+            const prov = this.#providers[i];
+            if(prov === provider) {
+                this.#providers.splice(i, 1);
+                Gtk.StyleContext.remove_provider_for_display(
+                    Gdk.Display.get_default()!,
+                    provider
+                );
+                break;
+            }
+        }
+    }
+
+    public applyStyle(stylesheet: string): void {
+        try {
+            const provider = Gtk.CssProvider.new();
+            provider.load_from_string(stylesheet)
+            this.#providers.push(provider);
+            
+            Gtk.StyleContext.add_provider_for_display(
+                Gdk.Display.get_default()!,
+                provider,
+                Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+            );
+        } catch(e) {
+            console.error(`Colorshell: Couldn't apply style. Stderr: ${e}`);
+            return;
+        }
+    }
+
+    vfunc_command_line(cmd: Gio.ApplicationCommandLine): number {
+        const args = cmd.get_arguments().toSpliced(0, 1); // remove executable
+
+        if(cmd.isRemote) {
+            try {
+                // warn user that this method is pretty slow
+                cmd.print_literal("\nColorshell: !! Using a remote instance to communicate is pretty slow, \
+you should use the socket in the XDG_RUNTIME_DIR/colorshell.sock for a faster response.\n\n");
+
+                const res = handleArguments(cmd, args);
+
+                cmd.done();
+                cmd.set_exit_status(res);
+                return res;
+            } catch(_e) {
+                const e = _e as Error;
+                cmd.printerr_literal(`Error: something went wrong! Stderr: ${e.message}\n${e.stack}`);
+                cmd.done();
+                return 1;
+            }
+        } else {
+            if(args.length > 0) {
+                cmd.printerr_literal("Error: colorshell not running. Try to clean-run before using arguments");
+                cmd.done();
+                return 1;
+            }
+            
+            this.activate();
+        }
+        
+        return 0;
+    }
+
+    vfunc_activate(): void {
+        super.vfunc_activate();
+        this.hold();
+        this.main();
+    }
+
+    private init(): void {
         // load gresource from build-defined path
         try {
             this.#gresource = Gio.Resource.load(GRESOURCES_FILE.split('/').filter(s => 
@@ -170,98 +261,11 @@ export class Shell extends Adw.Application implements Gio.ActionMap {
         );
     }
 
-    public static getDefault(): Shell {
-        if(!this.instance)
-            this.instance = new Shell();
-
-        return this.instance;
-    }
-
-    public resetStyle(): void {
-        this.#providers.forEach(provider =>
-            Gtk.StyleContext.remove_provider_for_display(
-                Gdk.Display.get_default()!,
-                provider
-            )
-        );
-    }
-
-    public removeProvider(provider: Gtk.CssProvider): void {
-        if(!this.#providers.includes(provider)) {
-            console.warn("Colorshell: Couldn't find the provided GtkCssProvider to remove. Was it added before?");
-            return;
-        }
-
-        for(let i = 0; i < this.#providers.length; i++) {
-            const prov = this.#providers[i];
-            if(prov === provider) {
-                this.#providers.splice(i, 1);
-                Gtk.StyleContext.remove_provider_for_display(
-                    Gdk.Display.get_default()!,
-                    provider
-                );
-                break;
-            }
-        }
-    }
-
-    public applyStyle(stylesheet: string): void {
-        try {
-            const provider = Gtk.CssProvider.new();
-            provider.load_from_string(stylesheet)
-            this.#providers.push(provider);
-            
-            Gtk.StyleContext.add_provider_for_display(
-                Gdk.Display.get_default()!,
-                provider,
-                Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
-            );
-        } catch(e) {
-            console.error(`Colorshell: Couldn't apply style. Stderr: ${e}`);
-            return;
-        }
-    }
-
-    vfunc_command_line(cmd: Gio.ApplicationCommandLine): number {
-        const args = cmd.get_arguments().toSpliced(0, 1); // remove executable
-
-        if(cmd.isRemote) {
-            try {
-                // warn user that this method is pretty slow
-                cmd.print_literal("\nColorshell: !! Using a remote instance to communicate is pretty slow, \
-you should use the socket in the XDG_RUNTIME_DIR/colorshell.sock for a faster response.\n\n");
-
-                const res = handleArguments(cmd, args);
-
-                cmd.done();
-                cmd.set_exit_status(res);
-                return res;
-            } catch(_e) {
-                const e = _e as Error;
-                cmd.printerr_literal(`Error: something went wrong! Stderr: ${e.message}\n${e.stack}`);
-                cmd.done();
-                return 1;
-            }
-        } else {
-            if(args.length > 0) {
-                cmd.printerr_literal("Error: colorshell not running. Try to clean-run before using arguments");
-                cmd.done();
-                return 1;
-            }
-            
-            this.activate();
-        }
-        
-        return 0;
-    }
-
-    vfunc_activate(): void {
-        super.vfunc_activate();
-        this.hold();
-        this.main();
-    }
-
     private main(): void {
+        Gtk.init();
+        Adw.init();
+        this.init();
+
         createRoot((dispose) => {
             console.log(`Colorshell: Initializing things`);
             this.#connections.set(this, this.connect("shutdown", () => dispose()));
@@ -331,7 +335,9 @@ const generalConfigDefaults = {
         * ---
         * Example: 1(empty, current, shows ID), 2(empty, does not appear(makes 
         * the previous not to be in a crescent order)), 3(not empty, shows ID) */
-        enable_helper: true
+        enable_helper: true,
+        /** hide workspace indicator if there's only one active workspace */
+        hide_if_single: false
     },
 
     clock: {
