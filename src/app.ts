@@ -227,12 +227,12 @@ you should use the socket in the XDG_RUNTIME_DIR/colorshell.sock for a faster re
                         if(success) {
                             handleArguments({
                                 print_literal: (msg) => conn.outputStream.write_bytes(
-                                    encoder.encode(msg),
+                                    encoder.encode(`${msg}\n`),
                                     null
                                 ),
                                 // TODO: support writing to stderr(i don't know how to do that :sob:)
                                 printerr_literal: (msg) => conn.outputStream.write_bytes(
-                                    encoder.encode(msg),
+                                    encoder.encode(`${msg}\n`),
                                     null
                                 )
                             }, parsedArgs!);
