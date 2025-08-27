@@ -4,7 +4,7 @@ import { Pages } from "./Pages";
 import { PageSound } from "./pages/Sound";
 import { PageMicrophone } from "./pages/Microphone";
 import { createBinding, With } from "ags";
-import { Backlight } from "../../modules/backlight";
+import { Backlights } from "../../modules/backlight";
 
 import AstalWp from "gi://AstalWp";
 import { PageBacklight } from "./pages/Backlight";
@@ -50,28 +50,26 @@ export function Sliders() {
                     slidersPages?.toggle(PageMicrophone)} />
             </Gtk.Box>}
         </With>
-        <Gtk.Box visible={Boolean(Backlight.getDefault())}>
-            {Backlight.getDefault() &&
-                <With value={createBinding(Backlight.getDefault()!, "default")}>
-                    {(bklight: Backlight) => bklight && 
-                        <Gtk.Box class={"backlight"} spacing={3}>
-                            <Gtk.Button onClicked={() => {
-                                  bklight.brightness = bklight.maxBrightness
-                              }} iconName={"display-brightness-symbolic"}
-                            />
+        <Gtk.Box visible={createBinding(Backlights.getDefault(), "available")}>
+            <With value={createBinding(Backlights.getDefault(), "default")}>
+                {(bklight: Backlights.Backlight|null) => bklight && 
+                    <Gtk.Box class={"backlight"} spacing={3}>
+                        <Gtk.Button onClicked={() => {
+                              bklight.brightness = bklight.maxBrightness
+                          }} iconName={"display-brightness-symbolic"}
+                        />
 
-                            <Astal.Slider drawValue={false} hexpand value={createBinding(bklight, "brightness")} 
-                              max={bklight.maxBrightness}
-                              onChangeValue={(_, __, value) => {
-                                  Backlight.getDefault()!.brightness = value
-                              }}
-                            />
-                            <Gtk.Button class={"more"} iconName={"go-next-symbolic"} onClicked={() => 
-                                slidersPages?.toggle(PageBacklight)} />
-                        </Gtk.Box>
-                    }
-                </With>
-            }
+                        <Astal.Slider drawValue={false} hexpand value={createBinding(bklight, "brightness")} 
+                          max={bklight.maxBrightness}
+                          onChangeValue={(_, __, value) => {
+                              bklight.brightness = value
+                          }}
+                        />
+                        <Gtk.Button class={"more"} iconName={"go-next-symbolic"} onClicked={() => 
+                            slidersPages?.toggle(PageBacklight)} />
+                    </Gtk.Box>
+                }
+            </With>
         </Gtk.Box>
         <Pages $={(self) => slidersPages = self} />
     </Gtk.Box>
