@@ -350,6 +350,20 @@ const generalConfigDefaults = {
     }
 };
 
+const userDataDefaults = {
+    control_center: {
+        default_backlight: undefined
+    }
+};
+
+export const userData = new Config<
+    keyof typeof userDataDefaults, 
+    (typeof userDataDefaults)[keyof typeof userDataDefaults]
+>(
+    `${GLib.get_user_data_dir()}/colorshell/data.json`,
+    userDataDefaults
+);
+
 export const generalConfig = new Config<keyof typeof generalConfigDefaults, 
     typeof generalConfigDefaults[keyof typeof generalConfigDefaults]>(
         `${GLib.get_user_config_dir()}/colorshell/config.json`, generalConfigDefaults

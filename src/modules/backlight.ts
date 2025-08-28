@@ -1,14 +1,11 @@
 import { monitorFile, readFile } from "ags/file";
 import { exec } from "ags/process";
-import GObject, { getter, ParamSpec, setter, signal } from "ags/gobject";
+import GObject, { getter, ParamSpec, register, setter, signal } from "ags/gobject";
 
 import Gio from "gi://Gio?version=2.0";
 
 
 export namespace Backlights {
-
-    const BacklightsParamSpec = (name: string, flags: GObject.ParamFlags) => 
-        GObject.ParamSpec.object(name, null, null, flags) as ParamSpec<Backlights>;
 
     const BacklightParamSpec = (name: string, flags: GObject.ParamFlags) => 
         GObject.ParamSpec.object(name, null, null, flags) as ParamSpec<Backlight>;
@@ -22,13 +19,8 @@ export namespace Backlights {
         return instance;
     }
 
-    export class Backlights extends GObject.Object {
-        static {
-            GObject.registerClass({
-                GTypeName: "Backlights"
-            }, this);
-        }
-
+    @register({ GTypeName: "Backlights" })
+    class _Backlights extends GObject.Object {
 
         #backlights: Array<Backlight> = [];
         #default: Backlight|null = null;
@@ -101,13 +93,8 @@ export namespace Backlights {
         }
     }
 
-    export class Backlight extends GObject.Object {
-        static {
-            GObject.registerClass({
-                GTypeName: "Backlight"
-            }, this);
-        }
-
+    @register({ GTypeName: "Backlight" })
+    class _Backlight extends GObject.Object {
 
         declare $signals: GObject.Object.SignalSignatures & {
             "brightness-changed": (value: number) => void
@@ -207,4 +194,9 @@ export namespace Backlights {
             super.emit(signal, ...args);
         }
     }
+
+    export const Backlights = _Backlights;
+    export const Backlight = _Backlight;
+    export type Backlight = InstanceType<typeof Backlight>;
+    export type Backlights = InstanceType<typeof Backlights>;
 }

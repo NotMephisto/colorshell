@@ -1,11 +1,9 @@
 import { timeout } from "ags/time";
-import { monitorFile, readFileAsync } from "ags/file";
+import { monitorFile, readFileAsync, writeFileAsync } from "ags/file";
 import { Notifications } from "./notifications";
-import { encoder } from "./utils";
 import { Accessor } from "ags";
-import GObject, { getter, register } from "ags/gobject";
+import GObject, { getter, ParamSpec, register } from "ags/gobject";
 
-import GLib from "gi://GLib?version=2.0";
 import Gio from "gi://Gio?version=2.0";
 import AstalIO from "gi://AstalIO";
 import AstalNotifd from "gi://AstalNotifd";
@@ -24,8 +22,8 @@ class Config<K extends NonNullable<string|number|symbol>, V extends string|objec
     * in the `entries` field */
     public readonly defaults: Record<K, V>;
 
-    @getter(Object)
-    public get entries(): object { return this.#entries; }
+    @getter(Object as unknown as ParamSpec<Record<K, V>>)
+    public get entries() { return this.#entries; }
 
     #file: Gio.File;
     #entries: Record<K, V>;
@@ -47,26 +45,12 @@ class Config<K extends NonNullable<string|number|symbol>, V extends string|objec
             this.#file.make_directory_with_parents(null);
             this.#file.delete(null);
 
-            this.#file.create_readwrite_async(
-                Gio.FileCreateFlags.NONE, GLib.PRIORITY_DEFAULT, 
-                null, (_, asyncRes) => {
-                    const ioStream = this.#file.create_readwrite_finish(asyncRes);
-
-                    ioStream.outputStream.write_bytes_async(
-                        GLib.Bytes.new(encoder.encode(JSON.stringify(this.entries, undefined, 4))),
-                        GLib.PRIORITY_DEFAULT, null,
-                        (_, asyncRes) => {
-                            const writtenBytes = ioStream.outputStream.write_bytes_finish(asyncRes);
-
-                            if(!writtenBytes)
-                                Notifications.getDefault().sendNotification({
-                                    appName: "colorshell",
-                                    summary: "Write error",
-                                    body: `Couldn't write default configuration file to "${this.#file.get_path()!}"`
-                                });
-                        }
-                    );
-                });
+            this.writeFile().catch(e => Notifications.getDefault().sendNotification({
+                appName: "colorshell",
+                summary: "Write error",
+                body: `Couldn't write default configuration file to "${this.#file.get_path()!
+                    }".\nStderr: ${e}`
+            }));
         }
 
         monitorFile(this.#file.get_path()!, 
@@ -95,6 +79,13 @@ class Config<K extends NonNullable<string|number|symbol>, V extends string|objec
         this.readFile().catch(e => console.error(
             `Config: An error occurred while read the configuration file. Stderr: ${e}`
         ));
+    }
+
+    private async writeFile(): Promise<void> {
+        this.timeout = true;
+        await writeFileAsync(
+            this.#file.get_path()!, JSON.stringify(this.entries, undefined, 4)
+        ).finally(() => this.timeout = false);
     }
 
     private async readFile(): Promise<void> {
@@ -172,6 +163,29 @@ class Config<K extends NonNullable<string|number|symbol>, V extends string|objec
 
     public getPropertyDefault(path: string, expectType?: ValueTypes): boolean|number|string|object|any {
         return this._getProperty(path, this.defaults, expectType);
+    }
+
+    public setProperty(path: string, value: any, write?: boolean): void {
+        let property: any = this.#entries,
+            obj: typeof this.entries = property;
+        const pathArray = path.split('.').filter(str => str);
+
+        for(let i = 0; i < pathArray.length; i++) {
+            const currentPath = pathArray[i];
+
+            
+            property = property[currentPath as keyof typeof property];
+            if(typeof property === "object") {
+                obj = property;
+            } else {
+                obj[pathArray[pathArray.length - 1] as keyof typeof obj] = value;
+                break;
+            }
+        }
+
+        write && this.writeFile().catch(e => console.error(
+            `Config: Couldn't save file. Stderr: ${e}`
+        ));
     }
 
     private _getProperty(path: string, entries: Record<K, V>, expectType?: ValueTypes): (any|undefined) {
