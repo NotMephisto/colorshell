@@ -172,7 +172,6 @@ class Config<K extends NonNullable<string|number|symbol>, V extends string|objec
 
         for(let i = 0; i < pathArray.length; i++) {
             const currentPath = pathArray[i];
-
             
             property = property[currentPath as keyof typeof property];
             if(typeof property === "object") {
@@ -183,6 +182,7 @@ class Config<K extends NonNullable<string|number|symbol>, V extends string|objec
             }
         }
 
+        this.notify("entries");
         write && this.writeFile().catch(e => console.error(
             `Config: Couldn't save file. Stderr: ${e}`
         ));
