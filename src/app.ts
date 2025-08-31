@@ -22,15 +22,15 @@ import { Clipboard } from "./modules/clipboard";
 import { Config } from "./modules/config";
 import { Gdk, Gtk } from "ags/gtk4";
 import { createRoot, getScope } from "ags";
-import { triggerOSD } from "./window/OSD";
+import { OSDModes, triggerOSD } from "./window/OSD";
 import { programArgs, programInvocationName } from "system";
 import { setConsoleLogDomain } from "console";
 import { initPlayer } from "./modules/media";
 import { encoder } from "./modules/utils";
 import { exec } from "ags/process";
+import { Backlights } from "./modules/backlight";
 import GObject, { register } from "ags/gobject";
 
-import AstalNotifd from "gi://AstalNotifd";
 import GLib from "gi://GLib?version=2.0";
 import Gio from "gi://Gio?version=2.0";
 import Adw from "gi://Adw?version=1";
@@ -283,15 +283,38 @@ you should use the socket in the XDG_RUNTIME_DIR/colorshell.sock for a faster re
 
             this.#connections.set(Wireplumber.getDefault(), 
                 Wireplumber.getDefault().getDefaultSink().connect("notify::volume", () => 
-                    triggerOSD())
+                    !Windows.getDefault().isOpen("control-center") &&
+                        triggerOSD(OSDModes.SINK)
+                )
+            );
+
+            // dinamically connect to default backlight (if there's any)
+            let lastDefaultBk: Backlights.Backlight|null = null;
+            this.#connections.set(Backlights.getDefault(), 
+                Backlights.getDefault().connect("notify::default", (_, defaultBk: Backlights.Backlight|null) => {
+                    if(!lastDefaultBk) return;
+
+                    if(this.#connections.has(lastDefaultBk))
+                        lastDefaultBk.disconnect((this.#connections.get(lastDefaultBk) as number));
+
+                    lastDefaultBk = null;
+                    if(!defaultBk) return;
+
+                    lastDefaultBk = defaultBk;
+
+                    this.#connections.set(defaultBk, defaultBk.connect("brightness-changed", () => 
+                        !Windows.getDefault().isOpen("control-center") &&
+                            triggerOSD(OSDModes.BRIGHTNESS)
+                    ));
+                })
             );
 
             this.#connections.set(Notifications.getDefault(), [
-                Notifications.getDefault().connect("notification-added", (_, _notif: AstalNotifd.Notification) => {
+                Notifications.getDefault().connect("notification-added", () => {
                     Windows.getDefault().open("floating-notifications");
                 }),
-                Notifications.getDefault().connect("notification-removed", (_: Notifications, _id: number) => {
-                    _.notifications.length === 0 && Windows.getDefault().close("floating-notifications");
+                Notifications.getDefault().connect("notification-removed", (self) => {
+                    self.notifications.length === 0 && Windows.getDefault().close("floating-notifications");
                 })
             ]);
 

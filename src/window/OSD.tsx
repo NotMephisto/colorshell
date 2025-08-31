@@ -1,64 +1,106 @@
 import { Astal, Gtk } from "ags/gtk4";
-import { createBinding, createState } from "ags";
+import { Accessor, createBinding, createState, With } from "ags";
 import { Wireplumber } from "../modules/volume";
 import { Windows } from "../windows";
-import { Time, timeout } from "ags/time";
+import { Backlights } from "../modules/backlight";
+import { construct, variableToBoolean } from "../modules/utils";
 
+import GObject, { ParamSpec, property, register } from "ags/gobject";
 import Pango from "gi://Pango?version=1.0";
+import GLib from "gi://GLib?version=2.0";
 
 
-export enum OSDModes {
-    SINK,
-    BRIGHTNESS,
-    NONE
+@register({ GTypeName: "OSDMode" })
+export class OSDMode extends GObject.Object {
+    readonly #subs: Array<() => void> = [];
+    @property(String)
+    icon: string = "image-missing";
+    @property(Number)
+    value: number = 0;
+    @property(Number)
+    max: number = 100;
+    @property(String as unknown as ParamSpec<string|null>)
+    text: string|null = null;
+
+    constructor(props: {
+        icon: string | Accessor<string>;
+        value: number | Accessor<number>;
+        max?: number | Accessor<number>;
+        text?: string | Accessor<string>;
+    }) {
+        super();
+        this.#subs = construct(this, props);
+    }
+
+    vfunc_dispose(): void {
+        this.#subs.forEach(s => s());
+    }
 }
 
-const [osdMode, setOSDMode] = createState(OSDModes.NONE);
-let osdTimer: (Time|undefined), osdTimeout = 3500;
+export const OSDModes: Record<string, OSDMode> = {
+    SINK: new OSDMode({
+        icon: createBinding(Wireplumber.getWireplumber().defaultSpeaker, "volumeIcon"),
+        value: createBinding(Wireplumber.getWireplumber().defaultSpeaker, "volume"),
+        text: createBinding(Wireplumber.getWireplumber().defaultSpeaker, "description"),
+        max: Wireplumber.getDefault().getMaxSinkVolume() / 100
+    }),
+    BRIGHTNESS: Backlights.getDefault().available ? new OSDMode({
+            icon: "display-brightness-symbolic",
+            value: createBinding(Backlights.getDefault().default, "brightness"),
+            max: createBinding(Backlights.getDefault().default, "maxBrightness"),
+            text: createBinding(Backlights.getDefault().default, "name")
+        })
+    : new OSDMode({
+        icon: "display-brightness-symbolic",
+        value: 100,
+        max: 100,
+        text: "No Backlight found"
+    })
+}
 
-export const OSD = (mon: number) => {
-    if(osdMode.get() === OSDModes.NONE)
-        setOSDMode(OSDModes.SINK);
+const [osdMode, setOSDMode] = createState(OSDModes.SINK);
+let osdTimer: (GLib.Source|undefined), osdTimeout = 3500;
 
-    return <Astal.Window namespace={"osd"} class={"osd-window"} layer={Astal.Layer.OVERLAY}
+export const OSD = (mon: number) => 
+    <Astal.Window namespace={"osd"} class={"osd-window"} layer={Astal.Layer.OVERLAY}
       anchor={Astal.WindowAnchor.BOTTOM} focusable={false} marginBottom={80} monitor={mon}>
 
         <Gtk.Box class={"osd"}>
-            <Gtk.Image class={"icon"} iconName={createBinding(Wireplumber.getDefault().getDefaultSink(), 
-                  "volumeIcon").as(icon => !Wireplumber.getDefault().isMutedSink() && 
-                      Wireplumber.getDefault().getSinkVolume() > 0 ? icon : "audio-volume-muted-symbolic")}
-            />
-            <Gtk.Box orientation={Gtk.Orientation.VERTICAL} class={"volume"} vexpand={true} hexpand={true}>
-                <Gtk.Label class={"device"} label={createBinding(Wireplumber.getDefault().getDefaultSink(), 
-                      "description").as(description => description ?? "Speaker")}
-                  ellipsize={Pango.EllipsizeMode.END}
-                />
-                <Gtk.LevelBar class={"levelbar"} value={createBinding(
-                      Wireplumber.getDefault().getDefaultSink(), "volume")} 
-                  maxValue={Wireplumber.getDefault().getMaxSinkVolume() / 100}
-                />
-            </Gtk.Box>
+            <With value={osdMode}>
+                {(mode: OSDMode) => <Gtk.Box>
+                    <Gtk.Image class={"icon"} iconName={
+                        createBinding(mode, "icon")
+                    } />
+                    <Gtk.Box orientation={Gtk.Orientation.VERTICAL} class={"level"} vexpand hexpand>
+                        <Gtk.Label class={"text"} label={createBinding(mode, "text").as(t => t ?? "")}
+                          ellipsize={Pango.EllipsizeMode.END}
+                          visible={variableToBoolean(createBinding(mode, "text"))}
+                        />
+                        <Gtk.LevelBar value={createBinding(mode, "value")} hexpand
+                          maxValue={createBinding(mode, "max")}
+                        />
+                    </Gtk.Box>
+                </Gtk.Box>}
+            </With>
         </Gtk.Box>
-    </Astal.Window>
-}
+    </Astal.Window>;
 
-export function triggerOSD() {
-    if(Windows.getDefault().isOpen("control-center")) return;
-
+export function triggerOSD(mode: OSDMode) {
+    setOSDMode(mode);
     Windows.getDefault().open("osd");
 
     if(!osdTimer) {
-        osdTimer = timeout(osdTimeout, () => {
+        osdTimer = setTimeout(() => {
             osdTimer = undefined;
             Windows.getDefault().close("osd");
-        });
+        }, osdTimeout);
 
         return;
     }
 
-    osdTimer.cancel();
-    osdTimer = timeout(osdTimeout, () => {
+    osdTimer.destroy();
+    osdTimer = setTimeout(() => {
         Windows.getDefault().close("osd");
         osdTimer = undefined;
-    });
+    }, osdTimeout);
 }

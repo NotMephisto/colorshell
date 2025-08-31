@@ -9,7 +9,6 @@ import GObject from "ags/gobject";
 import AstalNotifd from "gi://AstalNotifd";
 import Pango from "gi://Pango?version=1.0";
 import GLib from "gi://GLib?version=2.0";
-import { timeout } from "ags/time";
 
 
 function getNotificationImage(notif: AstalNotifd.Notification|HistoryNotification): (string|undefined) {
@@ -42,36 +41,24 @@ export function NotificationWidget({ notification, actionClicked, holdOnHover, s
 
     const conns: Map<GObject.Object, Array<number>> = new Map();
 
-    onCleanup(() => 
-        conns.forEach((ids, obj) => ids.forEach(id => obj.disconnect(id))));
+    onCleanup(() => conns.forEach((ids, obj) => 
+        ids.forEach(id => obj.disconnect(id))
+    ));
 
     return <Gtk.Box hexpand class={`notification ${
           Notifications.getDefault().getUrgencyString(notification.urgency)
-      }`} orientation={Gtk.Orientation.VERTICAL} spacing={5}
-      $={(self) => {
-          const eventControllerMotion = Gtk.EventControllerMotion.new(),
-              gestureClick = Gtk.GestureClick.new();
+      }`} orientation={Gtk.Orientation.VERTICAL} spacing={5}>
 
-          self.add_controller(eventControllerMotion);
-          self.add_controller(gestureClick);
-
-          conns.set(eventControllerMotion, [
-              eventControllerMotion.connect("enter", () => 
-                  holdOnHover && Notifications.getDefault().holdNotification(notification.id)),
-              eventControllerMotion.connect("leave", () => 
-                  holdOnHover && notification && timeout(600, () => 
-                      Notifications.getDefault().removeNotification(notification.id)
-                  ))
-          ]);
-
-          conns.set(gestureClick, [
-              gestureClick.connect("released", (gesture) => {
-                  gesture.get_current_button() === Gdk.BUTTON_PRIMARY &&
-                      actionClicked?.(notification);
-              })
-          ]);
-      }}>
-
+        <Gtk.EventControllerMotion onEnter={() => holdOnHover && 
+              Notifications.getDefault().holdNotification(notification.id)
+          } onLeave={() => holdOnHover &&
+              Notifications.getDefault().releaseNotification(notification.id)
+          }
+        />
+        <Gtk.GestureClick onReleased={(gesture) => 
+            gesture.get_current_button() === Gdk.BUTTON_PRIMARY &&
+                actionClicked?.(notification)
+        } />
         <Gtk.Box class={"top"} hexpand>
             <Gtk.Image class="app-icon" $={(self) => {
                   const icon = getSymbolicIcon(notification.appIcon ?? notification.appName) ?? 
@@ -84,7 +71,7 @@ export function NotificationWidget({ notification, actionClicked, holdOnHover, s
 
                   self.set_visible(false);
             }} />
-            <Gtk.Label class={"app-name"} halign={Gtk.Align.START} hexpand={true} 
+            <Gtk.Label class={"app-name"} halign={Gtk.Align.START} hexpand
               label={notification.appName || "Application"} />
 
             <Gtk.Label class={"time"} visible={showTime} xalign={1} 
@@ -101,14 +88,14 @@ export function NotificationWidget({ notification, actionClicked, holdOnHover, s
                 />
             }
             <Gtk.Box class={"text"} orientation={Gtk.Orientation.VERTICAL}
-              vexpand={true}>
+              vexpand>
 
-                <Gtk.Label class={"summary"} useMarkup={true} hexpand xalign={0}
+                <Gtk.Label class={"summary"} useMarkup hexpand xalign={0}
                   vexpand={false} ellipsize={Pango.EllipsizeMode.END} label={
                       escapeUnintendedMarkup(notification.summary)}
                 />
 
-                <Gtk.Label class={"body"} useMarkup={true} xalign={0} wrap={true} hexpand
+                <Gtk.Label class={"body"} useMarkup xalign={0} wrap hexpand
                   vexpand wrapMode={Pango.WrapMode.WORD_CHAR} valign={Gtk.Align.START} label={
                       escapeUnintendedMarkup(notification.body)}
                 />

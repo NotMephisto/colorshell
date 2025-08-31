@@ -1,14 +1,17 @@
-import { execAsync, Gio, GLib, register } from "astal";
-import Polkit from "gi://Polkit";
-import PolkitAgent from "gi://PolkitAgent";
+import { execAsync } from "ags/process";
+import { register } from "ags/gobject";
 import { EntryPopup, EntryPopupProps } from "../widget/EntryPopup";
-import AstalAuth from "gi://AstalAuth";
 import { AskPopup, AskPopupProps } from "../widget/AskPopup";
 
-export { Auth };
+import AstalAuth from "gi://AstalAuth";
+import Polkit from "gi://Polkit";
+import PolkitAgent from "gi://PolkitAgent";
+import Gio from "gi://Gio?version=2.0";
+import GLib from "gi://GLib?version=2.0";
+
 
 @register({ GTypeName: "AuthAgent" })
-class Auth extends PolkitAgent.Listener {
+export class Auth extends PolkitAgent.Listener {
     private static instance: Auth;
     #subject: Polkit.Subject;
 

@@ -6,6 +6,7 @@ import { getSymbolicIcon } from "./apps";
 
 import GLib from "gi://GLib?version=2.0";
 import Gio from "gi://Gio?version=2.0";
+import GObject from "gi://GObject?version=2.0";
 
 
 /** gnim doesn't export this, so we need to do it again */
@@ -213,4 +214,30 @@ export function addSliderMarksFromMinMax(slider: Astal.Slider, amountOfMarks: nu
     }
 
     return slider;
+}
+
+/** initialize and sub class properties with accessors */
+export function construct(klass: object, props: Record<any, any|Accessor<any>>): Array<() => void> {
+
+    const subs: Array<() => void> = [];
+    const isGObject = klass instanceof GObject.Object;
+
+    Object.keys(props).forEach(k => {
+        const v = props[k as keyof typeof props];
+
+        if(v === undefined) return;
+        if(v instanceof Accessor) {
+            subs.push(v.subscribe(() => {
+                klass[k as keyof typeof klass] = v.get() as never;
+                if(isGObject) klass.notify(k);
+            }));
+
+            klass[k as keyof typeof klass] = v.get() as never;
+            return;
+        }
+        
+        klass[k as keyof typeof klass] = v as never;
+    });
+
+    return subs;
 }

@@ -193,6 +193,13 @@ export namespace Backlights {
         ): void {
             super.emit(signal, ...args);
         }
+
+        public connect<Signal extends keyof typeof this.$signals>(
+            signal: Signal,
+            callback: (self: typeof this, ...args: Parameters<(typeof this.$signals)[Signal]>) => ReturnType<(typeof this.$signals)[Signal]>
+        ): number {
+            return super.connect(signal, callback);
+        }
     }
 
     export const Backlights = _Backlights;

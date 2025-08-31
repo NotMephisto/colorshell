@@ -1,17 +1,13 @@
-import { timeout } from "ags/time";
 import { execAsync } from "ags/process";
-import { readFile } from "ags/file";
 import { generalConfig } from "../app";
 import { onCleanup } from "ags";
-import GObject, { getter, property, register, signal } from "ags/gobject";
+import GObject, { getter, ParamSpec, property, register, signal } from "ags/gobject";
 
 import AstalNotifd from "gi://AstalNotifd";
-import AstalIO from "gi://AstalIO";
-import Gio from "gi://Gio?version=2.0";
 import GLib from "gi://GLib?version=2.0";
 
 
-export interface HistoryNotification {
+export type HistoryNotification = {
     id: number;
     appName: string;
     body: string;
@@ -22,28 +18,100 @@ export interface HistoryNotification {
     image?: string;
 }
 
+export class NotificationTimeout {
+    #source?: GLib.Source;
+    #args?: Array<any>;
+    #millis: number;
+    #lastRemained!: number;
+
+    readonly callback: () => void;
+    get millis(): number { return this.#millis; }
+    get remaining(): number { return this.source!.get_time() }
+    get lastRemained(): number { return this.#lastRemained; }
+    get running(): boolean { return Boolean(this.source?.is_destroyed()); }
+    get source(): GLib.Source|undefined { return this.#source; }
+
+    constructor(millis: number, callback: () => void, start: boolean = true, ...args: Array<any>) {
+        this.#millis = millis;
+        this.callback = callback;
+        this.#args = args;
+
+        if(!start) return;
+        this.start();
+    }
+
+    cancel(): void {
+        // use lastRemained to calculate on what time the user hold the notification, so it
+        // can be released by the remaining time (works like a timeout "pause")
+        this.#lastRemained = Math.floor(Math.max(this.#source!.get_ready_time() - GLib.get_monotonic_time()) / 1000);
+        this.#source?.destroy();
+        this.#source?.unref();
+        this.#source = undefined;
+    }
+
+    start(newMillis?: number): GLib.Source {
+        if(this.running)
+            throw new Error("Notifications: Can't start a new counter if it's already running!");
+
+        if(newMillis !== undefined)
+            this.#millis = newMillis;
+
+        this.#source = setTimeout(
+            this.callback,
+            this.#millis,
+            this.#args
+        );
+
+        this.#lastRemained = Math.floor(Math.max(this.#source!.get_ready_time() - GLib.get_monotonic_time()) / 1000);
+
+        return this.#source;
+    }
+};
+
 @register({ GTypeName: "Notifications" })
-class Notifications extends GObject.Object {
+export class Notifications extends GObject.Object {
     private static instance: (Notifications|null) = null;
 
-    #notifications: Array<AstalNotifd.Notification> = [];
+    declare $signals: GObject.Object.SignalSignatures & {
+        "history-added": (notification: HistoryNotification) => void;
+        "history-removed": (notificationId: number) => void;
+        "history-cleared": () => void;
+        "notification-added": (notification: AstalNotifd.Notification) => void;
+        "notification-removed": (notificationId: number) => void;
+        "notification-replaced": (notificationId: number) => void;
+    };
+
+    #notifications = new Map<number, [AstalNotifd.Notification, NotificationTimeout]>();
     #history: Array<HistoryNotification> = [];
-    #notificationsOnHold: Set<number> = new Set<number>();
     #connections: Array<number> = [];
 
     @getter(Array<AstalNotifd.Notification>)
-    public get notifications() { return this.#notifications };
+    public get notifications() {
+        return [...this.#notifications.values()].map(([n]) => n);
+    };
 
     @getter(Array<HistoryNotification>)
     public get history() { return this.#history };
 
+    @getter(Array<AstalNotifd.Notification>)
+    public get notificationsOnHold() {
+        return [...this.#notifications.values()].filter(([_, s]) => 
+            typeof s === "undefined"
+        ).map(([n]) => n);
+    }
+
     @property(Number)
     public historyLimit: number = 10;
+
+    /** skip notifications directly to notification history */
+    @property(Boolean)
+    public ignoreNotifications: boolean = false;
 
 
     @signal(AstalNotifd.Notification) notificationAdded(_notification: AstalNotifd.Notification) {};
     @signal(Number) notificationRemoved(_id: number) {};
-    @signal(Object) historyAdded(_notification: Object) {};
+    @signal(Object as unknown as ParamSpec<HistoryNotification>) historyAdded(_notification: Object) {};
+    @signal() historyCleared() {};
     @signal(Number) historyRemoved(_id: number) {};
     @signal(Number) notificationReplaced(_id: number) {};
 
@@ -53,43 +121,13 @@ class Notifications extends GObject.Object {
         this.#connections.push(
             AstalNotifd.get_default().connect("notified", (notifd, id) => {
                 const notification = notifd.get_notification(id);
-                const notifTimeout = generalConfig.getProperty(
-                    `notifications.timeout_${this.getUrgencyString(notification.urgency).toLowerCase()}`, 
-                    "number") as number;
-
-                if(this.getNotifd().dontDisturb) {
+                
+                if(this.getNotifd().dontDisturb || this.ignoreNotifications) {
                     this.addHistory(notification, () => notification.dismiss());
                     return;
                 }
 
-                this.addNotification(notification, () => {
-                    if(notification.urgency !== AstalNotifd.Urgency.CRITICAL ||
-                      (notification.urgency === AstalNotifd.Urgency.CRITICAL && 
-                        notifTimeout > 0)) {
-
-                        let notifTimer: (AstalIO.Time|undefined) = undefined;
-                        let replacedConnectionId: number;
-
-                        const removeFun = () => { // Funny name haha lmao remove fun :skull:
-                            notifTimer = undefined;
-                            if(this.#notificationsOnHold.has(notification.id)) return;
-
-                            this.addHistory(notification, () => {
-                                replacedConnectionId && this.disconnect(replacedConnectionId);
-                                this.removeNotification(id);
-                            });
-                        }
-
-                        notifTimer = timeout(notifTimeout, removeFun);
-
-                        replacedConnectionId = this.connect("notification-replaced", (_, id: number) => {
-                            if(notification.id !== id) return;
-
-                            notifTimer?.cancel();
-                            notifTimer = timeout(notifTimeout, removeFun);
-                        });
-                    }
-                });
+                this.addNotification(notification, this.getNotificationTimeout(notification) > 0);
             }),
 
             AstalNotifd.get_default().connect("resolved", (notifd, id, _reason) => {
@@ -97,8 +135,6 @@ class Notifications extends GObject.Object {
                 this.addHistory(notifd.get_notification(id));
             })
         );
-
-        this.retrieveHistoryFromFile();
 
         onCleanup(() => {
             this.#connections.map(id => 
@@ -111,42 +147,6 @@ class Notifications extends GObject.Object {
             this.instance = new Notifications();
 
         return this.instance;
-    }
-
-    private retrieveHistoryFromFile(): void {
-        const historyFile = Gio.File.new_for_path(`${GLib.get_user_state_dir()}/astal/notifd/notifications.json`);
-        if(!historyFile.query_exists(null)) return;
-
-        let content: string;
-        console.log("Notifications: History file found! Trying to retrieve history from JSON");
-
-        try {
-            content = readFile(historyFile.get_path()!);
-        } catch(e: any) {
-            console.error(`Notifications: An error occurred while trying to read the history file. Stderr:\n${
-                (e as Error).message}\n${(e as Error).stack}`);
-
-            return;
-        }
-
-        try {
-            const historyJSON = JSON.parse(content);
-
-            (historyJSON["notifications"] as Array<AstalNotifd.Notification>).reverse()
-                .forEach(n => this.addHistory(n));
-        } catch(e: any) {
-            if(e instanceof SyntaxError) {
-                console.error(`Notifications: Couldn't parse history JSON because of a SyntaxError:\n${e.message
-                }\n${e.stack}`);
-
-                return;
-            }
-
-            console.error(`Notifications: An error occurred while parsing the history JSON file. Stderr:\n${
-                e.message}\n${e.stack}`);
-
-            return;
-        }
     }
 
     public async sendNotification(props: {
@@ -236,7 +236,7 @@ class Notifications extends GObject.Object {
 
         this.notify("history");
         this.emit("history-added", this.#history[0]);
-        onAdded && onAdded(notif);
+        onAdded?.(notif);
     }
 
     public async clearHistory(): Promise<void> {
@@ -245,6 +245,7 @@ class Notifications extends GObject.Object {
             this.emit("history-removed", notif.id);
         });
 
+        this.emit("history-cleared");
         this.notify("history");
     }
 
@@ -257,47 +258,82 @@ class Notifications extends GObject.Object {
         this.emit("history-removed", notifId);
     }
 
-    private addNotification(notif: AstalNotifd.Notification, onAdded?: (notif: AstalNotifd.Notification) => void): void {
-        for(let i = 0; i < this.#notifications.length; i++) {
-            const item = this.#notifications[i];
+    private addNotification(
+        notif: AstalNotifd.Notification, 
+        removeOnTimeout: boolean = true, 
+        onTimeoutEnd?: () => void
+    ): void {
 
-            if(item.id !== notif.id) continue;
-
-            this.#notifications.splice(i, 1);
-            this.emit("notification-replaced", item.id);
-            break;
+        const replaced = this.#notifications.has(notif.id);
+        const notifTimeout = this.getNotificationTimeout(notif);
+        const onEnd = () => {
+            removeOnTimeout && this.removeNotification(notif);
+            onTimeoutEnd?.();
         }
 
-        this.#notifications.unshift(notif);
+        // destroy timer of replaced notification(if there's any)
+        if(replaced) {
+            const data = this.#notifications.get(notif.id)!;
+            (data?.[1] instanceof NotificationTimeout) && 
+                data[1].cancel();
+        }
+        
+        this.#notifications.set(notif.id, [
+            notif, 
+            new NotificationTimeout(notifTimeout, onEnd, notifTimeout > 0)
+        ]);
+
+        replaced && this.emit("notification-replaced", notif.id);
+
         this.notify("notifications");
         this.emit("notification-added", notif);
-        onAdded?.(notif);
+
+        if(notifTimeout <= 0) onEnd?.();
     }
 
-    public removeNotification(notif: (AstalNotifd.Notification|number)): void {
-        const notificationId = (notif instanceof AstalNotifd.Notification) ? notif.id : notif;
-        this.#notificationsOnHold.delete(notificationId);
-
-        this.#notifications = this.#notifications.filter((item) =>
-            item.id !== notificationId);
-
-        AstalNotifd.get_default().get_notification(notificationId)?.dismiss();
-        this.notify("notifications");
-        this.emit("notification-removed", notificationId);
+    public getNotificationTimeout(notif: AstalNotifd.Notification): number {
+        return generalConfig.getProperty(
+            `notifications.timeout_${this.getUrgencyString(notif.urgency)}`, 
+            "number"
+        );
     }
 
-    private getNotificationById(id: number): AstalNotifd.Notification|undefined {
-        return this.#notifications.filter(notif => notif.id === id)?.[0];
-    }
-
-    public holdNotification(notif: (AstalNotifd.Notification|number)): void {
-        notif = (typeof notif === "number") ? 
-            this.getNotificationById(notif)!
+    public removeNotification(notif: (AstalNotifd.Notification|number), addToHistory: boolean = true): void {
+        notif = typeof notif === "number" ? 
+            this.#notifications.get(notif)?.[0]!
         : notif;
 
         if(!notif) return;
 
-        this.#notificationsOnHold.add(notif.id);
+        const timeout = this.#notifications.get(notif.id)![1];
+        timeout.running && timeout.cancel();
+
+        this.#notifications.delete(notif.id);
+        addToHistory && this.addHistory(notif);
+
+        notif.dismiss();
+        this.notify("notifications");
+        this.emit("notification-removed", notif.id);
+    }
+
+    public holdNotification(notif: AstalNotifd.Notification|number): void {
+        const id = typeof notif === "number" ? notif : notif.id;
+        const data = this.#notifications.get(id);
+
+        if(!data) return;
+
+        data[1].cancel();
+        this.notify("notifications-on-hold");
+    }
+
+    public releaseNotification(notif: AstalNotifd.Notification|number): void {
+        const id = typeof notif === "number" ? notif : notif.id;
+        const data = this.#notifications.get(id);
+
+        if(!data) return;
+        data[1].start(data[1].lastRemained); 
+
+        this.notify("notifications-on-hold");
     }
 
     public toggleDoNotDisturb(value?: boolean): boolean {
@@ -308,6 +344,18 @@ class Notifications extends GObject.Object {
     }
 
     public getNotifd(): AstalNotifd.Notifd { return AstalNotifd.get_default(); }
-}
 
-export { Notifications };
+    public emit<Signal extends keyof typeof this.$signals>(
+        signal: Signal, ...args: Parameters<(typeof this.$signals)[Signal]>
+    ): void {
+        super.emit(signal, ...args);
+    }
+
+    public connect<Signal extends keyof typeof this.$signals>(
+        signal: Signal, 
+        callback: (self: typeof this, ...params: Parameters<(typeof this.$signals)[Signal]>) => 
+            ReturnType<(typeof this.$signals)[Signal]>
+    ): number {
+        return super.connect(signal, callback);
+    }
+}
