@@ -15,6 +15,9 @@ is_standalone=`(git remote -v > /dev/null 2>&1) || echo -n true`
 temp_dir="$XDG_CACHE_HOME/colorshell-installer"
 repo_directory=`[[ "$is_standalone" ]] && echo -n "$temp_dir/repo" || echo -n "."`
 
+#get commits for compairing between local & cloud repo versions
+local_repo_vers=`git rev-parse @`
+cloud_repo_vers=`git rev-parse @{u}`
 
 # source utils script before installation
 if [[ "$is_standalone" ]]; then
@@ -54,7 +57,9 @@ Send_log warn "!! By running this script, you assume total responsability for an
 if [[ "$answer" == y ]] || [[ "$skip_prompts" ]]; then
     if [[ "$is_standalone" ]]; then
         Send_log "The installer noticed that you're calling the script remotely"
-        rm -rf $repo_directory 2> /dev/null
+        if [[ "$repo_directory" ]] && [[ "$local_repo_vers" != "$cloud_repo_vers" ]]
+            rm -rf $repo_directory 2> /dev/null  
+        fi
         Send_log "Cloning repository in \`$repo_directory\`..."
         git clone https://github.com/retrozinndev/colorshell.git "$repo_directory"
     fi
